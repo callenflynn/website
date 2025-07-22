@@ -92,11 +92,16 @@
             opacity: 1;
         }
 
-        .theme-toggle {
+        .controls {
             position: fixed;
             top: 2rem;
             right: 2rem;
             z-index: 1000;
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .theme-toggle, .mute-toggle {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(20px);
             border: 1px solid rgba(255, 255, 255, 0.2);
@@ -111,9 +116,13 @@
             gap: 0.5rem;
         }
 
-        .theme-toggle:hover {
+        .theme-toggle:hover, .mute-toggle:hover {
             background: rgba(255, 255, 255, 0.2);
             transform: translateY(-2px);
+        }
+
+        .mute-toggle {
+            min-width: 100px;
         }
 
         .projects-grid {
@@ -353,6 +362,18 @@
             background: rgba(255, 255, 255, 0.6);
         }
 
+        body.light-theme .theme-toggle, 
+        body.light-theme .mute-toggle {
+            color: #333;
+            background: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+        }
+
+        body.light-theme .theme-toggle:hover,
+        body.light-theme .mute-toggle:hover {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
         @keyframes fadeInUp {
             from {
                 opacity: 0;
@@ -379,6 +400,10 @@
             
             .project-card {
                 padding: 1.5rem;
+            }
+
+            .controls {
+                flex-direction: column;
             }
         }
 
@@ -409,6 +434,12 @@
     </style>
 </head>
 <body>
+    <!-- Background music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="/song.mp4" type="audio/mp4">
+        Your browser does not support the audio element.
+    </audio>
+
     <div class="stars" id="stars"></div>
     <div class="floating-shapes">
         <div class="shape" style="top: 20%; left: 10%; width: 50px; height: 50px; background: white; border-radius: 50%;"></div>
@@ -417,8 +448,13 @@
     </div>
 
     <div class="container">
-        <div class="theme-toggle" id="themeToggle">
-            🌙 Dark
+        <div class="controls">
+            <div class="theme-toggle" id="themeToggle">
+                🌙 Dark
+            </div>
+            <div class="mute-toggle" id="muteToggle">
+                🎵 Music On
+            </div>
         </div>
         
         <header>
@@ -467,6 +503,76 @@
     </div>
 
     <script>
+        // Music control variables
+        let backgroundMusic = document.getElementById('backgroundMusic');
+        let isMuted = false;
+        let musicReady = false;
+        let playPromise = null;
+
+        // Initialize music
+        function initializeMusic() {
+            backgroundMusic.volume = 0.3; // Set to 30% volume (quiet)
+            
+            // Wait for audio to be ready
+            backgroundMusic.addEventListener('canplaythrough', () => {
+                musicReady = true;
+            });
+
+            backgroundMusic.addEventListener('error', (e) => {
+                console.log('Audio error:', e);
+                musicReady = false;
+            });
+            
+            // Try to play music when user first interacts with the page
+            document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
+            document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
+        }
+
+        async function playMusicOnFirstInteraction() {
+            if (!isMuted && musicReady) {
+                try {
+                    playPromise = backgroundMusic.play();
+                    await playPromise;
+                } catch (e) {
+                    console.log('Audio autoplay prevented or failed:', e.message);
+                }
+            }
+        }
+
+        // Mute toggle functionality
+        const muteToggle = document.getElementById('muteToggle');
+        muteToggle.addEventListener('click', async () => {
+            isMuted = !isMuted;
+            
+            if (isMuted) {
+                // Safely pause the music
+                if (playPromise) {
+                    try {
+                        await playPromise;
+                        backgroundMusic.pause();
+                    } catch (e) {
+                        console.log('Pause after play promise failed:', e.message);
+                    }
+                } else {
+                    backgroundMusic.pause();
+                }
+                muteToggle.innerHTML = '🔇 Music Off';
+            } else {
+                if (musicReady) {
+                    try {
+                        playPromise = backgroundMusic.play();
+                        await playPromise;
+                        muteToggle.innerHTML = '🎵 Music On';
+                    } catch (e) {
+                        console.log('Audio play failed:', e.message);
+                        muteToggle.innerHTML = '🎵 Music On';
+                    }
+                } else {
+                    muteToggle.innerHTML = '🎵 Music On';
+                }
+            }
+        });
+
         // Create animated stars
         function createStars() {
             const starsContainer = document.getElementById('stars');
@@ -568,6 +674,7 @@
             createStars();
             addParallaxEffect();
             addRippleEffect();
+            initializeMusic();
 
             // Get nameTitle after DOM is loaded
             const nameTitle = document.getElementById('nameTitle');
@@ -615,9 +722,6 @@
                 setTimeout(() => this.classList.remove('shake'), 500);
             }
         });
-
-        // Multiple clicks on name for extra effect
-        
 
         // Konami code
         document.addEventListener('keydown', function(e) {
