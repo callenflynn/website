@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cal's Page</title>
-    <meta name="description" content="Webpage with some of my stuff :)">
+    <meta name="description" content="Webpage with some of my stuff :)\n">
     <style>
         * {
             margin: 0;
@@ -548,18 +548,17 @@
         let musicReady = false;
         let playPromise = null;
 
-        // Detect if the browser is Safari (specifically, not Chrome/Android that might also contain "Safari" in userAgent)
-        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
-
-        // Initialize music based on browser
+        // Initialize music
         function initializeMusic() {
             backgroundMusic.volume = 0.3; // Set to 30% volume (quiet)
             
             backgroundMusic.addEventListener('canplaythrough', () => {
                 musicReady = true;
-                // If not Safari, attempt to autoplay immediately
-                if (!isSafari && !isMuted) {
-                    tryToPlayMusic();
+                // Always attempt to autoplay after 1 second if not muted
+                if (!isMuted) {
+                    setTimeout(() => {
+                        tryToPlayMusic();
+                    }, 1000); // 1-second delay
                 }
             });
 
@@ -568,11 +567,9 @@
                 musicReady = false;
             });
             
-            // Only add interaction listeners if it's Safari
-            if (isSafari) {
-                document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
-                document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
-            }
+            // Always add interaction listeners as a primary way (if autoplay blocked) or fallback
+            document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
+            document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
         }
 
         async function tryToPlayMusic() {
@@ -582,11 +579,9 @@
                     await playPromise;
                 } catch (e) {
                     console.log('Audio autoplay prevented or failed:', e.message);
-                    // If autoplay fails (e.g., due to browser policy), ensure interaction listener is still active
-                    if (!isSafari) { // For non-Safari, add a fallback interaction listener if autoplay failed
-                        document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
-                        document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
-                    }
+                    // Always add fallback interaction listeners if autoplay failed
+                    document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
+                    document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
                 }
             }
         }
