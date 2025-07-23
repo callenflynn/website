@@ -1,15 +1,24 @@
 // Music control variables
-let backgroundMusic = document.getElementById('backgroundMusic');
+let backgroundMusic;
 let isMuted = false;
 let musicReady = false;
 let playPromise = null;
 
 // Initialize music
 function initializeMusic() {
+    // Get the audio element here, after DOM is loaded
+    backgroundMusic = document.getElementById('backgroundMusic');
+    
+    if (!backgroundMusic) {
+        console.log('Audio element not found');
+        return;
+    }
+    
     backgroundMusic.volume = 0.3; // Set to 30% volume (quiet)
     
     backgroundMusic.addEventListener('canplaythrough', () => {
         musicReady = true;
+        console.log('Music ready to play');
         // Always attempt to autoplay immediately when ready and not muted
         if (!isMuted) {
             tryToPlayMusic();
@@ -21,6 +30,10 @@ function initializeMusic() {
         musicReady = false;
     });
     
+    backgroundMusic.addEventListener('loadstart', () => {
+        console.log('Audio loading started');
+    });
+    
     // Always add interaction listeners as a primary way (if autoplay blocked) or fallback
     // This ensures if initial autoplay fails, a click/key will play it.
     document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
@@ -28,8 +41,11 @@ function initializeMusic() {
 }
 
 function tryToPlayMusic() {
-    if (musicReady && !isMuted) {
-        backgroundMusic.play().catch(e => {
+    if (musicReady && !isMuted && backgroundMusic) {
+        console.log('Attempting to play music');
+        backgroundMusic.play().then(() => {
+            console.log('Music started playing');
+        }).catch(e => {
             console.log('Audio autoplay prevented or failed:', e.message);
             // Always add fallback interaction listeners if autoplay failed
             document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
@@ -39,28 +55,11 @@ function tryToPlayMusic() {
 }
 
 function playMusicOnFirstInteraction() {
-    if (!isMuted && musicReady) {
+    console.log('User interaction detected, trying to play music');
+    if (!isMuted && musicReady && backgroundMusic) {
         tryToPlayMusic();
     }
 }
-
-// Mute toggle functionality
-const muteToggle = document.getElementById('muteToggle');
-muteToggle.addEventListener('click', () => {
-    isMuted = !isMuted;
-    
-    if (isMuted) {
-        backgroundMusic.pause();
-        muteToggle.innerHTML = '🔇 Music Off';
-    } else {
-        if (musicReady) {
-            tryToPlayMusic();
-            muteToggle.innerHTML = '🎵 Music On';
-        } else {
-            muteToggle.innerHTML = '🎵 Music On';
-        }
-    }
-});
 
 // Create animated stars
 function createStars() {
@@ -168,6 +167,8 @@ function triggerFloatingAnimation(element) {
 
 // Initialize all effects
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM loaded, initializing...');
+    
     createStars();
     addParallaxEffect();
     addRippleEffect();
@@ -193,41 +194,74 @@ document.addEventListener('DOMContentLoaded', () => {
             triggerFloatingAnimation(nameTitle);
         }
     }, 15000); // Every 15 seconds (15000 milliseconds)
+
+    // Mute toggle functionality - moved here to ensure elements exist
+    const muteToggle = document.getElementById('muteToggle');
+    muteToggle.addEventListener('click', () => {
+        isMuted = !isMuted;
+        
+        if (isMuted) {
+            if (backgroundMusic) {
+                backgroundMusic.pause();
+            }
+            muteToggle.innerHTML = '🔇 Music Off';
+        } else {
+            if (musicReady && backgroundMusic) {
+                tryToPlayMusic();
+                muteToggle.innerHTML = '🎵 Music On';
+            } else {
+                muteToggle.innerHTML = '🎵 Music On';
+            }
+        }
+    });
+
+    // Theme toggle functionality - moved here too
+    const themeToggle = document.getElementById('themeToggle');
+    const body = document.body;
+    let isDark = true;
+
+    themeToggle.addEventListener('click', () => {
+        isDark = !isDark;
+        body.classList.toggle('light-theme');
+        themeToggle.innerHTML = isDark ? '🌙 Dark' : '☀️ Light';
+    });
 });
 
-// Clickable icons
-document.getElementById('codeIcon').addEventListener('click', function() {
-    this.classList.add('spin');
-    setTimeout(() => this.classList.remove('spin'), 1000);
-});
+// Clickable icons - these need to be after DOM loads too
+document.addEventListener('DOMContentLoaded', () => {
+    document.getElementById('codeIcon').addEventListener('click', function() {
+        this.classList.add('spin');
+        setTimeout(() => this.classList.remove('spin'), 1000);
+    });
 
-document.getElementById('mcIcon').addEventListener('click', function() {
-    this.classList.add('shake');
-    setTimeout(() => this.classList.remove('shake'), 500);
-});
-
-// Socials icon click effect
-document.getElementById('socialsIcon').addEventListener('click', function() {
-    this.classList.add('spin'); 
-    setTimeout(() => this.classList.remove('spin'), 1000);
-});
-
-// Footer shake effect
-let footerClickCount = 0;
-document.getElementById('footerText').addEventListener('click', function() {
-    footerClickCount++;
-    
-    if (footerClickCount % 3 === 0) {
-        // Every 3rd click - big shake
-        this.classList.remove('rainbow', 'shake');
-        this.classList.add('big-shake');
-        setTimeout(() => this.classList.remove('big-shake'), 800);
-    } else {
-        // Regular clicks - small shake
-        this.classList.remove('rainbow', 'big-shake');
+    document.getElementById('mcIcon').addEventListener('click', function() {
         this.classList.add('shake');
         setTimeout(() => this.classList.remove('shake'), 500);
-    }
+    });
+
+    // Socials icon click effect
+    document.getElementById('socialsIcon').addEventListener('click', function() {
+        this.classList.add('spin'); 
+        setTimeout(() => this.classList.remove('spin'), 1000);
+    });
+
+    // Footer shake effect
+    let footerClickCount = 0;
+    document.getElementById('footerText').addEventListener('click', function() {
+        footerClickCount++;
+        
+        if (footerClickCount % 3 === 0) {
+            // Every 3rd click - big shake
+            this.classList.remove('rainbow', 'shake');
+            this.classList.add('big-shake');
+            setTimeout(() => this.classList.remove('big-shake'), 800);
+        } else {
+            // Regular clicks - small shake
+            this.classList.remove('rainbow', 'big-shake');
+            this.classList.add('shake');
+            setTimeout(() => this.classList.remove('shake'), 500);
+        }
+    });
 });
 
 // Konami code
@@ -299,17 +333,6 @@ sparkleStyle.textContent += `
 `;
 document.head.appendChild(sparkleStyle);
 
-// Theme toggle functionality
-const themeToggle = document.getElementById('themeToggle');
-const body = document.body;
-let isDark = true;
-
-themeToggle.addEventListener('click', () => {
-    isDark = !isDark;
-    body.classList.toggle('light-theme');
-    themeToggle.innerHTML = isDark ? '🌙 Dark' : '☀️ Light';
-});
-
 // Add smooth entrance animation
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
@@ -320,6 +343,8 @@ const observer = new IntersectionObserver((entries) => {
     });
 });
 
-document.querySelectorAll('.project-card').forEach(card => {
-    observer.observe(card);
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.project-card').forEach(card => {
+        observer.observe(card);
+    });
 });
