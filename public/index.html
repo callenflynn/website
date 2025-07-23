@@ -554,11 +554,9 @@
             
             backgroundMusic.addEventListener('canplaythrough', () => {
                 musicReady = true;
-                // Always attempt to autoplay after 1 second if not muted
+                // Always attempt to autoplay immediately when ready and not muted
                 if (!isMuted) {
-                    setTimeout(() => {
-                        tryToPlayMusic();
-                    }, 1000); // 1-second delay
+                    tryToPlayMusic();
                 }
             });
 
@@ -568,25 +566,23 @@
             });
             
             // Always add interaction listeners as a primary way (if autoplay blocked) or fallback
+            // This ensures if initial autoplay fails, a click/key will play it.
             document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
             document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
         }
 
-        async function tryToPlayMusic() {
+        function tryToPlayMusic() {
             if (musicReady && !isMuted) {
-                try {
-                    playPromise = backgroundMusic.play();
-                    await playPromise;
-                } catch (e) {
+                backgroundMusic.play().catch(e => {
                     console.log('Audio autoplay prevented or failed:', e.message);
                     // Always add fallback interaction listeners if autoplay failed
                     document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
                     document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
-                }
+                });
             }
         }
 
-        async function playMusicOnFirstInteraction() {
+        function playMusicOnFirstInteraction() {
             if (!isMuted && musicReady) {
                 tryToPlayMusic();
             }
@@ -594,20 +590,11 @@
 
         // Mute toggle functionality
         const muteToggle = document.getElementById('muteToggle');
-        muteToggle.addEventListener('click', async () => {
+        muteToggle.addEventListener('click', () => {
             isMuted = !isMuted;
             
             if (isMuted) {
-                if (playPromise) {
-                    try {
-                        await playPromise;
-                        backgroundMusic.pause();
-                    } catch (e) {
-                        console.log('Pause after play promise failed:', e.message);
-                    }
-                } else {
-                    backgroundMusic.pause();
-                }
+                backgroundMusic.pause();
                 muteToggle.innerHTML = '🔇 Music Off';
             } else {
                 if (musicReady) {
