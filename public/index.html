@@ -229,12 +229,15 @@
         }
 
         .floating {
-            animation: floating 3s ease-in-out infinite;
+            animation: floating 3s ease-in-out; /* Changed to not repeat infinitely */
         }
 
         @keyframes floating {
-            0%, 100% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
+            0% { transform: translateY(0px); }
+            25% { transform: translateY(-15px); } /* Floats up */
+            50% { transform: translateY(0px); }  /* Comes back down */
+            75% { transform: translateY(-5px); } /* Briefly floats up again */
+            100% { transform: translateY(0px); } /* Settles */
         }
 
         .konami-mode {
@@ -288,6 +291,25 @@
             display: flex;
             gap: 1rem;
             flex-wrap: wrap;
+        }
+        
+        .socials-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .socials-list li {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.9;
+        }
+
+        .socials-list li:last-child {
+            margin-bottom: 0;
         }
 
         .btn {
@@ -434,7 +456,6 @@
     </style>
 </head>
 <body>
-    <!-- Background music -->
     <audio id="backgroundMusic" loop preload="auto">
         <source src="song.mp3" type="audio/mp3">
         Your browser does not support the audio element.
@@ -489,6 +510,23 @@
                         ⚔️ Join Concord SMP
                     </a>
                 </div>
+            </div>
+
+            <div class="project-card" style="animation-delay: 0.6s;">
+                <div class="project-icon" id="socialsIcon">🔗</div>
+                <h3 class="project-title">Socials</h3>
+                <ul class="socials-list">
+                    <li>🎮 Xbox: tinnyimp7960770</li>
+                    <li>
+                        <span style="font-size: 1.2em; margin-right: 5px;">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 496 512" width="24" height="24" fill="currentColor">
+                                <path d="M496 256c0 137-111 248-248 248S0 393 0 256 111 8 248 8s248 111 248 248zM248 376c-31 0-56-25-56-56s25-56 56-56 56 25 56 56-25 56-56 56zm96.7-175.7c-5.8-3.3-10-6.4-15.7-11-20.5-16.7-27.4-44.4-18.7-68.5 7.4-20.7 25.5-35.1 47-38.3 10-1.5 19-2.2 27.6-2.5 1.7-.1 3.3-.2 5-.2H384V96c0-13.3-10.7-24-24-24s-24 10.7-24 24v8c-6 0-12-.1-18.1-.1-27.6 0-54.7 10.7-75.1 31.1-20.4 20.4-31.1 47.5-31.1 75.1 0 16.6 3.1 32.7 9.1 47.7 5.8 14.5 15.6 26.6 28.7 36.1 13.1 9.5 28.5 16.4 45.3 20.7 16.8 4.3 34.4 6.5 52.3 6.5 1.7 0 3.3 0 5-.1h.1c.1 0 .2 0 .3 0 1.6 0 3.2 0 4.8-.1 1.7-.1 3.3-.2 5-.2H384v-8c0-13.3 10.7-24 24-24s24 10.7 24 24v8h.1c1.7 0 3.3.1 5 .2 1.6.1 3.2.1 4.8.2 1.7.1 3.3.2 5 .2 17.9 0 35.5-2.2 52.3-6.5 16.8-4.3 32.2-11.2 45.3-20.7 13.1-9.5 22.9-21.6 28.7-36.1 6-15 9.1-31.1 9.1-47.7 0-27.6-10.7-54.7-31.1-75.1-20.4-20.4-47.5-31.1-75.1-31.1-6.1 0-12.1.1-18.1.1-1.7 0-3.3.1-5 .2zM384 256c0 13.3-10.7 24-24 24s-24-10.7-24-24 10.7-24 24-24 24 10.7 24 24z"/>
+                            </svg>
+                        </span>
+                        Steam: BOBCATtwo
+                    </li>
+                    <li>👻 Snapchat: callen_flynn</li>
+                </ul>
             </div>
         </div>
 
@@ -669,6 +707,14 @@
         let konamiCode = [];
         const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65]; // Up, Up, Down, Down, Left, Right, Left, Right, B, A
 
+        // Function to trigger the floating animation
+        function triggerFloatingAnimation(element) {
+            element.classList.add('floating');
+            setTimeout(() => {
+                element.classList.remove('floating');
+            }, 3000); // Duration of the floating animation
+        }
+
         // Initialize all effects
         document.addEventListener('DOMContentLoaded', () => {
             createStars();
@@ -676,7 +722,6 @@
             addRippleEffect();
             initializeMusic();
 
-            // Get nameTitle after DOM is loaded
             const nameTitle = document.getElementById('nameTitle');
 
             // Name hanging effect with click counter
@@ -685,13 +730,18 @@
                 nameTitle.classList.toggle('hanging');
                 
                 if (clickCount >= 5) {
-                    nameTitle.classList.add('floating');
-                    setTimeout(() => {
-                        nameTitle.classList.remove('floating');
-                        clickCount = 0;
-                    }, 3000);
+                    triggerFloatingAnimation(nameTitle);
+                    clickCount = 0; // Reset click count after floating
                 }
             });
+
+            // Random floating effect for nameTitle
+            setInterval(() => {
+                const randomChance = Math.random(); // Generates a number between 0 and 1
+                if (randomChance < 0.3) { // 30% chance every 15 seconds
+                    triggerFloatingAnimation(nameTitle);
+                }
+            }, 15000); // Every 15 seconds (15000 milliseconds)
         });
 
         // Clickable icons
@@ -703,6 +753,12 @@
         document.getElementById('mcIcon').addEventListener('click', function() {
             this.classList.add('shake');
             setTimeout(() => this.classList.remove('shake'), 500);
+        });
+
+        // Socials icon click effect
+        document.getElementById('socialsIcon').addEventListener('click', function() {
+            this.classList.add('spin'); // Example effect, you can change this
+            setTimeout(() => this.classList.remove('spin'), 1000);
         });
 
         // Footer shake effect
