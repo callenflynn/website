@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: white;
@@ -548,17 +548,17 @@
         let musicReady = false;
         let playPromise = null;
 
-        // Detect if the user is on an Apple device (iOS/iPadOS/macOS Safari)
-        const isAppleDevice = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+        // Detect if the browser is Safari (specifically, not Chrome/Android that might also contain "Safari" in userAgent)
+        const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
 
-        // Initialize music based on device
+        // Initialize music based on browser
         function initializeMusic() {
             backgroundMusic.volume = 0.3; // Set to 30% volume (quiet)
             
             backgroundMusic.addEventListener('canplaythrough', () => {
                 musicReady = true;
-                // If not an Apple device, attempt to autoplay immediately
-                if (!isAppleDevice && !isMuted) {
+                // If not Safari, attempt to autoplay immediately
+                if (!isSafari && !isMuted) {
                     tryToPlayMusic();
                 }
             });
@@ -568,9 +568,11 @@
                 musicReady = false;
             });
             
-            // For all devices, still listen for first interaction as a fallback/primary for Apple
-            document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
-            document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
+            // Only add interaction listeners if it's Safari
+            if (isSafari) {
+                document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
+                document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
+            }
         }
 
         async function tryToPlayMusic() {
@@ -580,6 +582,11 @@
                     await playPromise;
                 } catch (e) {
                     console.log('Audio autoplay prevented or failed:', e.message);
+                    // If autoplay fails (e.g., due to browser policy), ensure interaction listener is still active
+                    if (!isSafari) { // For non-Safari, add a fallback interaction listener if autoplay failed
+                        document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
+                        document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
+                    }
                 }
             }
         }
