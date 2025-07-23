@@ -13,7 +13,7 @@
         }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: 'Inter', -apple-system, BlinkMacMacSystemFont, 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             min-height: 100vh;
             color: white;
@@ -526,7 +526,7 @@
                     <li><a href="https://www.xbox.com/en-US/play/user/TinnyImp7960770" target="_blank" style="text-decoration: none; color: inherit;"><img src="xbox.ico" alt="Xbox Logo"> Xbox: tinnyimp7960770</a></li>
                     <li><a href="https://steamcommunity.com/id/The_realcallenflynn/" target="_blank" style="text-decoration: none; color: inherit;"><img src="steam.ico" alt="Steam Logo"> Steam: BOBCATtwo</a></li>
                     <li><a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" style="text-decoration: none; color: inherit;"><img src="spotify.ico" alt="Spotify Logo"> Spotify: cal</a></li>
-                    <li><img src="snap.ico" alt="Snapchat Logo"> Snapchat: callen_flynn</li>
+                    <li><img src="snap.ico" alt="Snap Logo"> Snap: callen_flynn</li>
                 </ul>
             </div>
         </div>
@@ -548,13 +548,19 @@
         let musicReady = false;
         let playPromise = null;
 
-        // Initialize music
+        // Detect if the user is on an Apple device (iOS/iPadOS/macOS Safari)
+        const isAppleDevice = /(Mac|iPhone|iPod|iPad)/i.test(navigator.platform) || /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
+        // Initialize music based on device
         function initializeMusic() {
             backgroundMusic.volume = 0.3; // Set to 30% volume (quiet)
             
-            // Wait for audio to be ready
             backgroundMusic.addEventListener('canplaythrough', () => {
                 musicReady = true;
+                // If not an Apple device, attempt to autoplay immediately
+                if (!isAppleDevice && !isMuted) {
+                    tryToPlayMusic();
+                }
             });
 
             backgroundMusic.addEventListener('error', (e) => {
@@ -562,13 +568,13 @@
                 musicReady = false;
             });
             
-            // Try to play music when user first interacts with the page
+            // For all devices, still listen for first interaction as a fallback/primary for Apple
             document.addEventListener('click', playMusicOnFirstInteraction, { once: true });
             document.addEventListener('keydown', playMusicOnFirstInteraction, { once: true });
         }
 
-        async function playMusicOnFirstInteraction() {
-            if (!isMuted && musicReady) {
+        async function tryToPlayMusic() {
+            if (musicReady && !isMuted) {
                 try {
                     playPromise = backgroundMusic.play();
                     await playPromise;
@@ -578,13 +584,18 @@
             }
         }
 
+        async function playMusicOnFirstInteraction() {
+            if (!isMuted && musicReady) {
+                tryToPlayMusic();
+            }
+        }
+
         // Mute toggle functionality
         const muteToggle = document.getElementById('muteToggle');
         muteToggle.addEventListener('click', async () => {
             isMuted = !isMuted;
             
             if (isMuted) {
-                // Safely pause the music
                 if (playPromise) {
                     try {
                         await playPromise;
@@ -598,14 +609,8 @@
                 muteToggle.innerHTML = '🔇 Music Off';
             } else {
                 if (musicReady) {
-                    try {
-                        playPromise = backgroundMusic.play();
-                        await playPromise;
-                        muteToggle.innerHTML = '🎵 Music On';
-                    } catch (e) {
-                        console.log('Audio play failed:', e.message);
-                        muteToggle.innerHTML = '🎵 Music On';
-                    }
+                    tryToPlayMusic();
+                    muteToggle.innerHTML = '🎵 Music On';
                 } else {
                     muteToggle.innerHTML = '🎵 Music On';
                 }
@@ -721,7 +726,7 @@
             createStars();
             addParallaxEffect();
             addRippleEffect();
-            initializeMusic();
+            initializeMusic(); // Call initializeMusic here
 
             const nameTitle = document.getElementById('nameTitle');
 
