@@ -116,6 +116,7 @@ h1.hanging::before {
 .mute-toggle {
     min-width: 100px;
 }
+
 .project-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
@@ -297,7 +298,7 @@ h1.hanging::before {
 }
 
 .socials-list img {
-    width: 24px; /* Adjust size as needed */
+    width: 24px;
     height: 24px;
     vertical-align: middle;
     margin-right: 5px;
@@ -445,22 +446,40 @@ body.light-theme .mute-toggle:hover {
     50% { transform: translateY(-20px) rotate(180deg); }
 }
 
-.about-card .about-content {
-    display: flex;
-    align-items: center;    /* vertically centers text */
-    gap: 20px;              /* space between title and description */
-}
-
+/* 📦 Project Grid */
 .projects-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 equal columns by default */
-    gap: 20px; /* space between cards */
+    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
+    gap: 20px;
 }
 
+/* 📝 About Me Card */
 .about-card {
     grid-column: span 3; 
+    display: flex;              
+    align-items: center;        
+    padding: 1.5rem 2rem;       
 }
 
+.about-card .about-content {
+    display: flex;
+    align-items: flex-start;    
+    gap: 20px;                  
+    width: 100%;
+}
+
+.about-card .project-title {
+    flex: 0 0 auto;             
+    text-align: left;
+    margin-bottom: 0;
+}
+
+.about-card .project-description {
+    flex: 1;                    
+    text-align: left;
+}
+
+/* 📱 Mobile tweaks */
 @media (max-width: 900px) {
     .projects-grid {
         grid-template-columns: 1fr; 
@@ -469,6 +488,9 @@ body.light-theme .mute-toggle:hover {
     .about-card {
         grid-column: span 1; 
     }
+
+    .about-card .about-content {
+        flex-direction: column; 
+        align-items: flex-start; 
+    }
 }
-
-
