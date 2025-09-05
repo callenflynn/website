@@ -117,6 +117,13 @@ h1.hanging::before {
     min-width: 100px;
 }
 
+.projects-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+    margin-top: 3rem;
+}
+
 .project-card {
     background: rgba(255, 255, 255, 0.1);
     backdrop-filter: blur(20px);
@@ -298,7 +305,7 @@ h1.hanging::before {
 }
 
 .socials-list img {
-    width: 24px;
+    width: 24px; /* Adjust size as needed */
     height: 24px;
     vertical-align: middle;
     margin-right: 5px;
@@ -444,53 +451,4 @@ body.light-theme .mute-toggle:hover {
 @keyframes float {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-20px) rotate(180deg); }
-}
-
-/* 📦 Project Grid */
-.projects-grid {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr); /* 3 equal columns */
-    gap: 20px;
-}
-
-/* 📝 About Me Card */
-.about-card {
-    grid-column: span 3; 
-    display: flex;              
-    align-items: center;        
-    padding: 1.5rem 2rem;       
-}
-
-.about-card .about-content {
-    display: flex;
-    align-items: flex-start;    
-    gap: 20px;                  
-    width: 100%;
-}
-
-.about-card .project-title {
-    flex: 0 0 auto;             
-    text-align: left;
-    margin-bottom: 0;
-}
-
-.about-card .project-description {
-    flex: 1;                    
-    text-align: left;
-}
-
-/* 📱 Mobile tweaks */
-@media (max-width: 900px) {
-    .projects-grid {
-        grid-template-columns: 1fr; 
-    }
-
-    .about-card {
-        grid-column: span 1; 
-    }
-
-    .about-card .about-content {
-        flex-direction: column; 
-        align-items: flex-start; 
-    }
 }
