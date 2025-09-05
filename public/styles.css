@@ -452,3 +452,10 @@ body.light-theme .mute-toggle:hover {
     0%, 100% { transform: translateY(0px) rotate(0deg); }
     50% { transform: translateY(-20px) rotate(180deg); }
 }
+.about-card {
+    min-height: 100px;   /* shorter than normal cards */
+    display: flex;
+    align-items: center; /* vertically center the text */
+    justify-content: center;
+    text-align: center;  /* looks nicer for a wide box */
+}
