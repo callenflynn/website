@@ -415,4 +415,15 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.project-card').forEach(card => {
         observer.observe(card);
     });
+    
+    // Hardware icon interaction
+    const hardwareIcon = document.getElementById('hardwareIcon');
+    if (hardwareIcon) {
+        hardwareIcon.addEventListener('click', () => {
+            hardwareIcon.classList.add('spin');
+            setTimeout(() => {
+                hardwareIcon.classList.remove('spin');
+            }, 1000);
+        });
+    }
 });
