@@ -137,6 +137,10 @@ h1.hanging::before {
     .about-card {
         grid-column: span 3;
     }
+    
+    .hardware-card {
+        grid-column: span 3;
+    }
 }
 
 .project-card {
@@ -592,6 +596,15 @@ body.light-theme .mute-toggle:hover {
     .hardware-item strong {
         font-size: 0.95rem;
     }
+    
+    .hardware-list {
+        grid-template-columns: 1fr;
+        gap: 0.8rem;
+    }
+    
+    .gaming-stats-card {
+        padding: 1.5rem;
+    }
 }
 
 .floating-shapes {
@@ -633,8 +646,13 @@ body.light-theme .mute-toggle:hover {
 }
 
 .exophase-card {
-    max-width: 600px;
+    max-width: 800px;
     text-align: center;
+}
+
+.gaming-stats-card {
+    max-width: 900px;
+    padding: 2.5rem;
 }
 
 .exophase-card-container {
@@ -664,6 +682,16 @@ body.light-theme .mute-toggle:hover {
 .hardware-list {
     text-align: left;
     margin-top: 1rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+@media (min-width: 769px) {
+    .hardware-list {
+        grid-template-columns: 1fr 1fr;
+        gap: 1.5rem;
+    }
 }
 
 .hardware-item {
