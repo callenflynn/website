@@ -734,6 +734,16 @@ body.light-theme .hardware-item strong {
     color: #444;
 }
 
+.hardware-link {
+    color: inherit;
+    text-decoration: underline;
+    transition: opacity 0.3s ease;
+}
+
+.hardware-link:hover {
+    opacity: 0.8;
+}
+
 /* Touch and Mobile Enhancements */
 * {
     -webkit-tap-highlight-color: transparent;
