@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cal's Coding Projects</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Discord Banner -->
+    <div id="discordBanner" class="discord-banner" aria-label="Live Discord Status">
+        <div class="discord-banner-content">🔄 Loading Discord status...</div>
+    </div>
+
+    <!-- Background Elements -->
+    <div class="stars"></div>
+    <div class="floating-shapes"></div>
+
+    <!-- Music -->
+    <audio id="backgroundMusic" loop preload="auto">
+        <source src="https://www.soundjay.com/misc/sounds/bell-ringing-05.wav" type="audio/wav">
+        <source src="background-music.mp3" type="audio/mpeg">
+    </audio>
+
+    <!-- Controls -->
+    <div class="controls">
+        <button class="theme-toggle" id="themeToggle">
+            🌙 Dark Mode
+        </button>
+        <button class="mute-toggle" id="muteToggle">
+            🔊 Music On
+        </button>
+        <button class="back-button" onclick="window.location.href='index.html'">
+            ← Back to Main
+        </button>
+    </div>
+
+    <div class="container">
+        <header>
+            <h1>💻 Coding Projects</h1>
+            <p class="subtitle">Interactive games and programming projects I've built</p>
+        </header>
+
+        <div class="projects-grid">
+            <!-- Snake Gaem -->
+            <div class="project-card" style="animation-delay: 0.2s;">
+                <div class="project-icon" id="snakeIcon">🐍</div>
+                <h3 class="project-title">Snake Gaem</h3>
+                <p class="project-description">A modern take on the classic Snake game with smooth gameplay and responsive controls. Eat food, grow longer, and try not to crash into yourself!</p>
+                <div class="project-links">
+                    <a href="https://cals-snake-gaem.vercel.app" target="_blank" class="btn btn-primary">
+                        🎮 Play Snake Gaem
+                    </a>
+                </div>
+            </div>
+
+            <!-- Yes, Majesty! -->
+            <div class="project-card" style="animation-delay: 0.4s;">
+                <div class="project-icon" id="majestyIcon">👑</div>
+                <h3 class="project-title">Yes, Majesty!</h3>
+                <p class="project-description">An interactive royal decision-making kingdom game. Make choices that affect your kingdom's fate as you rule with wisdom... or chaos!</p>
+                <div class="project-links">
+                    <a href="https://callenflynn.github.io/Yes-Majesty" target="_blank" class="btn btn-primary">
+                        👑 Rule the Kingdom
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Secret Message Modal -->
+        <div class="secret-message" id="secretMessage">
+            <h3>🎉 You found the secret!</h3>
+            <p>Thanks for exploring my coding projects! Keep coding and keep creating! 🚀</p>
+            <button class="btn" onclick="document.getElementById('secretMessage').classList.remove('show')">Close</button>
+        </div>
+    </div>
+
+    <footer>
+        <p class="footer-text">Cal</p>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
