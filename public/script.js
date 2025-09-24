@@ -447,12 +447,10 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Discord Rich Presence via Lanyard API - Enhanced with RPC-style text
 async function fetchDiscordStatus() {
     const userId = '1409705687159668736'; 
     
     try {
-        // Add timestamp to prevent caching
         const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}?t=${Date.now()}`);
         const data = await response.json();
         
@@ -474,11 +472,9 @@ function updateDiscordBanner(userData) {
     let bannerHTML = '';
     let statusClass = userData.discord_status;
     
-    // Build status text with RPC-style formatting and icons
     let statusText = '';
     let iconHTML = '';
     
-    // Online status emojis
     const statusEmojis = {
         online: '🟢',
         idle: '🟡', 
@@ -596,23 +592,33 @@ function updateDiscordBanner(userData) {
     bannerContainer.innerHTML = bannerHTML;
 }
 
-// Enhanced Discord initialization with better refresh timing
+// Enhanced Discord initialization with faster refresh timing
 document.addEventListener('DOMContentLoaded', function() {
     // Wait for page to fully load before starting Discord updates
     setTimeout(() => {
         fetchDiscordStatus(); // Initial fetch
         
-        // Set up more frequent updates (every 10 seconds)
+        // Set up faster updates (every 5 seconds instead of 10)
         const discordRefreshInterval = setInterval(() => {
             fetchDiscordStatus();
             console.log('Discord status refreshed at:', new Date().toLocaleTimeString());
-        }, 10000); // Update every 10 seconds
+        }, 5000); // Update every 5 seconds
         
         // Force refresh when tab becomes visible (in case user was away)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 fetchDiscordStatus();
                 console.log('Tab became visible, refreshing Discord status');
+            }
+        });
+        
+        // Also refresh on mouse movement (but throttled to avoid spam)
+        let lastRefreshTime = 0;
+        document.addEventListener('mousemove', () => {
+            const now = Date.now();
+            if (now - lastRefreshTime > 3000) { // Only refresh once every 3 seconds via mouse movement
+                fetchDiscordStatus();
+                lastRefreshTime = now;
             }
         });
         
