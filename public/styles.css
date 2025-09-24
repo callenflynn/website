@@ -122,11 +122,63 @@ h1.hanging::before {
 
 .controls {
     position: fixed;
-    top: 2rem;
+    top: 70px; /* Banner is ~50px, so controls start at 70px */
     right: 2rem;
-    z-index: 1000;
+    z-index: 1001; /* Higher than banner (1000) to ensure they're on top */
     display: flex;
     gap: 0.8rem;
+}
+
+/* Mobile adjustments for controls positioning */
+@media (max-width: 768px) {
+    .controls {
+        top: 60px; /* Adjusted for mobile banner */
+        right: 1rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    body {
+        padding-top: 120px; /* Consistent mobile padding */
+    }
+    
+    .discord-banner {
+        font-size: 0.8rem;
+        padding: 8px 0;
+    }
+    
+    .discord-banner-content {
+        padding: 6px 15px;
+        max-width: 95%;
+    }
+    
+    .discord-banner-icon {
+        width: 20px;
+        height: 20px;
+        margin-right: 6px;
+    }
+}
+
+/* Small mobile adjustments */
+@media (max-width: 480px) {
+    .controls {
+        top: 55px; /* Further adjusted for smaller mobile banner */
+        right: 0.8rem;
+    }
+    
+    body {
+        padding-top: 110px; /* Consistent small mobile padding */
+    }
+    
+    .discord-banner {
+        font-size: 0.75rem;
+        padding: 6px 0;
+    }
+    
+    .discord-banner-content {
+        padding: 5px 12px;
+        font-size: 0.75rem;
+    }
 }
 
 .theme-toggle, .mute-toggle {
@@ -485,7 +537,7 @@ body.light-theme .mute-toggle:hover {
     
     .controls {
         position: fixed;
-        top: 1rem;
+        top: 60px; /* Adjusted for mobile Discord banner height */
         right: 1rem;
         flex-direction: column;
         gap: 0.5rem;
@@ -576,7 +628,7 @@ body.light-theme .mute-toggle:hover {
     }
     
     .controls {
-        top: 0.8rem;
+        top: 55px; 
         right: 0.8rem;
     }
     
@@ -1066,12 +1118,9 @@ a, button, .project-icon, .project-card, .btn, .theme-toggle, .mute-toggle {
     }
 }
 
-/* Add padding to body to account for fixed banner */
 body {
-    padding-top: 120px; /* Increased from 60px to 120px */
-}
+    padding-top: 140px; 
 
-/* Mobile adjustments */
 @media (max-width: 768px) {
     .discord-banner {
         font-size: 0.8rem;
@@ -1084,7 +1133,7 @@ body {
     }
     
     body {
-        padding-top: 110px;
+        padding-top: 120px; /* Consistent mobile padding */
     }
 }
 
@@ -1100,14 +1149,6 @@ body {
     }
     
     body {
-        padding-top: 165px;
-    }
-}
-
-@media (max-width: 768px) {
-    .discord-banner-icon {
-        width: 20px;
-        height: 20px;
-        margin-right: 6px;
+        padding-top: 145px;
     }
 }
