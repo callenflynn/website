@@ -446,3 +446,105 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 });
+
+// Discord Rich Presence via Lanyard API
+async function fetchDiscordStatus() {
+    const userId = '1409705687159668736'; 
+    
+    try {
+        const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}`);
+        const data = await response.json();
+        
+        if (data.success) {
+            updateDiscordDisplay(data.data);
+        } else {
+            document.getElementById('discordStatus').innerHTML = '<div class="status-loading">❌ Could not fetch Discord status</div>';
+        }
+    } catch (error) {
+        console.log('Discord status fetch error:', error);
+        document.getElementById('discordStatus').innerHTML = '<div class="status-loading">⚠️ Discord status unavailable</div>';
+    }
+}
+
+function updateDiscordDisplay(userData) {
+    const statusContainer = document.getElementById('discordStatus');
+    let statusHTML = '';
+    
+    // Online status
+    const statusEmojis = {
+        online: '🟢',
+        idle: '🟡', 
+        dnd: '🔴',
+        offline: '⚫'
+    };
+    
+    const statusNames = {
+        online: 'Online',
+        idle: 'Away',
+        dnd: 'Do Not Disturb',
+        offline: 'Offline'
+    };
+    
+    statusHTML += `
+        <div class="status-item">
+            <span class="status-indicator status-${userData.discord_status}"></span>
+            <div class="discord-activity-text">
+                <strong>${statusEmojis[userData.discord_status]} ${statusNames[userData.discord_status]}</strong>
+            </div>
+        </div>
+    `;
+    
+    // Spotify status
+    if (userData.spotify && userData.spotify.track_id) {
+        statusHTML += `
+            <div class="status-item spotify-info">
+                <div class="discord-activity-text">
+                    🎵 <strong>${userData.spotify.song}</strong>
+                    <small>by ${userData.spotify.artist} • ${userData.spotify.album}</small>
+                </div>
+            </div>
+        `;
+    }
+    
+    // Gaming/Activity status
+    if (userData.activities && userData.activities.length > 0) {
+        const gameActivity = userData.activities.find(act => act.type === 0); // Playing
+        if (gameActivity) {
+            statusHTML += `
+                <div class="status-item game-info">
+                    <div class="discord-activity-text">
+                        🎮 <strong>Playing ${gameActivity.name}</strong>
+                        ${gameActivity.details ? `<small>${gameActivity.details}</small>` : ''}
+                        ${gameActivity.state ? `<small>${gameActivity.state}</small>` : ''}
+                    </div>
+                </div>
+            `;
+        }
+    }
+    
+    if (!statusHTML.includes('spotify-info') && !statusHTML.includes('game-info') && userData.discord_status === 'offline') {
+        statusHTML += '<div class="status-loading">😴 Currently offline</div>';
+    } else if (!statusHTML.includes('spotify-info') && !statusHTML.includes('game-info')) {
+        statusHTML += '<div class="status-loading">💭 Just chilling</div>';
+    }
+    
+    statusContainer.innerHTML = statusHTML;
+}
+
+// Add Discord icon animation to your existing icon animations
+document.addEventListener('DOMContentLoaded', function() {
+    // Fetch Discord status on load and set up refresh
+    fetchDiscordStatus();
+    setInterval(fetchDiscordStatus, 15000); // Update every 15 seconds
+    
+    // Discord icon animation
+    const discordIcon = document.getElementById('discordStatusIcon');
+    if (discordIcon) {
+        discordIcon.addEventListener('click', function() {
+            this.style.transform = 'scale(1.2) rotate(15deg)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            }, 200);
+        });
+    }
+});
