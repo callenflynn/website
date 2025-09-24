@@ -299,72 +299,98 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
-// Clickable icons
+// Replace the problematic icon event listeners section (around line 337) with this:
+
 document.addEventListener('DOMContentLoaded', () => {
-    document.getElementById('codeIcon').addEventListener('click', function() {
-        this.classList.add('spin');
-        setTimeout(() => this.classList.remove('spin'), 1000);
-    });
+    // Add null checks for all icon elements
+    const codeIcon = document.getElementById('codeIcon');
+    if (codeIcon) {
+        codeIcon.addEventListener('click', function() {
+            this.classList.add('spin');
+            setTimeout(() => this.classList.remove('spin'), 1000);
+        });
+    }
 
-    document.getElementById('mcIcon').addEventListener('click', function() {
-        this.classList.add('shake');
-        setTimeout(() => this.classList.remove('shake'), 500);
-    });
-
-    document.getElementById('socialsIcon').addEventListener('click', function() {
-        this.classList.add('spin'); 
-        setTimeout(() => this.classList.remove('spin'), 1000);
-    });
-
-    // Footer shake effect
-    let footerClickCount = 0;
-    document.getElementById('footerText').addEventListener('click', function() {
-        footerClickCount++;
-        
-        if (footerClickCount % 3 === 0) {
-            this.classList.remove('rainbow', 'shake');
-            this.classList.add('big-shake');
-            setTimeout(() => this.classList.remove('big-shake'), 800);
-        } else {
-            this.classList.remove('rainbow', 'big-shake');
+    const mcIcon = document.getElementById('mcIcon');
+    if (mcIcon) {
+        mcIcon.addEventListener('click', function() {
             this.classList.add('shake');
             setTimeout(() => this.classList.remove('shake'), 500);
+        });
+    }
+
+    const socialsIcon = document.getElementById('socialsIcon');
+    if (socialsIcon) {
+        socialsIcon.addEventListener('click', function() {
+            this.classList.add('spin'); 
+            setTimeout(() => this.classList.remove('spin'), 1000);
+        });
+    }
+
+    // Coding projects icon animation (only exists on main page)
+    const codingIcon = document.getElementById('codingIcon');
+    if (codingIcon) {
+        codingIcon.addEventListener('click', function() {
+            this.classList.add('spin');
+            setTimeout(() => {
+                this.classList.remove('spin');
+            }, 1000);
+        });
+    }
+
+    // Footer shake effect
+    const footerText = document.getElementById('footerText');
+    if (footerText) {
+        let footerClickCount = 0;
+        footerText.addEventListener('click', function() {
+            footerClickCount++;
+            
+            if (footerClickCount % 3 === 0) {
+                this.classList.remove('rainbow', 'shake');
+                this.classList.add('big-shake');
+                setTimeout(() => this.classList.remove('big-shake'), 800);
+            } else {
+                this.classList.remove('rainbow', 'big-shake');
+                this.classList.add('shake');
+                setTimeout(() => this.classList.remove('shake'), 500);
+            }
+        });
+    }
+
+    // Hardware icon (only exists on main page)
+    const hardwareIcon = document.getElementById('hardwareIcon');
+    if (hardwareIcon) {
+        hardwareIcon.addEventListener('click', () => {
+            hardwareIcon.classList.add('spin');
+            setTimeout(() => {
+                hardwareIcon.classList.remove('spin');
+            }, 1000);
+        });
+    }
+
+    // For the coding page icons
+    if (window.location.pathname.includes('coding.html')) {
+        const snakeIcon = document.getElementById('snakeIcon');
+        if (snakeIcon) {
+            snakeIcon.addEventListener('click', function() {
+                this.style.transform = 'scale(1.3) rotate(10deg)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1) rotate(0deg)';
+                }, 300);
+            });
         }
-    });
-});
 
-// Coding projects icon animation
-document.getElementById('codingIcon').addEventListener('click', function() {
-    this.classList.add('spin');
-    setTimeout(() => {
-        this.classList.remove('spin');
-    }, 1000);
-});
-
-// For the coding page, add these animations if on coding.html
-if (window.location.pathname.includes('coding.html')) {
-    // Snake icon animation
-    const snakeIcon = document.getElementById('snakeIcon');
-    if (snakeIcon) {
-        snakeIcon.addEventListener('click', function() {
-            this.style.transform = 'scale(1.3) rotate(10deg)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1) rotate(0deg)';
-            }, 300);
-        });
+        const majestyIcon = document.getElementById('majestyIcon');
+        if (majestyIcon) {
+            majestyIcon.addEventListener('click', function() {
+                this.classList.add('shake');
+                setTimeout(() => {
+                    this.classList.remove('shake');
+                }, 500);
+            });
+        }
     }
-
-    // Majesty icon animation  
-    const majestyIcon = document.getElementById('majestyIcon');
-    if (majestyIcon) {
-        majestyIcon.addEventListener('click', function() {
-            this.classList.add('shake');
-            setTimeout(() => {
-                this.classList.remove('shake');
-            }, 500);
-        });
-    }
-}
+});
 
 // Konami code
 document.addEventListener('keydown', function(e) {
