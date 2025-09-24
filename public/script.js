@@ -650,8 +650,30 @@ function updateDiscordBanner(userData) {
             statusClass = 'listening';
         }
         else if (activity.type === 3) {
+            // Watching
             statusText = `${statusEmojis[userData.discord_status]} Now watching: ${activity.name}`;
-            if (activity.details) statusText += ` • ${activity.details}`;
+            if (activity.details) {
+                statusText += ` • ${activity.details}`;
+            }
+            if (activity.state && activity.state !== activity.details) {
+                statusText += ` • ${activity.state}`;
+            }
+            
+            // Add show/movie icon if available
+            if (activity.assets && activity.assets.large_image) {
+                let imageUrl = '';
+                if (activity.assets.large_image.startsWith('mp:')) {
+                    // Media proxy image
+                    imageUrl = `https://media.discordapp.net/${activity.assets.large_image.replace('mp:', '')}`;
+                } else if (activity.assets.large_image.startsWith('https://')) {
+                    // Direct URL (some streaming services use this)
+                    imageUrl = activity.assets.large_image;
+                } else {
+                    // Discord application asset
+                    imageUrl = `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
+                }
+                iconHTML = `<img class="discord-banner-icon" src="${imageUrl}" alt="Show Cover" onerror="this.style.display='none'">`;
+            }
             statusClass = 'watching';
         }
         else if (activity.type === 5) {
