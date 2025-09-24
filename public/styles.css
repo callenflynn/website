@@ -17,6 +17,21 @@ body {
     -ms-text-size-adjust: 100%;
 }
 
+/* Force Apple emoji style across all devices */
+* {
+    font-family: 'Inter', 'Apple Color Emoji', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+/* Specifically target emoji elements */
+.project-icon, 
+.hardware-item strong,
+.btn,
+.theme-toggle,
+.mute-toggle,
+.footer-text {
+    font-family: 'Inter', 'Apple Color Emoji', -apple-system, BlinkMacSystemFont, sans-serif !important;
+}
+
 .stars {
     position: fixed;
     top: 0;
