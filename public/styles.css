@@ -1068,7 +1068,7 @@ a, button, .project-icon, .project-card, .btn, .theme-toggle, .mute-toggle {
 
 /* Add padding to body to account for fixed banner */
 body {
-    padding-top: 60px;
+    padding-top: 120px; /* Increased from 60px to 120px */
 }
 
 /* Mobile adjustments */
@@ -1084,7 +1084,7 @@ body {
     }
     
     body {
-        padding-top: 50px;
+        padding-top: 110px;
     }
 }
 
@@ -1100,7 +1100,7 @@ body {
     }
     
     body {
-        padding-top: 45px;
+        padding-top: 105px;
     }
 }
 
