@@ -416,7 +416,6 @@ document.addEventListener('DOMContentLoaded', () => {
         observer.observe(card);
     });
     
-    // Hardware icon interaction
     const hardwareIcon = document.getElementById('hardwareIcon');
     if (hardwareIcon) {
         hardwareIcon.addEventListener('click', () => {
@@ -424,6 +423,26 @@ document.addEventListener('DOMContentLoaded', () => {
             setTimeout(() => {
                 hardwareIcon.classList.remove('spin');
             }, 1000);
+        });
+    }
+    
+    const snakeIcon = document.getElementById('snakeIcon');
+    if (snakeIcon) {
+        snakeIcon.addEventListener('click', () => {
+            snakeIcon.classList.add('bounce');
+            setTimeout(() => {
+                snakeIcon.classList.remove('bounce');
+            }, 600);
+        });
+    }
+    
+    const crownIcon = document.getElementById('crownIcon');
+    if (crownIcon) {
+        crownIcon.addEventListener('click', () => {
+            crownIcon.classList.add('shake');
+            setTimeout(() => {
+                crownIcon.classList.remove('shake');
+            }, 800);
         });
     }
 });
