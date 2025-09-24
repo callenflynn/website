@@ -333,6 +333,39 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 
+// Coding projects icon animation
+document.getElementById('codingIcon').addEventListener('click', function() {
+    this.classList.add('spin');
+    setTimeout(() => {
+        this.classList.remove('spin');
+    }, 1000);
+});
+
+// For the coding page, add these animations if on coding.html
+if (window.location.pathname.includes('coding.html')) {
+    // Snake icon animation
+    const snakeIcon = document.getElementById('snakeIcon');
+    if (snakeIcon) {
+        snakeIcon.addEventListener('click', function() {
+            this.style.transform = 'scale(1.3) rotate(10deg)';
+            setTimeout(() => {
+                this.style.transform = 'scale(1) rotate(0deg)';
+            }, 300);
+        });
+    }
+
+    // Majesty icon animation  
+    const majestyIcon = document.getElementById('majestyIcon');
+    if (majestyIcon) {
+        majestyIcon.addEventListener('click', function() {
+            this.classList.add('shake');
+            setTimeout(() => {
+                this.classList.remove('shake');
+            }, 500);
+        });
+    }
+}
+
 // Konami code
 document.addEventListener('keydown', function(e) {
     konamiCode.push(e.keyCode);
