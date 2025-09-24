@@ -32,6 +32,22 @@ body {
     font-family: 'Inter', 'Apple Color Emoji', -apple-system, BlinkMacSystemFont, sans-serif !important;
 }
 
+/* Twemoji emoji styling */
+img.emoji {
+    height: 1em;
+    width: 1em;
+    margin: 0 0.05em 0 0.1em;
+    vertical-align: -0.1em;
+}
+
+/* Larger emojis for project icons */
+.project-icon img.emoji {
+    height: 2.5rem;
+    width: 2.5rem;
+    margin: 0;
+    vertical-align: baseline;
+}
+
 .stars {
     position: fixed;
     top: 0;
