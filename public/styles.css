@@ -1100,11 +1100,10 @@ body {
     }
     
     body {
-        padding-top: 105px;
+        padding-top: 165px;
     }
 }
 
-/* Add this for better performance on mobile */
 @media (max-width: 768px) {
     .discord-banner-icon {
         width: 20px;
