@@ -79,6 +79,34 @@
         <p class="footer-text">Cal</p>
     </footer>
 
+    <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
+    
+    <script>
+        function isAppleDevice() {
+            const userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            return /iPad|iPhone|iPod/.test(userAgent) || 
+                   (/Macintosh/.test(userAgent) && 'ontouchend' in document) ||
+                   /Mac/.test(userAgent);
+        }
+
+        if (!isAppleDevice()) {
+            document.addEventListener('DOMContentLoaded', function() {
+                twemoji.parse(document.body, {
+                    folder: 'svg',
+                    ext: '.svg'
+                });
+            });
+        }
+
+        // Set footer year
+        document.addEventListener('DOMContentLoaded', function() {
+            const footerYear = document.getElementById('footerYear');
+            if (footerYear) {
+                footerYear.textContent = new Date().getFullYear();
+            }
+        });
+    </script>
+
     <script src="script.js"></script>
 </body>
 </html>
