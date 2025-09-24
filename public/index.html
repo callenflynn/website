@@ -9,7 +9,8 @@
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js"></script>
 </head>
 <body>
-    <div id="discordBanner" class="discord-banner">
+    <!-- Add aria-label to Discord banner -->
+<div id="discordBanner" class="discord-banner" aria-label="Live Discord Status">
         <div class="discord-banner-content">🔄 Loading Discord status...</div>
     </div>
     
@@ -141,13 +142,6 @@
                 </div>
             </div>
             
-            <div class="project-card discord-status-card" style="animation-delay: 1.2s;">
-                <div class="project-icon" id="discordStatusIcon">💬</div>
-                <h3 class="project-title">Live Discord Status</h3>
-                <div class="discord-status" id="discordStatus">
-                    <div class="status-loading">🔄 Connecting to Discord...</div>
-                </div>
-            </div>
 
 
 

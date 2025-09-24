@@ -447,7 +447,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// Discord Rich Presence via Lanyard API - Enhanced with better refresh
+// Discord Rich Presence via Lanyard API - Enhanced with RPC-style text
 async function fetchDiscordStatus() {
     const userId = '1409705687159668736'; 
     
@@ -474,10 +474,11 @@ function updateDiscordBanner(userData) {
     let bannerHTML = '';
     let statusClass = userData.discord_status;
     
-    // Build status text
+    // Build status text with RPC-style formatting and icons
     let statusText = '';
+    let iconHTML = '';
     
-    // Online status
+    // Online status emojis
     const statusEmojis = {
         online: '🟢',
         idle: '🟡', 
@@ -485,27 +486,113 @@ function updateDiscordBanner(userData) {
         offline: '⚫'
     };
     
-    statusText += statusEmojis[userData.discord_status];
-    
-    // Add activity info
+    // Check for Spotify first (highest priority)
     if (userData.spotify && userData.spotify.track_id) {
-        statusText += ` 🎵 ${userData.spotify.song} by ${userData.spotify.artist}`;
-    } else if (userData.activities && userData.activities.length > 0) {
-        const gameActivity = userData.activities.find(act => act.type === 0);
-        if (gameActivity) {
-            statusText += ` 🎮 Playing ${gameActivity.name}`;
+        statusText = `${statusEmojis[userData.discord_status]} Now listening to: ${userData.spotify.song} by ${userData.spotify.artist}`;
+        iconHTML = `<img class="discord-banner-icon" src="${userData.spotify.album_art_url}" alt="Album Art" onerror="this.style.display='none'">`;
+        statusClass = 'spotify';
+    }
+    // Check for gaming/activities
+    else if (userData.activities && userData.activities.length > 0) {
+        const activity = userData.activities[0]; // Get first activity
+        
+        if (activity.type === 0) {
+            // Playing a game
+            statusText = `${statusEmojis[userData.discord_status]} Now playing: ${activity.name}`;
+            if (activity.details) {
+                statusText += ` • ${activity.details}`;
+            }
+            if (activity.state && activity.state !== activity.details) {
+                statusText += ` • ${activity.state}`;
+            }
+            
+            // Add game icon if available
+            if (activity.assets && activity.assets.large_image) {
+                let imageUrl = '';
+                if (activity.assets.large_image.startsWith('mp:')) {
+                    // Media proxy image
+                    imageUrl = `https://media.discordapp.net/${activity.assets.large_image.replace('mp:', '')}`;
+                } else if (activity.assets.large_image.startsWith('spotify:')) {
+                    // Spotify image (shouldn't happen here but just in case)
+                    imageUrl = `https://i.scdn.co/image/${activity.assets.large_image.replace('spotify:', '')}`;
+                } else {
+                    // Discord application asset
+                    imageUrl = `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
+                }
+                iconHTML = `<img class="discord-banner-icon" src="${imageUrl}" alt="Game Icon" onerror="this.style.display='none'">`;
+            }
+            statusClass = 'gaming';
         }
-    } else {
+        else if (activity.type === 1) {
+            // Streaming
+            statusText = `${statusEmojis[userData.discord_status]} 🔴 Streaming: ${activity.name}`;
+            if (activity.details) {
+                statusText += ` • ${activity.details}`;
+            }
+            statusClass = 'streaming';
+        }
+        else if (activity.type === 2) {
+            // Listening (not Spotify)
+            statusText = `${statusEmojis[userData.discord_status]} Now listening to: ${activity.name}`;
+            if (activity.details) {
+                statusText += ` • ${activity.details}`;
+            }
+            statusClass = 'listening';
+        }
+        else if (activity.type === 3) {
+            // Watching
+            statusText = `${statusEmojis[userData.discord_status]} Now watching: ${activity.name}`;
+            if (activity.details) {
+                statusText += ` • ${activity.details}`;
+            }
+            statusClass = 'watching';
+        }
+        else if (activity.type === 5) {
+            // Competing
+            statusText = `${statusEmojis[userData.discord_status]} Competing in: ${activity.name}`;
+            if (activity.details) {
+                statusText += ` • ${activity.details}`;
+            }
+            statusClass = 'competing';
+        }
+        else {
+            // Custom status or other activity
+            statusText = `${statusEmojis[userData.discord_status]} ${activity.name}`;
+            if (activity.state) {
+                statusText += ` • ${activity.state}`;
+            }
+            statusClass = 'custom';
+        }
+    }
+    // Check for custom status
+    else if (userData.discord_user && userData.discord_user.custom_status) {
+        const customStatus = userData.discord_user.custom_status;
+        statusText = `${statusEmojis[userData.discord_status]}`;
+        if (customStatus.emoji) {
+            statusText += ` ${customStatus.emoji.name}`;
+        }
+        if (customStatus.text) {
+            statusText += ` ${customStatus.text}`;
+        }
+        statusClass = 'custom';
+    }
+    // Just show online status
+    else {
         const statusNames = {
             online: 'Online',
             idle: 'Away', 
             dnd: 'Do Not Disturb',
             offline: 'Offline'
         };
-        statusText += ` ${statusNames[userData.discord_status]}`;
+        statusText = `${statusEmojis[userData.discord_status]} ${statusNames[userData.discord_status]}`;
     }
     
-    bannerHTML = `<div class="discord-banner-content ${statusClass}">${statusText}</div>`;
+    bannerHTML = `
+        <div class="discord-banner-content ${statusClass}">
+            ${iconHTML}
+            <span class="discord-banner-text">${statusText}</span>
+        </div>
+    `;
     bannerContainer.innerHTML = bannerHTML;
 }
 
@@ -515,7 +602,7 @@ document.addEventListener('DOMContentLoaded', function() {
     setTimeout(() => {
         fetchDiscordStatus(); // Initial fetch
         
-        // Set up more frequent updates (every 10 seconds instead of 15)
+        // Set up more frequent updates (every 10 seconds)
         const discordRefreshInterval = setInterval(() => {
             fetchDiscordStatus();
             console.log('Discord status refreshed at:', new Date().toLocaleTimeString());
@@ -530,17 +617,4 @@ document.addEventListener('DOMContentLoaded', function() {
         });
         
     }, 2000); // Wait 2 seconds after page load to start
-    
-    // Keep existing Discord icon animation if it exists
-    const discordIcon = document.getElementById('discordStatusIcon');
-    if (discordIcon) {
-        discordIcon.addEventListener('click', function() {
-            this.style.transform = 'scale(1.2) rotate(15deg)';
-            setTimeout(() => {
-                this.style.transform = 'scale(1) rotate(0deg)';
-            }, 200);
-            // Force refresh when icon is clicked
-            fetchDiscordStatus();
-        });
-    }
 });
