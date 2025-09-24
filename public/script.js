@@ -480,31 +480,95 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
+// Discord Rich Presence - Fixed initialization
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('Starting Discord initialization...');
+    
+    // Check if Discord banner exists before trying to use it
+    const discordBanner = document.getElementById('discordBanner');
+    if (!discordBanner) {
+        console.log('Discord banner not found on this page');
+        return;
+    }
+    
+    // Set initial loading state
+    discordBanner.innerHTML = '<div class="discord-banner-content">🔄 Loading Discord status...</div>';
+    
+    // Wait for page to fully load before starting Discord updates
+    setTimeout(() => {
+        console.log('Fetching initial Discord status...');
+        fetchDiscordStatus(); // Initial fetch
+        
+        // Set up refresh intervals
+        const discordRefreshInterval = setInterval(() => {
+            fetchDiscordStatus();
+            console.log('Discord status refreshed at:', new Date().toLocaleTimeString());
+        }, 5000); // Update every 5 seconds
+        
+        // Force refresh when tab becomes visible (in case user was away)
+        document.addEventListener('visibilitychange', () => {
+            if (!document.hidden) {
+                fetchDiscordStatus();
+                console.log('Tab became visible, refreshing Discord status');
+            }
+        });
+        
+        // Also refresh on mouse movement (but throttled to avoid spam)
+        let lastRefreshTime = 0;
+        document.addEventListener('mousemove', () => {
+            const now = Date.now();
+            if (now - lastRefreshTime > 3000) { // Only refresh once every 3 seconds via mouse movement
+                fetchDiscordStatus();
+                lastRefreshTime = now;
+            }
+        });
+        
+    }, 2000); // Wait 2 seconds after page load to start
+});
+
+// Fixed Discord fetch function with better error handling
 async function fetchDiscordStatus() {
     const userId = '1409705687159668736'; 
+    const bannerContainer = document.getElementById('discordBanner');
+    
+    if (!bannerContainer) {
+        console.log('Discord banner container not found');
+        return;
+    }
     
     try {
+        console.log('Fetching Discord status for user:', userId);
         const response = await fetch(`https://api.lanyard.rest/v1/users/${userId}?t=${Date.now()}`);
-        const data = await response.json();
         
-        if (data.success) {
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        
+        const data = await response.json();
+        console.log('Discord API response:', data);
+        
+        if (data.success && data.data) {
             updateDiscordBanner(data.data);
         } else {
-            document.getElementById('discordBanner').innerHTML = '<div class="discord-banner-content">❌ Discord status unavailable</div>';
+            bannerContainer.innerHTML = '<div class="discord-banner-content">❌ Discord data unavailable</div>';
         }
     } catch (error) {
-        console.log('Discord status fetch error:', error);
-        document.getElementById('discordBanner').innerHTML = '<div class="discord-banner-content">⚠️ Connecting to Discord...</div>';
+        console.error('Discord status fetch error:', error);
+        bannerContainer.innerHTML = '<div class="discord-banner-content">⚠️ Connecting to Discord...</div>';
     }
 }
 
+// Fixed Discord banner update function
 function updateDiscordBanner(userData) {
     const bannerContainer = document.getElementById('discordBanner');
-    if (!bannerContainer) return;
+    if (!bannerContainer) {
+        console.log('Banner container not found during update');
+        return;
+    }
     
-    let bannerHTML = '';
+    console.log('Updating Discord banner with data:', userData);
+    
     let statusClass = userData.discord_status;
-    
     let statusText = '';
     let iconHTML = '';
     
@@ -539,13 +603,10 @@ function updateDiscordBanner(userData) {
             if (activity.assets && activity.assets.large_image) {
                 let imageUrl = '';
                 if (activity.assets.large_image.startsWith('mp:')) {
-                    // Media proxy image
                     imageUrl = `https://media.discordapp.net/${activity.assets.large_image.replace('mp:', '')}`;
                 } else if (activity.assets.large_image.startsWith('spotify:')) {
-                    // Spotify image (shouldn't happen here but just in case)
                     imageUrl = `https://i.scdn.co/image/${activity.assets.large_image.replace('spotify:', '')}`;
                 } else {
-                    // Discord application asset
                     imageUrl = `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
                 }
                 iconHTML = `<img class="discord-banner-icon" src="${imageUrl}" alt="Game Icon" onerror="this.style.display='none'">`;
@@ -553,43 +614,28 @@ function updateDiscordBanner(userData) {
             statusClass = 'gaming';
         }
         else if (activity.type === 1) {
-            // Streaming
             statusText = `${statusEmojis[userData.discord_status]} 🔴 Streaming: ${activity.name}`;
-            if (activity.details) {
-                statusText += ` • ${activity.details}`;
-            }
+            if (activity.details) statusText += ` • ${activity.details}`;
             statusClass = 'streaming';
         }
         else if (activity.type === 2) {
-            // Listening (not Spotify)
             statusText = `${statusEmojis[userData.discord_status]} Now listening to: ${activity.name}`;
-            if (activity.details) {
-                statusText += ` • ${activity.details}`;
-            }
+            if (activity.details) statusText += ` • ${activity.details}`;
             statusClass = 'listening';
         }
         else if (activity.type === 3) {
-            // Watching
             statusText = `${statusEmojis[userData.discord_status]} Now watching: ${activity.name}`;
-            if (activity.details) {
-                statusText += ` • ${activity.details}`;
-            }
+            if (activity.details) statusText += ` • ${activity.details}`;
             statusClass = 'watching';
         }
         else if (activity.type === 5) {
-            // Competing
             statusText = `${statusEmojis[userData.discord_status]} Competing in: ${activity.name}`;
-            if (activity.details) {
-                statusText += ` • ${activity.details}`;
-            }
+            if (activity.details) statusText += ` • ${activity.details}`;
             statusClass = 'competing';
         }
         else {
-            // Custom status or other activity
             statusText = `${statusEmojis[userData.discord_status]} ${activity.name}`;
-            if (activity.state) {
-                statusText += ` • ${activity.state}`;
-            }
+            if (activity.state) statusText += ` • ${activity.state}`;
             statusClass = 'custom';
         }
     }
@@ -597,12 +643,8 @@ function updateDiscordBanner(userData) {
     else if (userData.discord_user && userData.discord_user.custom_status) {
         const customStatus = userData.discord_user.custom_status;
         statusText = `${statusEmojis[userData.discord_status]}`;
-        if (customStatus.emoji) {
-            statusText += ` ${customStatus.emoji.name}`;
-        }
-        if (customStatus.text) {
-            statusText += ` ${customStatus.text}`;
-        }
+        if (customStatus.emoji) statusText += ` ${customStatus.emoji.name}`;
+        if (customStatus.text) statusText += ` ${customStatus.text}`;
         statusClass = 'custom';
     }
     // Just show online status
@@ -616,44 +658,13 @@ function updateDiscordBanner(userData) {
         statusText = `${statusEmojis[userData.discord_status]} ${statusNames[userData.discord_status]}`;
     }
     
-    bannerHTML = `
+    const bannerHTML = `
         <div class="discord-banner-content ${statusClass}">
             ${iconHTML}
             <span class="discord-banner-text">${statusText}</span>
         </div>
     `;
+    
     bannerContainer.innerHTML = bannerHTML;
+    console.log('Discord banner updated successfully');
 }
-
-// Enhanced Discord initialization with faster refresh timing
-document.addEventListener('DOMContentLoaded', function() {
-    // Wait for page to fully load before starting Discord updates
-    setTimeout(() => {
-        fetchDiscordStatus(); // Initial fetch
-        
-        // Set up faster updates (every 5 seconds instead of 10)
-        const discordRefreshInterval = setInterval(() => {
-            fetchDiscordStatus();
-            console.log('Discord status refreshed at:', new Date().toLocaleTimeString());
-        }, 5000); // Update every 5 seconds
-        
-        // Force refresh when tab becomes visible (in case user was away)
-        document.addEventListener('visibilitychange', () => {
-            if (!document.hidden) {
-                fetchDiscordStatus();
-                console.log('Tab became visible, refreshing Discord status');
-            }
-        });
-        
-        // Also refresh on mouse movement (but throttled to avoid spam)
-        let lastRefreshTime = 0;
-        document.addEventListener('mousemove', () => {
-            const now = Date.now();
-            if (now - lastRefreshTime > 3000) { // Only refresh once every 3 seconds via mouse movement
-                fetchDiscordStatus();
-                lastRefreshTime = now;
-            }
-        });
-        
-    }, 2000); // Wait 2 seconds after page load to start
-});
