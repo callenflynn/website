@@ -1166,4 +1166,41 @@ body {
         padding-top: 145px;
     }
 }
+
+/* Add this CSS to your styles.css file */
+
+.project-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for project logos */
+.project-icon:hover .project-logo {
+    transform: scale(1.1);
+}
+
+/* Make sure the project-icon container works well with images */
+.project-icon {
+    width: 4rem;
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin: 0 auto 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+/* Specific styling for logo containers */
+.project-icon:has(.project-logo) {
+    background: transparent;
+    border-radius: 12px;
+    padding: 0.5rem;
 }

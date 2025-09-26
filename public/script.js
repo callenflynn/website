@@ -390,6 +390,19 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
+    // Update the RageJump icon animation in script.js
+
+    const rageIcon = document.getElementById('rageIcon');
+    if (rageIcon) {
+        rageIcon.addEventListener('click', function() {
+            // Intense shaking animation for rage theme
+            this.classList.add('rage-shake');
+            setTimeout(() => {
+                this.classList.remove('rage-shake');
+            }, 800);
+        });
+    }
 });
 
 // Konami code
