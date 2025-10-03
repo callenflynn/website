@@ -3,18 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cal's Coding Projects</title>
+    <title>Cal Flynn - Developer Portfolio</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="portfolio.css">
 </head>
-<body>
+<body class="portfolio-body">
     <!-- Discord Banner -->
     <div id="discordBanner" class="discord-banner" aria-label="Live Discord Status">
         <div class="discord-banner-content">🔄 Loading Discord status...</div>
     </div>
 
-    <!-- Background Elements -->
-    <div class="stars"></div>
-    <div class="floating-shapes"></div>
+    <!-- Navigation -->
+    <nav class="portfolio-nav">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <span class="brand-name">Cal Flynn</span>
+                <span class="brand-title">Developer</span>
+            </div>
+            <div class="nav-controls">
+                <button class="theme-toggle" id="themeToggle">🌙</button>
+                <button class="mute-toggle" id="muteToggle">🔊</button>
+                <a href="index.html" class="nav-back">← Back</a>
+            </div>
+        </div>
+    </nav>
 
     <!-- Music -->
     <audio id="backgroundMusic" loop preload="auto">
@@ -22,79 +34,166 @@
         <source src="background-music.mp3" type="audio/mpeg">
     </audio>
 
-    <!-- Controls -->
-    <div class="controls">
-        <button class="theme-toggle" id="themeToggle">
-            🌙 Dark Mode
-        </button>
-        <button class="mute-toggle" id="muteToggle">
-            🔊 Music On
-        </button>
-        <button class="back-button" onclick="window.location.href='index.html'">
-            ← Back to Main
-        </button>
-    </div>
-
-    <div class="container">
-        <header>
-            <h1>💻 Coding Projects</h1>
-            <p class="subtitle">Interactive games and programming projects I've built</p>
-        </header>
-
-        <div class="projects-grid">
-            <!-- Snake Gaem -->
-            <div class="project-card" style="animation-delay: 0.2s;">
-                <div class="project-icon" id="snakeIcon">🐍</div>
-                <h3 class="project-title">Snake Gaem</h3>
-                <p class="project-description">A modern take on the classic Snake game with smooth gameplay and responsive controls. Eat food, grow longer, and try not to crash into yourself!</p>
-                <div class="project-links">
-                    <a href="https://cals-snake-gaem.vercel.app" target="_blank" class="btn btn-primary">
-                        🎮 Play Snake Gaem
-                    </a>
+    <main class="portfolio-main">
+        <!-- Hero Section -->
+        <section class="portfolio-hero">
+            <div class="hero-content">
+                <h1 class="hero-title">
+                    <span class="title-line">My Projects</span>
+                    <span class="title-subtitle">Building interactive experiences with code</span>
+                </h1>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">3</span>
+                        <span class="stat-label">Projects</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">JavaScript</span>
+                        <span class="stat-label">Primary Language</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">2024</span>
+                        <span class="stat-label">Year Started</span>
+                    </div>
                 </div>
             </div>
+        </section>
 
-            <!-- Yes, Majesty! -->
-            <div class="project-card" style="animation-delay: 0.4s;">
-                <div class="project-icon" id="majestyIcon">👑</div>
-                <h3 class="project-title">Yes, Majesty!</h3>
-                <p class="project-description">An interactive royal decision-making kingdom game. Make choices that affect your kingdom's fate as you rule with wisdom... or chaos!</p>
-                <div class="project-links">
-                    <a href="https://callenflynn.github.io/Yes-Majesty" target="_blank" class="btn btn-primary">
-                        👑 Rule the Kingdom
-                    </a>
+        <!-- Projects Grid -->
+        <section class="portfolio-projects">
+            <div class="projects-container">
+                <!-- Snake Gaem -->
+                <article class="portfolio-card" data-aos="fade-up">
+                    <div class="card-header">
+                        <div class="project-meta">
+                            <span class="project-type">Game</span>
+                            <span class="project-status">Live</span>
+                        </div>
+                        <div class="project-icon" id="snakeIcon">🐍</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="project-name">Snake Gaem</h3>
+                        <p class="project-tech">HTML5 Canvas • JavaScript • CSS3</p>
+                        <p class="project-description">Modern implementation of the classic Snake game featuring smooth gameplay mechanics, responsive controls, and progressive difficulty scaling.</p>
+                        <div class="project-features">
+                            <span class="feature-tag">Canvas Rendering</span>
+                            <span class="feature-tag">Game Logic</span>
+                            <span class="feature-tag">Responsive Design</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="https://cals-snake-gaem.vercel.app" target="_blank" class="project-link primary">
+                            <span>View Live</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Yes, Majesty! -->
+                <article class="portfolio-card" data-aos="fade-up" data-aos-delay="100">
+                    <div class="card-header">
+                        <div class="project-meta">
+                            <span class="project-type">Interactive Fiction</span>
+                            <span class="project-status">Live</span>
+                        </div>
+                        <div class="project-icon" id="majestyIcon">👑</div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="project-name">Yes, Majesty!</h3>
+                        <p class="project-tech">JavaScript • DOM Manipulation • State Management</p>
+                        <p class="project-description">Interactive decision-making kingdom simulation where player choices dynamically affect narrative outcomes and kingdom statistics.</p>
+                        <div class="project-features">
+                            <span class="feature-tag">State Management</span>
+                            <span class="feature-tag">Branching Narrative</span>
+                            <span class="feature-tag">Dynamic UI</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="https://callenflynn.github.io/Yes-Majesty" target="_blank" class="project-link primary">
+                            <span>View Live</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- RageJump -->
+                <article class="portfolio-card" data-aos="fade-up" data-aos-delay="200">
+                    <div class="card-header">
+                        <div class="project-meta">
+                            <span class="project-type">Platformer</span>
+                            <span class="project-status">Live</span>
+                        </div>
+                        <div class="project-icon" id="rageIcon">
+                            <img src="rj-logo.png" alt="RageJump Logo" class="project-logo">
+                        </div>
+                    </div>
+                    <div class="card-content">
+                        <h3 class="project-name">RageJump</h3>
+                        <p class="project-tech">JavaScript • Physics Engine • Collision Detection</p>
+                        <p class="project-description">Precision-based one-button platformer engineered for maximum difficulty. Features custom physics engine and frustration-driven game design.</p>
+                        <div class="project-features">
+                            <span class="feature-tag">Physics Engine</span>
+                            <span class="feature-tag">Collision System</span>
+                            <span class="feature-tag">Difficulty Design</span>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <a href="https://ragejump.vercel.app" target="_blank" class="project-link primary">
+                            <span>View Live</span>
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="m9 18 6-6-6-6"/>
+                            </svg>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Skills Section -->
+        <section class="portfolio-skills">
+            <div class="skills-container">
+                <h2 class="section-title">Technical Skills</h2>
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3>Languages</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">JavaScript</span>
+                            <span class="skill-tag">HTML5</span>
+                            <span class="skill-tag">CSS3</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Frameworks & Tools</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Canvas API</span>
+                            <span class="skill-tag">Vercel</span>
+                            <span class="skill-tag">GitHub Pages</span>
+                        </div>
+                    </div>
+                    <div class="skill-category">
+                        <h3>Concepts</h3>
+                        <div class="skill-tags">
+                            <span class="skill-tag">Game Development</span>
+                            <span class="skill-tag">DOM Manipulation</span>
+                            <span class="skill-tag">Responsive Design</span>
+                        </div>
+                    </div>
                 </div>
             </div>
+        </section>
+    </main>
 
-            <!-- RageJump -->
-            <div class="project-card" style="animation-delay: 0.6s;">
-                <div class="project-icon" id="rageIcon">
-                    <img src="rj-logo.png" alt="RageJump Logo" class="project-logo">
-                </div>
-                <h3 class="project-title">RageJump</h3>
-                <p class="project-description">A brutally difficult one-button platformer designed to test your patience and reflexes. Jump, rage, repeat.(ts shi so ahh ngl. I got angry js beta testing)</p>
-                <div class="project-links">
-                    <a href="https://ragejump.vercel.app" target="_blank" class="btn btn-primary">
-                        🤬 Rage Now
-                    </a>
-                </div>
-            </div>
+    <footer class="portfolio-footer">
+        <div class="footer-content">
+            <p>&copy; 2024 Cal Flynn. Built with passion for code.</p>
         </div>
-
-        <!-- Secret Message Modal -->
-        <div class="secret-message" id="secretMessage">
-            <h3>🎉 You found the secret!</h3>
-            <p>Thanks for exploring my coding projects! Keep coding and keep creating! 🚀</p>
-            <button class="btn" onclick="document.getElementById('secretMessage').classList.remove('show')">Close</button>
-        </div>
-    </div>
-
-    <footer>
-        <p class="footer-text">Cal</p>
     </footer>
 
     <script src="https://twemoji.maxcdn.com/v/latest/twemoji.min.js" crossorigin="anonymous"></script>
-    
     <script>
         function isAppleDevice() {
             const userAgent = navigator.userAgent || navigator.vendor || window.opera;
@@ -111,16 +210,7 @@
                 });
             });
         }
-
-        // Set footer year
-        document.addEventListener('DOMContentLoaded', function() {
-            const footerYear = document.getElementById('footerYear');
-            if (footerYear) {
-                footerYear.textContent = new Date().getFullYear();
-            }
-        });
     </script>
-
     <script src="script.js"></script>
 </body>
 </html>

@@ -1,0 +1,431 @@
+/* portfolio.css - Professional developer portfolio styling */
+
+.portfolio-body {
+    background: #0a0a0a;
+    color: #e0e0e0;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+.portfolio-body.light-theme {
+    background: #fafafa;
+    color: #2a2a2a;
+}
+
+/* Navigation */
+.portfolio-nav {
+    position: fixed;
+    top: 60px; /* Below Discord banner */
+    left: 0;
+    right: 0;
+    background: rgba(10, 10, 10, 0.95);
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    z-index: 999;
+    padding: 1rem 0;
+}
+
+.portfolio-body.light-theme .portfolio-nav {
+    background: rgba(250, 250, 250, 0.95);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.nav-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-brand {
+    display: flex;
+    flex-direction: column;
+}
+
+.brand-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+}
+
+.portfolio-body.light-theme .brand-name {
+    color: #2a2a2a;
+}
+
+.brand-title {
+    font-size: 0.875rem;
+    color: #888;
+    font-weight: 400;
+}
+
+.nav-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.nav-controls button {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    padding: 0.5rem;
+    color: white;
+    cursor: pointer;
+    font-size: 0.875rem;
+    transition: all 0.3s ease;
+}
+
+.nav-controls button:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.nav-back {
+    color: #888;
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: color 0.3s ease;
+}
+
+.nav-back:hover {
+    color: #ffffff;
+}
+
+.portfolio-body.light-theme .nav-back:hover {
+    color: #2a2a2a;
+}
+
+/* Main Content */
+.portfolio-main {
+    margin-top: 140px; /* Account for Discord banner + nav */
+    padding: 0 2rem;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Hero Section */
+.portfolio-hero {
+    padding: 4rem 0;
+    text-align: center;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 4rem;
+}
+
+.portfolio-body.light-theme .portfolio-hero {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.hero-title {
+    margin: 0 0 2rem 0;
+}
+
+.title-line {
+    display: block;
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.5rem;
+}
+
+.portfolio-body.light-theme .title-line {
+    color: #2a2a2a;
+}
+
+.title-subtitle {
+    display: block;
+    font-size: 1.125rem;
+    color: #888;
+    font-weight: 400;
+}
+
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    gap: 3rem;
+    margin-top: 2rem;
+}
+
+.stat {
+    text-align: center;
+}
+
+.stat-number {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #60a5fa;
+}
+
+.stat-label {
+    display: block;
+    font-size: 0.875rem;
+    color: #888;
+    margin-top: 0.25rem;
+}
+
+/* Projects Section */
+.portfolio-projects {
+    margin-bottom: 4rem;
+}
+
+.projects-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 2rem;
+}
+
+.portfolio-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.portfolio-body.light-theme .portfolio-card {
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.portfolio-card:hover {
+    transform: translateY(-4px);
+    border-color: #60a5fa;
+    box-shadow: 0 10px 30px rgba(96, 165, 250, 0.2);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.project-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.project-type {
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.project-status {
+    display: inline-block;
+    padding: 0.25rem 0.5rem;
+    background: #10b981;
+    color: white;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.project-icon {
+    width: 3rem;
+    height: 3rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    background: rgba(96, 165, 250, 0.1);
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.project-logo {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 4px;
+}
+
+.card-content {
+    margin-bottom: 1.5rem;
+}
+
+.project-name {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 0.5rem 0;
+}
+
+.portfolio-body.light-theme .project-name {
+    color: #2a2a2a;
+}
+
+.project-tech {
+    font-size: 0.875rem;
+    color: #60a5fa;
+    margin: 0 0 1rem 0;
+    font-weight: 500;
+}
+
+.project-description {
+    font-size: 0.875rem;
+    color: #888;
+    margin: 0 0 1rem 0;
+    line-height: 1.6;
+}
+
+.project-features {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.feature-tag {
+    padding: 0.25rem 0.5rem;
+    background: rgba(96, 165, 250, 0.1);
+    color: #60a5fa;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.card-footer {
+    display: flex;
+    gap: 1rem;
+}
+
+.project-link {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.project-link.primary {
+    background: #60a5fa;
+    color: white;
+}
+
+.project-link.primary:hover {
+    background: #3b82f6;
+    transform: translateX(2px);
+}
+
+/* Skills Section */
+.portfolio-skills {
+    padding: 4rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.portfolio-body.light-theme .portfolio-skills {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.skills-container {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.section-title {
+    font-size: 2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 2rem 0;
+}
+
+.portfolio-body.light-theme .section-title {
+    color: #2a2a2a;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 2rem;
+    margin-top: 2rem;
+}
+
+.skill-category h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin: 0 0 1rem 0;
+}
+
+.portfolio-body.light-theme .skill-category h3 {
+    color: #2a2a2a;
+}
+
+.skill-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    justify-content: center;
+}
+
+.skill-tag {
+    padding: 0.5rem 1rem;
+    background: rgba(96, 165, 250, 0.1);
+    color: #60a5fa;
+    border: 1px solid rgba(96, 165, 250, 0.3);
+    border-radius: 20px;
+    font-size: 0.875rem;
+    font-weight: 500;
+}
+
+/* Footer */
+.portfolio-footer {
+    padding: 2rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    margin-top: 4rem;
+}
+
+.portfolio-body.light-theme .portfolio-footer {
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    text-align: center;
+    color: #888;
+    font-size: 0.875rem;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+    .nav-container {
+        padding: 0 1rem;
+    }
+    
+    .portfolio-main {
+        padding: 0 1rem;
+        margin-top: 120px;
+    }
+    
+    .title-line {
+        font-size: 2rem;
+    }
+    
+    .hero-stats {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .projects-container {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+    
+    .skills-grid {
+        grid-template-columns: 1fr;
+        gap: 1.5rem;
+    }
+}
