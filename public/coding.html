@@ -6,106 +6,176 @@
     <title>Cal Flynn - Developer Portfolio</title>
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="portfolio.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="portfolio-body">
+    <!-- Animated background grid -->
+    <div class="bg-grid"></div>
+    
+    <!-- Discord status banner -->
     <div id="discordBanner" class="discord-banner" aria-label="Live Discord Status">
-        <div class="discord-banner-content">🔄 Loading Discord status...</div>
+        <div class="discord-banner-content">
+            <div class="status-indicator"></div>
+            <span>Loading Discord status...</span>
+        </div>
     </div>
 
+    <!-- Navigation -->
     <nav class="portfolio-nav">
         <div class="nav-container">
             <div class="nav-brand">
-                <span class="brand-name">Callen Flynn</span>
-                <span class="brand-title">Developer</span>
+                <span class="brand-name glow-text">Cal Flynn</span>
+                <span class="brand-title">/dev</span>
             </div>
             <div class="nav-controls">
-                <a href="index.html" class="nav-back">← Back</a>
+                <a href="index.html" class="nav-back">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="m15 18-6-6 6-6"/>
+                    </svg>
+                    <span>Back</span>
+                </a>
             </div>
         </div>
     </nav>
 
+    <main class="portfolio-main">
+        <section class="portfolio-hero">
+            <div class="hero-container">
+                <h1 class="hero-title glow-text">Projects</h1>
+                <p class="hero-subtitle">Building digital experiences through code</p>
+                <div class="terminal-indicator">
+                    <span class="terminal-prompt">$</span>
+                    <span class="terminal-text">npm run showcase</span>
+                    <span class="cursor">|</span>
+                </div>
+            </div>
+        </section>
+
         <section class="portfolio-projects">
             <div class="projects-container">
                 <article class="portfolio-card" data-aos="fade-up">
-                    <div class="card-header">
-                        <div class="project-meta">
-                            <span class="project-type">Game</span>
-                            <span class="project-status">Live</span>
-                        </div>
-                        <div class="project-icon" id="snakeIcon">🐍</div>
-                    </div>
+                    <div class="card-glow"></div>
                     <div class="card-content">
-                        <h3 class="project-name">Snake Gaem</h3>
-                        <p class="project-tech">HTML5 Canvas • JavaScript • CSS3</p>
-                        <p class="project-description">Snake Game by me</p>
-                    </div>
-                    <div class="card-footer">
-                        <a href="https://cals-snake-gaem.vercel.app" target="_blank" class="project-link primary">
-                            <span>View Live</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="m9 18 6-6-6-6"/>
-                            </svg>
-                        </a>
+                        <div class="card-header">
+                            <div class="project-icon">
+                                <span class="icon-emoji">🐍</span>
+                            </div>
+                            <div class="project-meta">
+                                <span class="project-type">Game</span>
+                                <span class="project-status active">Live</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h3 class="project-name">Snake Game</h3>
+                            <p class="project-description">Classic snake game with modern twist</p>
+                            
+                            <div class="tech-stack">
+                                <span class="tech-tag">HTML5 Canvas</span>
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">CSS3</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="https://cals-snake-gaem.vercel.app" target="_blank" class="project-link">
+                                <span>Launch</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15,3 21,3 21,9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </article>
 
                 <article class="portfolio-card" data-aos="fade-up" data-aos-delay="100">
-                    <div class="card-header">
-                        <div class="project-meta">
-                            <span class="project-type">Interactive Fiction</span>
-                            <span class="project-status">Live</span>
-                        </div>
-                        <div class="project-icon" id="majestyIcon">👑</div>
-                    </div>
+                    <div class="card-glow"></div>
                     <div class="card-content">
-                        <h3 class="project-name">Yes, Majesty!</h3>
-                        <p class="project-tech">JavaScript • DOM Manipulation • State Management</p>
-                        <p class="project-description">Text-based kingdom sim game</p>
-
-                    </div>
-                    <div class="card-footer">
-                        <a href="https://callenflynn.github.io/Yes-Majesty" target="_blank" class="project-link primary">
-                            <span>View Live</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="m9 18 6-6-6-6"/>
-                            </svg>
-                        </a>
+                        <div class="card-header">
+                            <div class="project-icon">
+                                <span class="icon-emoji">👑</span>
+                            </div>
+                            <div class="project-meta">
+                                <span class="project-type">Interactive Fiction</span>
+                                <span class="project-status active">Live</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h3 class="project-name">Yes, Majesty!</h3>
+                            <p class="project-description">Text-based kingdom simulation game</p>
+                            
+                            <div class="tech-stack">
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">DOM Manipulation</span>
+                                <span class="tech-tag">State Management</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="https://callenflynn.github.io/Yes-Majesty" target="_blank" class="project-link">
+                                <span>Launch</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15,3 21,3 21,9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </article>
 
+                <!-- RageJump -->
                 <article class="portfolio-card" data-aos="fade-up" data-aos-delay="200">
-                    <div class="card-header">
-                        <div class="project-meta">
-                            <span class="project-type">Platformer</span>
-                            <span class="project-status">Live</span>
-                        </div>
-                        <div class="project-icon" id="rageIcon">
-                            <img src="rj-logo.png" alt="RageJump Logo" class="project-logo">
-                        </div>
-                    </div>
+                    <div class="card-glow"></div>
                     <div class="card-content">
-                        <h3 class="project-name">RageJump</h3>
-                        <p class="project-tech">JavaScript • Physics Engine • Collision Detection</p>
-                        <p class="project-description">sigh</p>
-
-                    </div>
-                    <div class="card-footer">
-                        <a href="https://ragejump.vercel.app" target="_blank" class="project-link primary">
-                            <span>View Live</span>
-                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="m9 18 6-6-6-6"/>
-                            </svg>
-                        </a>
+                        <div class="card-header">
+                            <div class="project-icon">
+                                <img src="rj-logo.png" alt="RageJump Logo" class="project-logo">
+                            </div>
+                            <div class="project-meta">
+                                <span class="project-type">Platformer</span>
+                                <span class="project-status active">Live</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body">
+                            <h3 class="project-name">RageJump</h3>
+                            <p class="project-description">Challenging precision platformer</p>
+                            
+                            <div class="tech-stack">
+                                <span class="tech-tag">JavaScript</span>
+                                <span class="tech-tag">Physics Engine</span>
+                                <span class="tech-tag">Collision Detection</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-footer">
+                            <a href="https://ragejump.vercel.app" target="_blank" class="project-link">
+                                <span>Launch</span>
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/>
+                                    <polyline points="15,3 21,3 21,9"/>
+                                    <line x1="10" y1="14" x2="21" y2="3"/>
+                                </svg>
+                            </a>
+                        </div>
                     </div>
                 </article>
             </div>
         </section>
-
     </main>
 
     <footer class="portfolio-footer">
         <div class="footer-content">
-            <p>&copy; 2024 Cal Flynn. Built with passion for code.</p>
+            <div class="footer-text">
+                <span class="footer-prompt">~/portfolio</span>
+                <span>© 2024 Cal Flynn</span>
+            </div>
         </div>
     </footer>
 
@@ -126,6 +196,16 @@
                 });
             });
         }
+
+        // Terminal cursor animation
+        document.addEventListener('DOMContentLoaded', function() {
+            const cursor = document.querySelector('.cursor');
+            if (cursor) {
+                setInterval(() => {
+                    cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
+                }, 600);
+            }
+        });
     </script>
     <script src="script.js"></script>
 </body>

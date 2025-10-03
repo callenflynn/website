@@ -22,7 +22,7 @@ function initializeMusic() {
     backgroundMusic.addEventListener('canplaythrough', () => {
         musicReady = true;
         console.log('Music ready to play');
-        // Removed auto-play since we start muted
+        // DO NOT auto-play - start muted
     });
 
     backgroundMusic.addEventListener('error', (e) => {
@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const muteToggle = document.getElementById('muteToggle');
     if (muteToggle) {
+        // Set initial state to muted (show muted icon)
         muteToggle.innerHTML = '🔇';
         
         muteToggle.addEventListener('click', () => {
