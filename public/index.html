@@ -9,7 +9,6 @@
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js"></script>
 </head>
 <body>
-    <!-- Add aria-label to Discord banner -->
 <div id="discordBanner" class="discord-banner" aria-label="Live Discord Status">
         <div class="discord-banner-content">🔄 Loading Discord status...</div>
     </div>
@@ -154,14 +153,12 @@
 
     <script src="script.js"></script>
     <script>
-        // Detect Apple devices
         function isAppleDevice() {
             return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                    (navigator.userAgent.includes('Mac') && 'ontouchend' in document) ||
                    navigator.userAgent.includes('Macintosh');
         }
         
-        // Only use Twemoji on non-Apple devices
         if (!isAppleDevice()) {
             twemoji.parse(document.body, {
                 folder: 'svg',

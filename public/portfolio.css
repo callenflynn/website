@@ -1,9 +1,6 @@
-/* portfolio.css - Professional developer portfolio styling */
 
-/* Import modern fonts */
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
-/* CSS Variables for consistent theming */
 :root {
     --bg-primary: #0a0a0f;
     --bg-secondary: #111118;
@@ -18,7 +15,6 @@
     --grid-color: rgba(255, 255, 255, 0.02);
 }
 
-/* Global styles */
 .portfolio-body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     background: var(--bg-primary);
@@ -28,7 +24,6 @@
     position: relative;
 }
 
-/* Animated background grid */
 .bg-grid {
     position: fixed;
     top: 0;
@@ -48,7 +43,6 @@
     100% { transform: translate(50px, 50px); }
 }
 
-/* Glow text effect */
 .glow-text {
     background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
     background-clip: text;
@@ -58,7 +52,6 @@
     filter: drop-shadow(0 0 10px var(--glow-color));
 }
 
-/* Discord banner */
 .discord-banner {
     background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
     border-bottom: 1px solid var(--border-color);
@@ -89,7 +82,6 @@
     50% { opacity: 0.5; }
 }
 
-/* Navigation */
 .portfolio-nav {
     position: sticky;
     top: 0;
@@ -144,7 +136,6 @@
     background: rgba(0, 212, 255, 0.1);
 }
 
-/* Hero section */
 .portfolio-hero {
     padding: 4rem 2rem 2rem;
     text-align: center;
@@ -201,7 +192,6 @@
     51%, 100% { opacity: 0; }
 }
 
-/* Projects section */
 .portfolio-projects {
     padding: 4rem 2rem;
 }
@@ -214,7 +204,6 @@
     gap: 2rem;
 }
 
-/* Project cards */
 .portfolio-card {
     position: relative;
     background: var(--bg-secondary);
@@ -428,7 +417,6 @@
     }
 }
 
-/* Scroll animations */
 @keyframes fadeUp {
     from {
         opacity: 0;

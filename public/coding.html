@@ -11,10 +11,8 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 <body class="portfolio-body">
-    <!-- Animated background grid -->
     <div class="bg-grid"></div>
     
-    <!-- Discord status banner -->
     <div id="discordBanner" class="discord-banner" aria-label="Live Discord Status">
         <div class="discord-banner-content">
             <div class="status-indicator"></div>
@@ -22,7 +20,6 @@
         </div>
     </div>
 
-    <!-- Navigation -->
     <nav class="portfolio-nav">
         <div class="nav-container">
             <div class="nav-brand">
@@ -47,8 +44,7 @@
                 <p class="hero-subtitle">Building digital experiences through code</p>
                 <div class="terminal-indicator">
                     <span class="terminal-prompt">$</span>
-                    <span class="terminal-text" id="typewriter"></span>
-                    <span class="cursor">|</span>
+                    <span class="terminal-text" id="typewriter"><span class="cursor">|</span></span>
                 </div>
             </div>
         </section>
@@ -177,10 +173,10 @@
             });
         }
 
-        // Typewriter effect
         class Typewriter {
             constructor(element, commands, options = {}) {
                 this.element = element;
+                this.cursor = element.querySelector('.cursor');
                 this.commands = commands;
                 this.currentCommandIndex = 0;
                 this.currentText = '';
@@ -196,7 +192,7 @@
                 this.isTyping = true;
                 for (let i = 0; i <= text.length; i++) {
                     this.currentText = text.slice(0, i);
-                    this.element.textContent = this.currentText;
+                    this.element.innerHTML = this.currentText + '<span class="cursor">|</span>';
                     await this.wait(this.typeSpeed + Math.random() * 40);
                 }
                 this.isTyping = false;
@@ -207,7 +203,7 @@
                 const textLength = this.currentText.length;
                 for (let i = textLength; i >= 0; i--) {
                     this.currentText = this.currentText.slice(0, i);
-                    this.element.textContent = this.currentText;
+                    this.element.innerHTML = this.currentText + '<span class="cursor">|</span>';
                     await this.wait(this.deleteSpeed + Math.random() * 30);
                 }
                 this.isDeleting = false;
@@ -221,37 +217,22 @@
                 while (true) {
                     const currentCommand = this.commands[this.currentCommandIndex];
                     
-                    // Type the command
                     await this.type(currentCommand);
                     
-                    // Pause
                     await this.wait(this.pauseTime);
                     
-                    // Delete the command
                     await this.delete();
                     
-                    // Pause before next command
                     await this.wait(this.deletePauseTime);
                     
-                    // Move to next command
                     this.currentCommandIndex = (this.currentCommandIndex + 1) % this.commands.length;
                 }
             }
         }
 
-        // Terminal cursor animation and typewriter
         document.addEventListener('DOMContentLoaded', function() {
-            const cursor = document.querySelector('.cursor');
             const typewriterElement = document.getElementById('typewriter');
             
-            // Cursor animation
-            if (cursor) {
-                setInterval(() => {
-                    cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
-                }, 600);
-            }
-
-            // Typewriter commands
             const commands = [
                 'npm run showcase',
                 'git status',
@@ -263,7 +244,6 @@
                 'vercel deploy'
             ];
 
-            // Start typewriter effect
             if (typewriterElement) {
                 const typewriter = new Typewriter(typewriterElement, commands, {
                     typeSpeed: 100,
@@ -272,7 +252,6 @@
                     deletePauseTime: 800
                 });
                 
-                // Small delay before starting
                 setTimeout(() => {
                     typewriter.start();
                 }, 1000);
