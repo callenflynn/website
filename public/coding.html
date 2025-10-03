@@ -47,7 +47,7 @@
                 <p class="hero-subtitle">Building digital experiences through code</p>
                 <div class="terminal-indicator">
                     <span class="terminal-prompt">$</span>
-                    <span class="terminal-text">npm run showcase</span>
+                    <span class="terminal-text" id="typewriter"></span>
                     <span class="cursor">|</span>
                 </div>
             </div>
@@ -70,13 +70,7 @@
                         
                         <div class="card-body">
                             <h3 class="project-name">Snake Game</h3>
-                            <p class="project-description">Classic snake game with modern twist</p>
-                            
-                            <div class="tech-stack">
-                                <span class="tech-tag">HTML5 Canvas</span>
-                                <span class="tech-tag">JavaScript</span>
-                                <span class="tech-tag">CSS3</span>
-                            </div>
+                            <p class="project-description">Snake :D</p>
                         </div>
                         
                         <div class="card-footer">
@@ -107,13 +101,7 @@
                         
                         <div class="card-body">
                             <h3 class="project-name">Yes, Majesty!</h3>
-                            <p class="project-description">Text-based kingdom simulation game</p>
-                            
-                            <div class="tech-stack">
-                                <span class="tech-tag">JavaScript</span>
-                                <span class="tech-tag">DOM Manipulation</span>
-                                <span class="tech-tag">State Management</span>
-                            </div>
+                            <p class="project-description">Text based kingdom simulation game</p>
                         </div>
                         
                         <div class="card-footer">
@@ -144,13 +132,7 @@
                         
                         <div class="card-body">
                             <h3 class="project-name">RageJump</h3>
-                            <p class="project-description">Challenging precision platformer</p>
-                            
-                            <div class="tech-stack">
-                                <span class="tech-tag">JavaScript</span>
-                                <span class="tech-tag">Physics Engine</span>
-                                <span class="tech-tag">Collision Detection</span>
-                            </div>
+                            <p class="project-description">sigh</p>
                         </div>
                         
                         <div class="card-footer">
@@ -173,7 +155,6 @@
         <div class="footer-content">
             <div class="footer-text">
                 <span class="footer-prompt">~/portfolio</span>
-                <span>© 2024 Cal Flynn</span>
             </div>
         </div>
     </footer>
@@ -196,13 +177,105 @@
             });
         }
 
-        // Terminal cursor animation
+        // Typewriter effect
+        class Typewriter {
+            constructor(element, commands, options = {}) {
+                this.element = element;
+                this.commands = commands;
+                this.currentCommandIndex = 0;
+                this.currentText = '';
+                this.typeSpeed = options.typeSpeed || 80;
+                this.deleteSpeed = options.deleteSpeed || 50;
+                this.pauseTime = options.pauseTime || 2000;
+                this.deletePauseTime = options.deletePauseTime || 1000;
+                this.isTyping = false;
+                this.isDeleting = false;
+            }
+
+            async type(text) {
+                this.isTyping = true;
+                for (let i = 0; i <= text.length; i++) {
+                    this.currentText = text.slice(0, i);
+                    this.element.textContent = this.currentText;
+                    await this.wait(this.typeSpeed + Math.random() * 40);
+                }
+                this.isTyping = false;
+            }
+
+            async delete() {
+                this.isDeleting = true;
+                const textLength = this.currentText.length;
+                for (let i = textLength; i >= 0; i--) {
+                    this.currentText = this.currentText.slice(0, i);
+                    this.element.textContent = this.currentText;
+                    await this.wait(this.deleteSpeed + Math.random() * 30);
+                }
+                this.isDeleting = false;
+            }
+
+            wait(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            async start() {
+                while (true) {
+                    const currentCommand = this.commands[this.currentCommandIndex];
+                    
+                    // Type the command
+                    await this.type(currentCommand);
+                    
+                    // Pause
+                    await this.wait(this.pauseTime);
+                    
+                    // Delete the command
+                    await this.delete();
+                    
+                    // Pause before next command
+                    await this.wait(this.deletePauseTime);
+                    
+                    // Move to next command
+                    this.currentCommandIndex = (this.currentCommandIndex + 1) % this.commands.length;
+                }
+            }
+        }
+
+        // Terminal cursor animation and typewriter
         document.addEventListener('DOMContentLoaded', function() {
             const cursor = document.querySelector('.cursor');
+            const typewriterElement = document.getElementById('typewriter');
+            
+            // Cursor animation
             if (cursor) {
                 setInterval(() => {
                     cursor.style.opacity = cursor.style.opacity === '0' ? '1' : '0';
                 }, 600);
+            }
+
+            // Typewriter commands
+            const commands = [
+                'npm run showcase',
+                'git status',
+                'npm run dev',
+                'code .',
+                'npm test',
+                'git commit -m "feat: new project"',
+                'npm run build',
+                'vercel deploy'
+            ];
+
+            // Start typewriter effect
+            if (typewriterElement) {
+                const typewriter = new Typewriter(typewriterElement, commands, {
+                    typeSpeed: 100,
+                    deleteSpeed: 60,
+                    pauseTime: 2500,
+                    deletePauseTime: 800
+                });
+                
+                // Small delay before starting
+                setTimeout(() => {
+                    typewriter.start();
+                }, 1000);
             }
         });
     </script>
