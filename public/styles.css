@@ -1134,7 +1134,7 @@ a, button, .project-icon, .project-card, .btn, .theme-toggle, .mute-toggle {
 
 body {
     padding-top: 140px; 
-
+}
 @media (max-width: 768px) {
     .discord-banner {
         font-size: 0.8rem;
@@ -1147,7 +1147,7 @@ body {
     }
     
     body {
-        padding-top: 120px; /* Consistent mobile padding */
+        padding-top: 120px;
     }
 }
 
@@ -1167,7 +1167,6 @@ body {
     }
 }
 
-/* Add this CSS to your styles.css file */
 
 .project-logo {
     width: 100%;
@@ -1177,12 +1176,10 @@ body {
     transition: all 0.3s ease;
 }
 
-/* Hover effect for project logos */
 .project-icon:hover .project-logo {
     transform: scale(1.1);
 }
 
-/* Make sure the project-icon container works well with images */
 .project-icon {
     width: 4rem;
     height: 4rem;
@@ -1198,7 +1195,6 @@ body {
     overflow: hidden;
 }
 
-/* Specific styling for logo containers */
 .project-icon:has(.project-logo) {
     background: transparent;
     border-radius: 12px;

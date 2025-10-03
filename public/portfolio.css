@@ -64,7 +64,6 @@
 .nav-controls {
     display: flex;
     align-items: center;
-    gap: 1rem;
 }
 
 .nav-controls button {
@@ -86,15 +85,24 @@
     color: #888;
     text-decoration: none;
     font-size: 0.875rem;
-    transition: color 0.3s ease;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
 }
 
 .nav-back:hover {
     color: #ffffff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.portfolio-body.light-theme .nav-back {
+    border: 1px solid rgba(0, 0, 0, 0.2);
 }
 
 .portfolio-body.light-theme .nav-back:hover {
     color: #2a2a2a;
+    background: rgba(0, 0, 0, 0.05);
 }
 
 /* Main Content */

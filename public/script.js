@@ -1,12 +1,15 @@
 // Music control variables
 let backgroundMusic;
-let isMuted = false;
+let isMuted = true; // Changed from false to true - start muted
 let musicReady = false;
 let playPromise = null;
 let hasInteracted = false;
 
-// Initialize music
 function initializeMusic() {
+    if (window.location.pathname.includes('coding.html')) {
+        return;
+    }
+    
     backgroundMusic = document.getElementById('backgroundMusic');
     
     if (!backgroundMusic) {
@@ -14,15 +17,12 @@ function initializeMusic() {
         return;
     }
     
-    backgroundMusic.volume = 0.3; // Set to 30% volume (quiet)
+    backgroundMusic.volume = 0.3; 
     
     backgroundMusic.addEventListener('canplaythrough', () => {
         musicReady = true;
         console.log('Music ready to play');
-        // Try to play immediately when ready
-        if (!isMuted) {
-            tryToPlayMusic();
-        }
+        // Removed auto-play since we start muted
     });
 
     backgroundMusic.addEventListener('error', (e) => {
@@ -30,10 +30,8 @@ function initializeMusic() {
         musicReady = false;
     });
     
-    // Try to preload and start playing
     backgroundMusic.load();
     
-    // Add event listeners for first interaction
     addInteractionListeners();
 }
 
@@ -49,14 +47,12 @@ function addInteractionListeners() {
                 tryToPlayMusic();
             }
             
-            // Remove all listeners after first interaction
             events.forEach(event => {
                 document.removeEventListener(event, handleFirstInteraction, true);
             });
         }
     }
     
-    // Add listeners for all interaction types
     events.forEach(event => {
         document.addEventListener(event, handleFirstInteraction, true);
     });
@@ -74,7 +70,6 @@ function tryToPlayMusic() {
             }).catch(error => {
                 console.log('Autoplay prevented:', error.message);
                 
-                // Show a subtle play button overlay if autoplay fails
                 showPlayPrompt();
             });
         }
@@ -82,7 +77,6 @@ function tryToPlayMusic() {
 }
 
 function showPlayPrompt() {
-    // Create a subtle play button that appears briefly
     const playPrompt = document.createElement('div');
     playPrompt.innerHTML = `
         <div style="
@@ -104,14 +98,12 @@ function showPlayPrompt() {
     
     document.body.appendChild(playPrompt);
     
-    // Remove after animation
     setTimeout(() => {
         if (playPrompt.parentNode) {
             playPrompt.parentNode.removeChild(playPrompt);
         }
     }, 4000);
     
-    // Add click handler to prompt
     playPrompt.addEventListener('click', () => {
         if (!isMuted && musicReady && backgroundMusic) {
             tryToPlayMusic();
@@ -122,7 +114,6 @@ function showPlayPrompt() {
     });
 }
 
-// Add CSS for the fade animation
 const musicStyle = document.createElement('style');
 musicStyle.textContent = `
     @keyframes fadeInOut {
@@ -134,7 +125,6 @@ musicStyle.textContent = `
 `;
 document.head.appendChild(musicStyle);
 
-// Rest of your existing code...
 function createStars() {
     const starsContainer = document.getElementById('stars');
     const numStars = 100;
@@ -151,7 +141,6 @@ function createStars() {
     }
 }
 
-// Add smooth scroll behavior
 document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     anchor.addEventListener('click', function (e) {
         e.preventDefault();
@@ -161,7 +150,6 @@ document.querySelectorAll('a[href^="#"]').forEach(anchor => {
     });
 });
 
-// Add parallax effect to project cards
 function addParallaxEffect() {
     const cards = document.querySelectorAll('.project-card');
     
@@ -179,7 +167,6 @@ function addParallaxEffect() {
     });
 }
 
-// Add click ripple effect
 function addRippleEffect() {
     const buttons = document.querySelectorAll('.btn');
     
@@ -213,7 +200,6 @@ function addRippleEffect() {
     });
 }
 
-// Add CSS for ripple animation
 const style = document.createElement('style');
 style.textContent = `
     @keyframes ripple {
@@ -225,7 +211,6 @@ style.textContent = `
 `;
 document.head.appendChild(style);
 
-// Easter eggs
 let clickCount = 0;
 let konamiCode = [];
 const konamiSequence = [38, 38, 40, 40, 37, 39, 37, 39, 66, 65];
@@ -237,72 +222,69 @@ function triggerFloatingAnimation(element) {
     }, 3000);
 }
 
-// Initialize all effects
 document.addEventListener('DOMContentLoaded', () => {
     console.log('DOM loaded, initializing...');
     
     createStars();
     addParallaxEffect();
     addRippleEffect();
-    initializeMusic(); // Initialize music with new system
+    initializeMusic();
 
     const nameTitle = document.getElementById('nameTitle');
+    if (nameTitle) {
+        nameTitle.addEventListener('click', () => {
+            clickCount++;
+            nameTitle.classList.toggle('hanging');
+            
+            if (clickCount >= 5) {
+                triggerFloatingAnimation(nameTitle);
+                clickCount = 0;
+            }
+        });
 
-    // Name hanging effect with click counter
-    nameTitle.addEventListener('click', () => {
-        clickCount++;
-        nameTitle.classList.toggle('hanging');
-        
-        if (clickCount >= 5) {
-            triggerFloatingAnimation(nameTitle);
-            clickCount = 0;
-        }
-    });
+        setInterval(() => {
+            const randomChance = Math.random(); 
+            if (randomChance < 0.3) { 
+                triggerFloatingAnimation(nameTitle);
+            }
+        }, 15000);
+    }
 
-    // Random floating effect for nameTitle
-    setInterval(() => {
-        const randomChance = Math.random(); 
-        if (randomChance < 0.3) { 
-            triggerFloatingAnimation(nameTitle);
-        }
-    }, 15000);
-
-    // Mute toggle functionality
     const muteToggle = document.getElementById('muteToggle');
-    muteToggle.addEventListener('click', () => {
-        isMuted = !isMuted;
+    if (muteToggle) {
+        muteToggle.innerHTML = '🔇';
         
-        if (isMuted) {
-            if (backgroundMusic) {
-                backgroundMusic.pause();
-            }
-            muteToggle.innerHTML = '🔇 Music Off';
-        } else {
-            if (musicReady && backgroundMusic) {
-                tryToPlayMusic();
-                muteToggle.innerHTML = '🎵 Music On';
+        muteToggle.addEventListener('click', () => {
+            isMuted = !isMuted;
+            
+            if (isMuted) {
+                if (backgroundMusic) {
+                    backgroundMusic.pause();
+                }
+                muteToggle.innerHTML = '🔇';
             } else {
-                muteToggle.innerHTML = '🎵 Music On';
+                if (musicReady && backgroundMusic) {
+                    tryToPlayMusic();
+                    muteToggle.innerHTML = '🔊';
+                } else {
+                    muteToggle.innerHTML = '🔊';
+                }
             }
-        }
-    });
+        });
+    }
 
-    // Theme toggle functionality
     const themeToggle = document.getElementById('themeToggle');
-    const body = document.body;
-    let isDark = true;
+    if (themeToggle) {
+        const body = document.body;
+        let isDark = true;
 
-    themeToggle.addEventListener('click', () => {
-        isDark = !isDark;
-        body.classList.toggle('light-theme');
-        themeToggle.innerHTML = isDark ? '🌙 Dark' : '☀️ Light';
-    });
-});
+        themeToggle.addEventListener('click', () => {
+            isDark = !isDark;
+            body.classList.toggle('light-theme');
+            themeToggle.innerHTML = isDark ? '🌙 Dark' : '☀️ Light';
+        });
+    }
 
-// Replace the problematic icon event listeners section (around line 337) with this:
-
-document.addEventListener('DOMContentLoaded', () => {
-    // Add null checks for all icon elements
     const codeIcon = document.getElementById('codeIcon');
     if (codeIcon) {
         codeIcon.addEventListener('click', function() {
@@ -327,7 +309,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Coding projects icon animation (only exists on main page)
     const codingIcon = document.getElementById('codingIcon');
     if (codingIcon) {
         codingIcon.addEventListener('click', function() {
@@ -338,7 +319,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Footer shake effect
     const footerText = document.getElementById('footerText');
     if (footerText) {
         let footerClickCount = 0;
@@ -357,7 +337,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Hardware icon (only exists on main page)
     const hardwareIcon = document.getElementById('hardwareIcon');
     if (hardwareIcon) {
         hardwareIcon.addEventListener('click', () => {
@@ -368,7 +347,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // For the coding page icons
     if (window.location.pathname.includes('coding.html')) {
         const snakeIcon = document.getElementById('snakeIcon');
         if (snakeIcon) {
@@ -389,23 +367,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 }, 500);
             });
         }
+
+        const rageIcon = document.getElementById('rageIcon');
+        if (rageIcon) {
+            rageIcon.addEventListener('click', function() {
+                this.classList.add('rage-shake');
+                setTimeout(() => {
+                    this.classList.remove('rage-shake');
+                }, 800);
+            });
+        }
     }
 
-    // Update the RageJump icon animation in script.js
-
-    const rageIcon = document.getElementById('rageIcon');
-    if (rageIcon) {
-        rageIcon.addEventListener('click', function() {
-            // Intense shaking animation for rage theme
-            this.classList.add('rage-shake');
-            setTimeout(() => {
-                this.classList.remove('rage-shake');
-            }, 800);
-        });
-    }
+    document.querySelectorAll('.project-card').forEach(card => {
+        observer.observe(card);
+    });
 });
 
-// Konami code
 document.addEventListener('keydown', function(e) {
     konamiCode.push(e.keyCode);
     
@@ -415,18 +393,22 @@ document.addEventListener('keydown', function(e) {
     
     if (konamiCode.toString() === konamiSequence.toString()) {
         document.body.classList.add('konami-mode');
-        document.getElementById('secretMessage').classList.add('show');
+        const secretMessage = document.getElementById('secretMessage');
+        if (secretMessage) {
+            secretMessage.classList.add('show');
+        }
         
         setTimeout(() => {
             document.body.classList.remove('konami-mode');
-            document.getElementById('secretMessage').classList.remove('show');
+            if (secretMessage) {
+                secretMessage.classList.remove('show');
+            }
         }, 3000);
         
         konamiCode = [];
     }
 });
 
-// Double click anywhere for surprise
 let doubleClickTimeout;
 document.addEventListener('click', function(e) {
     if (doubleClickTimeout) {
@@ -457,7 +439,6 @@ document.addEventListener('click', function(e) {
     }
 });
 
-// Add sparkle animation
 const sparkleStyle = document.createElement('style');
 sparkleStyle.textContent += `
     @keyframes sparkleUp {
@@ -473,7 +454,6 @@ sparkleStyle.textContent += `
 `;
 document.head.appendChild(sparkleStyle);
 
-// Add smooth entrance animation
 const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
@@ -483,68 +463,26 @@ const observer = new IntersectionObserver((entries) => {
     });
 });
 
-document.addEventListener('DOMContentLoaded', () => {
-    document.querySelectorAll('.project-card').forEach(card => {
-        observer.observe(card);
-    });
-    
-    const hardwareIcon = document.getElementById('hardwareIcon');
-    if (hardwareIcon) {
-        hardwareIcon.addEventListener('click', () => {
-            hardwareIcon.classList.add('spin');
-            setTimeout(() => {
-                hardwareIcon.classList.remove('spin');
-            }, 1000);
-        });
-    }
-    
-    const snakeIcon = document.getElementById('snakeIcon');
-    if (snakeIcon) {
-        snakeIcon.addEventListener('click', () => {
-            snakeIcon.classList.add('bounce');
-            setTimeout(() => {
-                snakeIcon.classList.remove('bounce');
-            }, 600);
-        });
-    }
-    
-    const crownIcon = document.getElementById('crownIcon');
-    if (crownIcon) {
-        crownIcon.addEventListener('click', () => {
-            crownIcon.classList.add('shake');
-            setTimeout(() => {
-                crownIcon.classList.remove('shake');
-            }, 800);
-        });
-    }
-});
-
-// Discord Rich Presence - Fixed initialization
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Starting Discord initialization...');
     
-    // Check if Discord banner exists before trying to use it
     const discordBanner = document.getElementById('discordBanner');
     if (!discordBanner) {
         console.log('Discord banner not found on this page');
         return;
     }
     
-    // Set initial loading state
     discordBanner.innerHTML = '<div class="discord-banner-content">🔄 Loading Discord status...</div>';
     
-    // Wait for page to fully load before starting Discord updates
     setTimeout(() => {
         console.log('Fetching initial Discord status...');
-        fetchDiscordStatus(); // Initial fetch
+        fetchDiscordStatus();
         
-        // Set up refresh intervals
         const discordRefreshInterval = setInterval(() => {
             fetchDiscordStatus();
             console.log('Discord status refreshed at:', new Date().toLocaleTimeString());
-        }, 5000); // Update every 5 seconds
+        }, 5000);
         
-        // Force refresh when tab becomes visible (in case user was away)
         document.addEventListener('visibilitychange', () => {
             if (!document.hidden) {
                 fetchDiscordStatus();
@@ -552,20 +490,18 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Also refresh on mouse movement (but throttled to avoid spam)
         let lastRefreshTime = 0;
         document.addEventListener('mousemove', () => {
             const now = Date.now();
-            if (now - lastRefreshTime > 3000) { // Only refresh once every 3 seconds via mouse movement
+            if (now - lastRefreshTime > 3000) {
                 fetchDiscordStatus();
                 lastRefreshTime = now;
             }
         });
         
-    }, 2000); // Wait 2 seconds after page load to start
+    }, 2000);
 });
 
-// Fixed Discord fetch function with better error handling
 async function fetchDiscordStatus() {
     const userId = '1409705687159668736'; 
     const bannerContainer = document.getElementById('discordBanner');
@@ -597,7 +533,6 @@ async function fetchDiscordStatus() {
     }
 }
 
-// Fixed Discord banner update function
 function updateDiscordBanner(userData) {
     const bannerContainer = document.getElementById('discordBanner');
     if (!bannerContainer) {
@@ -618,18 +553,15 @@ function updateDiscordBanner(userData) {
         offline: '⚫'
     };
     
-    // Check for Spotify first (highest priority)
     if (userData.spotify && userData.spotify.track_id) {
         statusText = `${statusEmojis[userData.discord_status]} Now listening to: ${userData.spotify.song} by ${userData.spotify.artist}`;
         iconHTML = `<img class="discord-banner-icon" src="${userData.spotify.album_art_url}" alt="Album Art" onerror="this.style.display='none'">`;
         statusClass = 'spotify';
     }
-    // Check for gaming/activities
     else if (userData.activities && userData.activities.length > 0) {
-        const activity = userData.activities[0]; // Get first activity
+        const activity = userData.activities[0];
         
         if (activity.type === 0) {
-            // Playing a game
             statusText = `${statusEmojis[userData.discord_status]} Now playing: ${activity.name}`;
             if (activity.details) {
                 statusText += ` • ${activity.details}`;
@@ -638,7 +570,6 @@ function updateDiscordBanner(userData) {
                 statusText += ` • ${activity.state}`;
             }
             
-            // Add game icon if available
             if (activity.assets && activity.assets.large_image) {
                 let imageUrl = '';
                 if (activity.assets.large_image.startsWith('mp:')) {
@@ -663,7 +594,6 @@ function updateDiscordBanner(userData) {
             statusClass = 'listening';
         }
         else if (activity.type === 3) {
-            // Watching
             statusText = `${statusEmojis[userData.discord_status]} Now watching: ${activity.name}`;
             if (activity.details) {
                 statusText += ` • ${activity.details}`;
@@ -672,17 +602,13 @@ function updateDiscordBanner(userData) {
                 statusText += ` • ${activity.state}`;
             }
             
-            // Add show/movie icon if available
             if (activity.assets && activity.assets.large_image) {
                 let imageUrl = '';
                 if (activity.assets.large_image.startsWith('mp:')) {
-                    // Media proxy image
                     imageUrl = `https://media.discordapp.net/${activity.assets.large_image.replace('mp:', '')}`;
                 } else if (activity.assets.large_image.startsWith('https://')) {
-                    // Direct URL (some streaming services use this)
                     imageUrl = activity.assets.large_image;
                 } else {
-                    // Discord application asset
                     imageUrl = `https://cdn.discordapp.com/app-assets/${activity.application_id}/${activity.assets.large_image}.png`;
                 }
                 iconHTML = `<img class="discord-banner-icon" src="${imageUrl}" alt="Show Cover" onerror="this.style.display='none'">`;
@@ -700,7 +626,6 @@ function updateDiscordBanner(userData) {
             statusClass = 'custom';
         }
     }
-    // Check for custom status
     else if (userData.discord_user && userData.discord_user.custom_status) {
         const customStatus = userData.discord_user.custom_status;
         statusText = `${statusEmojis[userData.discord_status]}`;
@@ -708,7 +633,6 @@ function updateDiscordBanner(userData) {
         if (customStatus.text) statusText += ` ${customStatus.text}`;
         statusClass = 'custom';
     }
-    // Just show online status
     else {
         const statusNames = {
             online: 'Online',
