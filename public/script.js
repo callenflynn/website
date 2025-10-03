@@ -687,7 +687,6 @@ async function updateDiscordStatus() {
                 statusParts.push(`💭 ${customStatus.state}`);
             }
             
-            // Set status icon based on Discord status
             switch(user.discord_status) {
                 case 'online': statusIcon = '🟢'; break;
                 case 'idle': statusIcon = '🟡'; break;
@@ -695,10 +694,8 @@ async function updateDiscordStatus() {
                 default: statusIcon = '⚫';
             }
             
-            // Combine all activities or show default
             statusText = statusParts.length > 0 ? statusParts.join(' • ') : 'Online';
             
-            // Update the banner
             document.getElementById('discordBanner').innerHTML = `
                 <div class="discord-banner-content">
                     ${statusIcon} ${statusText}
