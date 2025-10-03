@@ -654,3 +654,65 @@ function updateDiscordBanner(userData) {
     bannerContainer.innerHTML = bannerHTML;
     console.log('Discord banner updated successfully');
 }
+
+async function updateDiscordStatus() {
+    try {
+        const response = await fetch('https://api.lanyard.rest/v1/users/1409705687159668736');
+        const data = await response.json();
+        
+        if (data.success && data.data.discord_status !== 'offline') {
+            const user = data.data;
+            const activities = user.activities || [];
+            
+            let statusText = '';
+            let statusIcon = '';
+            
+            // Check for different activity types
+            const game = activities.find(activity => activity.type === 0); // Playing
+            const spotify = activities.find(activity => activity.name === 'Spotify');
+            const customStatus = activities.find(activity => activity.type === 4); // Custom status
+            
+            // Build status text based on what's active
+            const statusParts = [];
+            
+            if (game) {
+                statusParts.push(`🎮 Playing ${game.name}`);
+            }
+            
+            if (spotify && spotify.details) {
+                statusParts.push(`🎵 ${spotify.details} by ${spotify.state}`);
+            }
+            
+            if (customStatus && customStatus.state) {
+                statusParts.push(`💭 ${customStatus.state}`);
+            }
+            
+            // Set status icon based on Discord status
+            switch(user.discord_status) {
+                case 'online': statusIcon = '🟢'; break;
+                case 'idle': statusIcon = '🟡'; break;
+                case 'dnd': statusIcon = '🔴'; break;
+                default: statusIcon = '⚫';
+            }
+            
+            // Combine all activities or show default
+            statusText = statusParts.length > 0 ? statusParts.join(' • ') : 'Online';
+            
+            // Update the banner
+            document.getElementById('discordBanner').innerHTML = `
+                <div class="discord-banner-content">
+                    ${statusIcon} ${statusText}
+                </div>
+            `;
+        } else {
+            document.getElementById('discordBanner').innerHTML = `
+                <div class="discord-banner-content">⚫ Offline</div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error fetching Discord status:', error);
+        document.getElementById('discordBanner').innerHTML = `
+            <div class="discord-banner-content">❌ Status unavailable</div>
+        `;
+    }
+}
