@@ -562,18 +562,36 @@ body {
 }
 
 .exophase-card-container {
+    display: flex;
+    justify-content: center;
     margin-top: 1rem;
 }
 
 .exophase-card-image {
     max-width: 100%;
+    width: 100%;
     height: auto;
     border-radius: 10px;
     transition: transform 0.3s ease;
+    min-width: 400px;
+    max-width: 600px;
 }
 
 .exophase-card-image:hover {
-    transform: scale(1.05);
+    transform: scale(1.02);
+}
+
+@media (max-width: 768px) {
+    .exophase-card-image {
+        min-width: 300px;
+        max-width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .exophase-card-image {
+        min-width: 250px;
+    }
 }
 
 .mute-toggle {
