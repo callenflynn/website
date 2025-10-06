@@ -3,8 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cal's Page</title>
-    <meta name="description" content="Webpage with some of my stuff :)">
+    <title>Cal Flynn - Developer & Gamer</title>
+    <meta name="description" content="Cal Flynn's personal website showcasing coding projects, gaming achievements, and tech setup. High school developer passionate about programming, sim racing, and gaming.">
+    <meta name="keywords" content="Cal Flynn, developer, gaming, coding, sim racing, minecraft, programming">
+    <meta name="author" content="Cal Flynn">
+    
+    <meta property="og:title" content="Cal Flynn - Developer & Gamer">
+    <meta property="og:description" content="Personal website showcasing coding projects, gaming achievements, and tech setup.">
+    <meta property="og:url" content="https://callen.is-a.dev">
+    <meta property="og:type" content="website">
+    
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js"></script>
 </head>
@@ -31,118 +39,165 @@
                 🌙 Dark
             </div>
             <div class="mute-toggle" id="muteToggle">
-                🎵 Music On
+                🎵
             </div>
         </div>
         
-        <header>
-            <h1 id="nameTitle">Cal</h1>
+        <header class="main-header">
+            <h1 id="nameTitle" class="hero-title">Cal</h1>
+            <p class="hero-subtitle">Developer • Gamer • Tech Enthusiast</p>
         </header>
 
         <div class="projects-grid">
+            <div class="project-card about-card featured-card">
+                <div class="card-header">
+                    <div class="project-icon">👋</div>
+                    <h2 class="project-title">About Me</h2>
+                </div>
+                <div class="card-content">
+                    <p class="project-description">
+                        Hi! I'm Cal, a high school student who loves coding, videogames (especially sim racing), and skiing. My favorite game is Rainbow Six Siege.
+                    </p>
+                    <div class="highlight-stats">
+                        <div class="stat-item">
+                            <span class="stat-number">3+</span>
+                            <span class="stat-label">Years Coding</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-number">10+</span>
+                            <span class="stat-label">Projects</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <div class="project-card about-card">
-                
-    <h3 class="project-title">About Me</h3>
-    <p class="project-description">
-        Hi! I'm Cal, a highschool student who coding, videogames (especially simracing), and skiing. Favorite game is Siege.
-    </p>
-</div>
-
-            <div class="project-card" style="animation-delay: 0.2s;">
-                <div class="project-icon" id="codeIcon">💻</div>
-                <h3 class="project-title">Coding Projects</h3>
-                <p class="project-description">
-                    Explore my development work and contributions. From collaborative projects with Nestrix Applications to personal coding adventures on GitHub.
-                </p>
-                <div class="project-links">
-
-                    <a href="https://github.com/callenflynn" class="btn" target="_blank">
-                        🐙 GitHub Profile
-                    </a>
-                    <a href="coding.html" class="btn btn-primary">
-                        💻 View Coding Projects
-                    </a>
-                                        <a href="https://nestrix-applications.github.io/Nestrix/" class="btn btn-primary" target="_blank">
-                        🌐 Nestrix Applications
-                    </a>
+            <div class="project-card featured-card" style="animation-delay: 0.2s;">
+                <div class="card-header">
+                    <div class="project-icon" id="codeIcon">💻</div>
+                    <h2 class="project-title">Coding Projects</h2>
+                </div>
+                <div class="card-content">
+                    <p class="project-description">
+                        Explore my development work and contributions. From collaborative projects with Nestrix Applications to personal coding adventures on GitHub.
+                    </p>
+                    <div class="project-links">
+                        <a href="coding.html" class="btn btn-primary">
+                            💻 View Projects
+                        </a>
+                        <a href="https://github.com/callenflynn" class="btn btn-secondary" target="_blank">
+                            🐙 GitHub
+                        </a>
+                        <a href="https://nestrix-applications.github.io/Nestrix/" class="btn btn-secondary" target="_blank">
+                            🌐 Nestrix
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="project-card" style="animation-delay: 0.4s;">
+                <div class="card-header">
+                    <div class="project-icon" id="mcIcon">🏰</div>
+                    <h2 class="project-title">Minecraft Server</h2>
+                </div>
+                <div class="card-content">
+                    <p class="project-description">
+                        Join our thriving Minecraft community! Concord SMP offers a unique survival multiplayer experience with custom features and an amazing community.
+                    </p>
+                    <div class="project-links">
+                        <a href="https://concord-smp.vercel.app/" class="btn btn-primary" target="_blank">
+                            ⚔️ Join Concord SMP
+                        </a>
+                    </div>
                 </div>
             </div>
             
             <div class="project-card" style="animation-delay: 0.6s;">
-                <div class="project-icon" id="socialsIcon">🔗</div>
-                <h3 class="project-title">Socials</h3>
-                <ul class="socials-list">
-                    <li><a href="https://www.xbox.com/en-US/play/user/TinnyImp7960770" target="_blank" style="text-decoration: none; color: inherit;"><img src="assets/xbox.ico" alt="Xbox Logo"> Xbox: tinnyimp7960770</a></li>
-                    <li><a href="https://steamcommunity.com/id/Callenflynn" target="_blank" style="text-decoration: none; color: inherit;"><img src="assets/steam.ico" alt="Steam Logo"> Steam: BOBCATtwo</a></li>
-                    <li><a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" style="text-decoration: none; color: inherit;"><img src="assets/spotify.ico" alt="Spotify Logo"> Spotify: cal</a></li>
-                    <li><a href="https://snapchat.com/add/callen_flynn" target="_blank" style="text-decoration: none; color: inherit;"><img src="assets/snap.ico" alt="Snapchat Logo"> Snap: callen_flynn</a></li>
-                    <li><a href="https://discord.com/users/1409705687159668736" target="_blank" style="text-decoration: none; color: inherit;"><img src="assets/discord.ico" alt="Discord Logo"> Discord: cf151</a></li>
-                    <li><a href="https://www.trueachievements.com/gamer/TinnyImp7960770" target="_blank" style="text-decoration: none; color: inherit;"><img src="assets/trueachievements.ico" alt="trueachievements Logo"> TrueAchievements</a></li>
-                    <li><a href="https://www.exophase.com/user/Tinnyimp7960770" target="_blank" style="text-decoration: none; color: inherit;"><img src="assets/exophase.ico" alt="Exophase Logo"> Exophase</a></li>
-
-                </ul>
-            </div>
-            
-            <div class="project-card" style="animation-delay: 0.4s;">
-                <div class="project-icon" id="mcIcon">🏰</div>
-                <h3 class="project-title">Minecraft Server</h3>
-                <p class="project-description">
-                    Join our thriving Minecraft community! Concord SMP offers a unique survival multiplayer experience with custom features and an amazing community.
-                </p>
-                <div class="project-links">
-                    <a href="https://concord-smp.vercel.app/" class="btn btn-primary" target="_blank">
-                        ⚔️ Join Concord SMP
-                    </a>
+                <div class="card-header">
+                    <div class="project-icon" id="socialsIcon">🔗</div>
+                    <h2 class="project-title">Connect With Me</h2>
                 </div>
-            </div>
-            
-            
-            <div class="project-card hardware-card" style="animation-delay: 1.0s;">
-                <div class="project-icon" id="hardwareIcon">⚙️</div>
-                <h3 class="project-title">My Setup</h3>
-                <p class="project-description">
-                    Here's the hardware I use for gaming, coding, and everything in between.
-                </p>
-                <div class="hardware-list">
-                    <div class="hardware-item">
-                        <strong>💻 Main Computer:</strong> ASUS G14 - RTX 5070 Ti, 32GB DDR5, AMD Ryzen 9 HX, 1800p 120Hz OLED
-                    </div>
-                    <div class="hardware-item">
-                        <strong>🎮 Xbox:</strong> Xbox Series X with Elite Series 2 Controller
-                    </div>
-                    <div class="hardware-item">
-                      <strong>🏎️ Sim Racing:</strong> <a href="https://www.thrustmaster.com/en-us/products/t248" target="_blank" class="hardware-link">Thrustmaster T248 Wheel</a> & Pedals - iRacing, WRC, Assetto Corsa
-                    </div>
-                    <div class="hardware-item">
-                        <strong>🎮 Consoles:</strong> Nintendo Switch 2, Nintendo Wii
+                <div class="card-content">
+                    <div class="socials-grid">
+                        <a href="https://discord.com/users/1409705687159668736" target="_blank" class="social-item">
+                            <img src="assets/discord.ico" alt="Discord" loading="lazy">
+                            <span>cf151</span>
+                        </a>
+                        <a href="https://www.xbox.com/en-US/play/user/TinnyImp7960770" target="_blank" class="social-item">
+                            <img src="assets/xbox.ico" alt="Xbox" loading="lazy">
+                            <span>TinnyImp</span>
+                        </a>
+                        <a href="https://steamcommunity.com/id/Callenflynn" target="_blank" class="social-item">
+                            <img src="assets/steam.ico" alt="Steam" loading="lazy">
+                            <span>BOBCATtwo</span>
+                        </a>
+                        <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u" target="_blank" class="social-item">
+                            <img src="assets/spotify.ico" alt="Spotify" loading="lazy">
+                            <span>cal</span>
+                        </a>
+                        <a href="https://snapchat.com/add/callen_flynn" target="_blank" class="social-item">
+                            <img src="assets/snap.ico" alt="Snapchat" loading="lazy">
+                            <span>callen_flynn</span>
+                        </a>
+                        <a href="https://www.trueachievements.com/gamer/TinnyImp7960770" target="_blank" class="social-item">
+                            <img src="assets/trueachievements.ico" alt="TrueAchievements" loading="lazy">
+                            <span>TrueAchievements</span>
+                        </a>
                     </div>
                 </div>
             </div>
             
-
-
-
-
+            <div class="project-card hardware-card" style="animation-delay: 0.8s;">
+                <div class="card-header">
+                    <div class="project-icon" id="hardwareIcon">⚙️</div>
+                    <h2 class="project-title">My Tech Setup</h2>
+                </div>
+                <div class="card-content">
+                    <div class="hardware-grid">
+                        <div class="hardware-item">
+                            <div class="hardware-icon">💻</div>
+                            <div class="hardware-details">
+                                <h4>Main Computer</h4>
+                                <p>ASUS G14 - RTX 5070 Ti, 32GB DDR5, AMD Ryzen 9 HX</p>
+                            </div>
+                        </div>
+                        <div class="hardware-item">
+                            <div class="hardware-icon">🎮</div>
+                            <div class="hardware-details">
+                                <h4>Gaming</h4>
+                                <p>Xbox Series X, Nintendo Switch 2, Nintendo Wii</p>
+                            </div>
+                        </div>
+                        <div class="hardware-item">
+                            <div class="hardware-icon">🏎️</div>
+                            <div class="hardware-details">
+                                <h4>Sim Racing</h4>
+                                <p><a href="https://www.thrustmaster.com/en-us/products/t248" target="_blank" class="hardware-link">Thrustmaster T248</a> - iRacing, WRC, Assetto Corsa</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <div class="exophase-section">
+        <section class="gaming-stats-section">
+            <div class="section-header">
+                <h2 class="section-title">Gaming Achievements</h2>
+                <p class="section-subtitle">My live Xbox and Steam gaming stats</p>
+            </div>
             <div class="project-card exophase-card gaming-stats-card">
-                <div class="project-icon">🎮</div>
-                <h3 class="project-title">Gaming Stats</h3>
-                <p class="project-description">
-                    My live Xbox and Steam gaming achievements and stats.
-                </p>
                 <div class="exophase-card-container">
                     <a href="https://www.exophase.com/user/Tinnyimp7960770" target="_blank">
-                        <img src="https://card.exophase.com/1/3592223.png" alt="My Gaming Stats" class="exophase-card-image">
+                        <img src="https://card.exophase.com/1/3592223.png" alt="Cal's Gaming Achievement Card" class="exophase-card-image" loading="lazy">
                     </a>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <footer>
-            <p class="footer-text" id="footerText">Thanks for visiting my site! ✨</p>
+        <footer class="main-footer">
+            <div class="footer-content">
+                <p class="footer-text" id="footerText">Thanks for visiting my site! ✨</p>
+                <p class="footer-copyright">© 2024 Cal Flynn</p>
+            </div>
         </footer>
 
         <div class="secret-message" id="secretMessage">
