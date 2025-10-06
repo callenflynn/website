@@ -42,6 +42,12 @@
             <div class="hero-container">
                 <h1 class="hero-title glow-text">Projects</h1>
                 <p class="hero-subtitle">Building digital experiences through code</p>
+                <div class="hero-stats">
+                    <div class="stat-item">
+                        <span class="stat-number" id="daysSinceCoding">0</span>
+                        <span class="stat-label">Days Since First Code</span>
+                    </div>
+                </div>
                 <div class="terminal-indicator">
                     <span class="terminal-prompt">$</span>
                     <span class="terminal-text" id="typewriter"><span class="cursor">|</span></span>
@@ -173,6 +179,16 @@
             });
         }
 
+        // Calculate days since first code
+        function calculateDaysSinceFirstCode() {
+            const firstCodeDate = new Date('2024-05-21');
+            const today = new Date();
+            const timeDiff = today.getTime() - firstCodeDate.getTime();
+            const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
+            
+            document.getElementById('daysSinceCoding').textContent = daysDiff;
+        }
+
         class Typewriter {
             constructor(element, commands, options = {}) {
                 this.element = element;
@@ -218,11 +234,8 @@
                     const currentCommand = this.commands[this.currentCommandIndex];
                     
                     await this.type(currentCommand);
-                    
                     await this.wait(this.pauseTime);
-                    
                     await this.delete();
-                    
                     await this.wait(this.deletePauseTime);
                     
                     this.currentCommandIndex = (this.currentCommandIndex + 1) % this.commands.length;
@@ -231,17 +244,20 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
+            // Calculate and display days since first code
+            calculateDaysSinceFirstCode();
+            
             const typewriterElement = document.getElementById('typewriter');
             
             const commands = [
                 'npm run showcase',
-                'git status',
-                'npm run dev',
-                'code .',
-                'npm test',
-                'git commit -m "feat: new project"',
-                'npm run build',
-                'vercel deploy'
+                'ls projects/',
+                'cat projects.json',
+                'npm run portfolio',
+                'git log --oneline',
+                'open snake-game.html',
+                'ls *.js',
+                'cd portfolio/'
             ];
 
             if (typewriterElement) {

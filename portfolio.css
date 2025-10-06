@@ -1,4 +1,3 @@
-
 @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&family=Inter:wght@300;400;500;600;700&display=swap');
 
 :root {
@@ -388,6 +387,39 @@
     color: var(--accent-primary);
 }
 
+/* Hero Stats */
+.hero-stats {
+    display: flex;
+    justify-content: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.stat-item {
+    text-align: center;
+    color: #ffffff;
+}
+
+.stat-number {
+    display: block;
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #667eea;
+    font-family: 'JetBrains Mono', monospace;
+    text-shadow: 0 0 20px rgba(102, 126, 234, 0.5);
+}
+
+.stat-label {
+    font-size: 0.9rem;
+    color: #a0a0a0;
+    font-weight: 400;
+    margin-top: 0.5rem;
+}
+
 /* Responsive design */
 @media (max-width: 768px) {
     .nav-container {
@@ -413,6 +445,19 @@
     
     .terminal-indicator {
         padding: 0.5rem 1rem;
+        font-size: 0.8rem;
+    }
+    
+    .hero-stats {
+        margin: 1.5rem 0;
+        padding: 1rem;
+    }
+    
+    .stat-number {
+        font-size: 2rem;
+    }
+    
+    .stat-label {
         font-size: 0.8rem;
     }
 }
