@@ -573,24 +573,28 @@ body {
     height: auto;
     border-radius: 10px;
     transition: transform 0.3s ease;
-    min-width: 500px;
-    max-width: 800px;
+    min-width: 600px;
+    max-width: 900px;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    filter: contrast(1.05) brightness(1.02);
 }
 
 .exophase-card-image:hover {
     transform: scale(1.02);
+    filter: contrast(1.08) brightness(1.04);
 }
 
 @media (max-width: 768px) {
     .exophase-card-image {
-        min-width: 400px;
+        min-width: 450px;
         max-width: 100%;
     }
 }
 
 @media (max-width: 480px) {
     .exophase-card-image {
-        min-width: 300px;
+        min-width: 350px;
     }
 }
 
