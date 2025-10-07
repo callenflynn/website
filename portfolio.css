@@ -391,6 +391,7 @@
 .hero-stats {
     display: flex;
     justify-content: center;
+    gap: 3rem;
     margin: 2rem 0;
     padding: 1.5rem;
     background: rgba(255, 255, 255, 0.05);
@@ -402,6 +403,7 @@
 .stat-item {
     text-align: center;
     color: #ffffff;
+    flex: 1;
 }
 
 .stat-number {
@@ -420,7 +422,6 @@
     margin-top: 0.5rem;
 }
 
-/* Responsive design */
 @media (max-width: 768px) {
     .nav-container {
         padding: 1rem;
@@ -449,6 +450,8 @@
     }
     
     .hero-stats {
+        flex-direction: column;
+        gap: 2rem;
         margin: 1.5rem 0;
         padding: 1rem;
     }

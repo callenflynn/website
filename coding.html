@@ -47,6 +47,10 @@
                         <span class="stat-number" id="daysSinceCoding">0</span>
                         <span class="stat-label">Days Since First Code</span>
                     </div>
+                    <div class="stat-item">
+                        <span class="stat-number" id="linesOfCode">...</span>
+                        <span class="stat-label">Lines of Code (This Site)</span>
+                    </div>
                 </div>
                 <div class="terminal-indicator">
                     <span class="terminal-prompt">$</span>
@@ -179,7 +183,6 @@
             });
         }
 
-        // Calculate days since first code
         function calculateDaysSinceFirstCode() {
             const firstCodeDate = new Date('2024-05-21');
             const today = new Date();
@@ -187,6 +190,65 @@
             const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
             
             document.getElementById('daysSinceCoding').textContent = daysDiff;
+        }
+
+        async function calculateLinesOfCode() {
+            const files = [
+                'index.html',
+                'coding.html',
+                'styles.css',
+                'portfolio.css',
+                'script.js',
+                '_config.yml'
+            ];
+            
+            let totalLines = 0;
+            const element = document.getElementById('linesOfCode');
+            
+            try {
+                element.textContent = 'Counting...';
+                
+                for (const file of files) {
+                    try {
+                        const response = await fetch(file);
+                        if (response.ok) {
+                            const content = await response.text();
+                            const lines = content.split('\n').length;
+                            totalLines += lines;
+                            
+                            // Update counter in real-time as files are counted
+                            element.textContent = totalLines.toLocaleString();
+                        }
+                    } catch (error) {
+                        console.log(`Could not fetch ${file}:`, error);
+                    }
+                }
+                
+                totalLines += 1;
+                
+                animateCounter('linesOfCode', totalLines);
+                
+            } catch (error) {
+                console.error('Error calculating lines of code:', error);
+                element.textContent = '1,200+';
+            }
+        }
+
+        function animateCounter(elementId, targetValue) {
+            const element = document.getElementById(elementId);
+            const duration = 1000;
+            const startValue = parseInt(element.textContent.replace(/,/g, '')) || 0;
+            const increment = (targetValue - startValue) / (duration / 16); // 60fps
+            let currentValue = startValue;
+            
+            const timer = setInterval(() => {
+                currentValue += increment;
+                if (currentValue >= targetValue) {
+                    currentValue = targetValue;
+                    clearInterval(timer);
+                }
+                element.textContent = Math.floor(currentValue).toLocaleString();
+            }, 16);
         }
 
         class Typewriter {
@@ -244,8 +306,8 @@
         }
 
         document.addEventListener('DOMContentLoaded', function() {
-            // Calculate and display days since first code
             calculateDaysSinceFirstCode();
+            calculateLinesOfCode();
             
             const typewriterElement = document.getElementById('typewriter');
             
@@ -257,7 +319,8 @@
                 'git log --oneline',
                 'open snake-game.html',
                 'ls *.js',
-                'cd portfolio/'
+                'cd portfolio/',
+                'wc -l *.html *.css *.js'
             ];
 
             if (typewriterElement) {
