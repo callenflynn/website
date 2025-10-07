@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://callen.is-a.dev/sitemap.xml
