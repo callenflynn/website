@@ -80,6 +80,7 @@ header {
     margin-bottom: 4rem;
     animation: fadeInUp 1s ease-out;
     position: relative;
+    margin-top: 80px; /* Add top margin to move header down */
 }
 
 h1 {
@@ -137,6 +138,10 @@ h1.hanging::before {
         padding-top: 120px; 
     }
     
+    header {
+        margin-top: 60px; /* Smaller margin on mobile */
+    }
+    
     .discord-banner {
         font-size: 0.8rem;
         padding: 8px 0;
@@ -162,6 +167,10 @@ h1.hanging::before {
     
     body {
         padding-top: 110px; 
+    }
+    
+    header {
+        margin-top: 50px; 
     }
     
     .discord-banner {
@@ -546,7 +555,6 @@ body.light-theme .mute-toggle:hover {
     border-radius: 4px;
 }
 
-/* Ensure album art doesn't take up full screen */
 .discord-banner img,
 .discord-banner-content img,
 .discord-album-art {
