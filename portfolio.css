@@ -139,7 +139,7 @@
 }
 
 .portfolio-hero {
-    padding: 3rem 2rem 2rem; 
+    padding: 4rem 2rem 2rem; /* Increased top padding to move title down */
     text-align: center;
 }
 
@@ -390,7 +390,20 @@
     color: var(--accent-primary);
 }
 
-/* Hero Stats */
+/* BAKA */
+/* BAKA */
+/* BAKA */
+/* BAKA */
+/* BAKA */
+/* BAKA */
+/* BAKA */
+
+/* why are you looking through here? */
+
+/* BAKA */
+/* BAKA */
+/* BAKA */
+/* BAKA */
 .hero-stats {
     display: flex;
     justify-content: center;
@@ -480,6 +493,63 @@
     background-color: #cb171e;
 }
 
+/* Add styles for new language types */
+.language-segment[data-language="typescript"] {
+    background-color: #3178c6;
+}
+
+.language-segment[data-language="python"] {
+    background-color: #3572A5;
+}
+
+.language-segment[data-language="php"] {
+    background-color: #4F5D95;
+}
+
+.language-segment[data-language="java"] {
+    background-color: #b07219;
+}
+
+.language-segment[data-language="cpp"] {
+    background-color: #f34b7d;
+}
+
+.language-segment[data-language="csharp"] {
+    background-color: #239120;
+}
+
+.language-segment[data-language="go"] {
+    background-color: #00ADD8;
+}
+
+.language-segment[data-language="rust"] {
+    background-color: #dea584;
+}
+
+.language-segment[data-language="swift"] {
+    background-color: #ffac45;
+}
+
+.language-segment[data-language="kotlin"] {
+    background-color: #A97BFF;
+}
+
+.language-segment[data-language="ruby"] {
+    background-color: #701516;
+}
+
+.language-segment[data-language="markdown"] {
+    background-color: #083fa1;
+}
+
+.language-segment[data-language="json"] {
+    background-color: #292929;
+}
+
+.language-segment[data-language="gitignore"] {
+    background-color: #f1f2f3;
+}
+
 .language-labels {
     display: flex;
     flex-wrap: wrap;
@@ -506,8 +576,17 @@
         padding: 1rem;
     }
     
+    .portfolio-nav {
+        top: 45px; 
+        padding: 0.4rem 0;
+    }
+    
+    .nav-container {
+        padding: 0.4rem 1rem;
+    }
+    
     .portfolio-hero {
-        padding: 2rem 1rem;
+        padding: 3.5rem 1rem 2rem; 
     }
     
     .portfolio-projects {
@@ -552,7 +631,7 @@
 
 @media (max-width: 480px) {
     .portfolio-nav {
-        top: 40px;
+        top: 40px; 
         padding: 0.3rem 0;
     }
     
@@ -561,7 +640,7 @@
     }
     
     .portfolio-hero {
-        padding: 2rem 1rem 2rem; 
+        padding: 3rem 1rem 2rem; 
     }
 }
 
