@@ -139,7 +139,7 @@
 }
 
 .portfolio-hero {
-    padding: 5rem 2rem 2rem; /* Increased from 4rem to 5rem */
+    padding: 6rem 2rem 2rem;
     text-align: center;
 }
 
@@ -586,7 +586,7 @@
     }
     
     .portfolio-hero {
-        padding: 4.5rem 1rem 2rem; /*this is the distance from top to nav bar*/
+        padding: 5.5rem 1rem 2rem; 
     }
     
     .portfolio-projects {
@@ -640,7 +640,7 @@
     }
     
     .portfolio-hero {
-        padding: 4rem 1rem 2rem; /* Increased from 3rem to 4rem */
+        padding: 5rem 1rem 2rem; 
     }
 }
 
