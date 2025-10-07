@@ -493,7 +493,6 @@
     background-color: #cb171e;
 }
 
-/* Add styles for new language types */
 .language-segment[data-language="typescript"] {
     background-color: #3178c6;
 }
@@ -586,7 +585,7 @@
     }
     
     .portfolio-hero {
-        padding: 5.5rem 1rem 2rem; 
+        padding: 6rem 1rem 2rem; 
     }
     
     .portfolio-projects {
