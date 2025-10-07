@@ -26,16 +26,47 @@ function calculateDaysSinceFirstCode() {
 
 async function calculateLinesOfCode() {
     const files = [
-        'index.html',
-        'coding.html',
-        'styles.css',
-        'portfolio.css',
-        'script.js',
-        'coding.js',
-        '_config.yml'
+        { name: 'index.html', type: 'html' },
+        { name: 'coding.html', type: 'html' },
+        { name: '404.html', type: 'html' },
+        { name: 'styles.css', type: 'css' },
+        { name: 'portfolio.css', type: 'css' },
+        { name: '404.css', type: 'css' },
+        { name: 'script.js', type: 'javascript' },
+        { name: 'coding.js', type: 'javascript' },
+        { name: '404.js', type: 'javascript' },
+        { name: 'sitemap.xml', type: 'xml' },
+        { name: 'robots.txt', type: 'txt' },
+        { name: '_config.yml', type: 'yml' },
+        { name: 'README.md', type: 'markdown' },
+        { name: 'package.json', type: 'json' },
+        { name: '.gitignore', type: 'gitignore' }
     ];
     
     let totalLines = 0;
+    let languageLines = {
+        html: 0,
+        css: 0,
+        javascript: 0,
+        xml: 0,
+        txt: 0,
+        yml: 0,
+        markdown: 0,
+        json: 0,
+        gitignore: 0,
+        typescript: 0,
+        python: 0,
+        php: 0,
+        java: 0,
+        cpp: 0,
+        csharp: 0,
+        go: 0,
+        rust: 0,
+        swift: 0,
+        kotlin: 0,
+        ruby: 0
+    };
+    
     const element = document.getElementById('linesOfCode');
     
     try {
@@ -43,27 +74,108 @@ async function calculateLinesOfCode() {
         
         for (const file of files) {
             try {
-                const response = await fetch(file);
+                const response = await fetch(file.name);
                 if (response.ok) {
                     const content = await response.text();
                     const lines = content.split('\n').length;
                     totalLines += lines;
+                    languageLines[file.type] += lines;
                 }
             } catch (error) {
-                console.log(`Could not fetch ${file}:`, error);
+                console.log(`Could not fetch ${file.name}:`, error);
             }
         }
         
         // Add Discord verification file (1 line)
         totalLines += 1;
+        languageLines.txt += 1;
         
-        // Animate to the total with smooth counting
-        animateCounter('linesOfCode', totalLines, 2000);
+        animateCounter('linesOfCode', totalLines, 1200);
+        
+        updateLanguageBreakdown(languageLines, totalLines);
         
     } catch (error) {
         console.error('Error calculating lines of code:', error);
         element.textContent = '1,200+';
     }
+}
+
+function updateLanguageBreakdown(languageLines, totalLines) {
+    const languageColors = {
+        html: '#e34c26',
+        css: '#1572B6', 
+        javascript: '#f1e05a',
+        xml: '#0060ac',
+        txt: '#89e051',
+        yml: '#cb171e',
+        markdown: '#083fa1',
+        json: '#292929',
+        gitignore: '#f1f2f3',
+        typescript: '#3178c6',
+        python: '#3572A5',
+        php: '#4F5D95',
+        java: '#b07219',
+        cpp: '#f34b7d',
+        csharp: '#239120',
+        go: '#00ADD8',
+        rust: '#dea584',
+        swift: '#ffac45',
+        kotlin: '#A97BFF',
+        ruby: '#701516'
+    };
+    
+    const languageNames = {
+        html: 'HTML',
+        css: 'CSS',
+        javascript: 'JavaScript',
+        xml: 'XML',
+        txt: 'Text',
+        yml: 'YAML',
+        markdown: 'Markdown',
+        json: 'JSON',
+        gitignore: 'Gitignore',
+        typescript: 'TypeScript',
+        python: 'Python',
+        php: 'PHP',
+        java: 'Java',
+        cpp: 'C++',
+        csharp: 'C#',
+        go: 'Go',
+        rust: 'Rust',
+        swift: 'Swift',
+        kotlin: 'Kotlin',
+        ruby: 'Ruby'
+    };
+    
+    const languagePercentages = {};
+    Object.keys(languageLines).forEach(lang => {
+        languagePercentages[lang] = totalLines > 0 ? (languageLines[lang] / totalLines) * 100 : 0;
+    });
+    
+    setTimeout(() => {
+        Object.keys(languagePercentages).forEach(lang => {
+            const segment = document.querySelector(`[data-language="${lang}"]`);
+            if (segment && languagePercentages[lang] > 0) {
+                segment.style.width = `${languagePercentages[lang]}%`;
+            }
+        });
+    }, 500);
+    
+    const labelsContainer = document.getElementById('languageLabels');
+    labelsContainer.innerHTML = '';
+    
+    Object.keys(languagePercentages)
+        .filter(lang => languagePercentages[lang] > 0)
+        .sort((a, b) => languagePercentages[b] - languagePercentages[a])
+        .forEach(lang => {
+            const label = document.createElement('div');
+            label.className = 'language-label';
+            label.innerHTML = `
+                <div class="language-dot" style="background-color: ${languageColors[lang]};"></div>
+                <span>${languageNames[lang]} ${languagePercentages[lang].toFixed(1)}%</span>
+            `;
+            labelsContainer.appendChild(label);
+        });
 }
 
 function animateCounter(elementId, targetValue, duration = 1500) {

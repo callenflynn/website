@@ -82,12 +82,15 @@
 }
 
 .portfolio-nav {
-    position: sticky;
-    top: 0;
-    background: rgba(10, 10, 15, 0.8);
+    position: fixed;
+    top: 70px; 
+    left: 0;
+    right: 0;
+    z-index: 900;
+    background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--border-color);
-    z-index: 100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 1rem 0;
 }
 
 .nav-container {
@@ -422,6 +425,82 @@
     margin-top: 0.5rem;
 }
 
+.languages-breakdown {
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.breakdown-title {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    text-align: center;
+}
+
+.language-bar {
+    display: flex;
+    height: 8px;
+    border-radius: 4px;
+    overflow: hidden;
+    background: rgba(255, 255, 255, 0.1);
+    margin-bottom: 1rem;
+}
+
+.language-segment {
+    height: 100%;
+    transition: width 1s ease-in-out;
+}
+
+.language-segment[data-language="html"] {
+    background-color: #e34c26;
+}
+
+.language-segment[data-language="css"] {
+    background-color: #1572B6;
+}
+
+.language-segment[data-language="javascript"] {
+    background-color: #f1e05a;
+}
+
+.language-segment[data-language="xml"] {
+    background-color: #0060ac;
+}
+
+.language-segment[data-language="txt"] {
+    background-color: #89e051;
+}
+
+.language-segment[data-language="yml"] {
+    background-color: #cb171e;
+}
+
+.language-labels {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem;
+    justify-content: center;
+    font-size: 0.9rem;
+}
+
+.language-label {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.language-dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+}
+
 @media (max-width: 768px) {
     .nav-container {
         padding: 1rem;
@@ -462,6 +541,23 @@
     
     .stat-label {
         font-size: 0.8rem;
+    }
+    
+    .language-labels {
+        flex-direction: column;
+        align-items: center;
+        gap: 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .portfolio-nav {
+        top: 55px; /* Even smaller on very small screens */
+        padding: 0.6rem 0;
+    }
+    
+    .portfolio-main {
+        padding-top: 110px; /* Adjusted for very small screens */
     }
 }
 
