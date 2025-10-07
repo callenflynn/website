@@ -20,7 +20,8 @@ function calculateDaysSinceFirstCode() {
     const timeDiff = today.getTime() - firstCodeDate.getTime();
     const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
     
-    animateCounter('daysSinceCoding', daysDiff, 800);
+    // Animate the counter with smooth counting
+    animateCounter('daysSinceCoding', daysDiff, 1500);
 }
 
 async function calculateLinesOfCode() {
@@ -53,9 +54,11 @@ async function calculateLinesOfCode() {
             }
         }
         
+        // Add Discord verification file (1 line)
         totalLines += 1;
         
-        animateCounter('linesOfCode', totalLines, 1200);
+        // Animate to the total with smooth counting
+        animateCounter('linesOfCode', totalLines, 2000);
         
     } catch (error) {
         console.error('Error calculating lines of code:', error);
@@ -63,20 +66,28 @@ async function calculateLinesOfCode() {
     }
 }
 
-function animateCounter(elementId, targetValue, duration = 1000) {
+function animateCounter(elementId, targetValue, duration = 1500) {
     const element = document.getElementById(elementId);
-    const startValue = 0;
-    const increment = targetValue / (duration / 16); 
-    let currentValue = startValue;
+    const startTime = Date.now();
     
-    const timer = setInterval(() => {
-        currentValue += increment;
-        if (currentValue >= targetValue) {
-            currentValue = targetValue;
-            clearInterval(timer);
+    function updateCounter() {
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        // Use easing function for smooth animation
+        const easeOut = 1 - Math.pow(1 - progress, 3);
+        const currentValue = Math.floor(easeOut * targetValue);
+        
+        element.textContent = currentValue.toLocaleString();
+        
+        if (progress < 1) {
+            requestAnimationFrame(updateCounter);
+        } else {
+            element.textContent = targetValue.toLocaleString();
         }
-        element.textContent = Math.floor(currentValue).toLocaleString();
-    }, 16);
+    }
+    
+    requestAnimationFrame(updateCounter);
 }
 
 class Typewriter {
