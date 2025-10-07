@@ -83,20 +83,20 @@
 
 .portfolio-nav {
     position: fixed;
-    top: 70px; 
+    top: 50px; 
     left: 0;
     right: 0;
     z-index: 900;
     background: rgba(0, 0, 0, 0.8);
     backdrop-filter: blur(20px);
     border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    padding: 1rem 0;
+    padding: 0.5rem 0; 
 }
 
 .nav-container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 1rem 2rem;
+    padding: 0.5rem 2rem; 
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -109,13 +109,13 @@
 }
 
 .brand-name {
-    font-size: 1.25rem;
+    font-size: 1.1rem; 
     font-weight: 700;
 }
 
 .brand-title {
     font-family: 'JetBrains Mono', monospace;
-    font-size: 0.875rem;
+    font-size: 0.8rem; 
     color: var(--text-muted);
 }
 
@@ -125,11 +125,11 @@
     gap: 0.5rem;
     color: var(--text-secondary);
     text-decoration: none;
-    padding: 0.5rem 1rem;
+    padding: 0.4rem 0.8rem; 
     border-radius: 0.5rem;
     border: 1px solid var(--border-color);
     transition: all 0.3s ease;
-    font-size: 0.875rem;
+    font-size: 0.8rem; 
 }
 
 .nav-back:hover {
@@ -139,7 +139,7 @@
 }
 
 .portfolio-hero {
-    padding: 4rem 2rem 2rem;
+    padding: 3rem 2rem 2rem; 
     text-align: center;
 }
 
@@ -552,12 +552,16 @@
 
 @media (max-width: 480px) {
     .portfolio-nav {
-        top: 55px; /* Even smaller on very small screens */
-        padding: 0.6rem 0;
+        top: 40px;
+        padding: 0.3rem 0;
     }
     
-    .portfolio-main {
-        padding-top: 110px; /* Adjusted for very small screens */
+    .nav-container {
+        padding: 0.3rem 1rem;
+    }
+    
+    .portfolio-hero {
+        padding: 2rem 1rem 2rem; 
     }
 }
 
