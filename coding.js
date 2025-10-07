@@ -187,8 +187,7 @@ async function calculateLinesOfCode() {
         xml: 0,
         yml: 0,
         txt: 0,
-        gitignore: 0,
-        image: 0
+        gitignore: 0
     };
     
     const element = document.getElementById('linesOfCode');
@@ -196,19 +195,16 @@ async function calculateLinesOfCode() {
     try {
         element.textContent = '0';
         
-        // Auto-discover ALL files including subfolders
         const files = await discoverProjectFiles();
         
         console.log('📁 Processing files for line counts...');
         
         for (const file of files) {
             if (file.lines) {
-                // Pre-set line count (like Discord verification)
                 totalLines += file.lines;
                 languageLines[file.type] += file.lines;
                 console.log(`📄 ${file.path}: ${file.lines} lines (${file.type})`);
-            } else if (file.type !== 'image') {
-                // Don't count lines for images
+            } else {
                 try {
                     const response = await fetch(file.path);
                     if (response.ok) {
@@ -221,11 +217,6 @@ async function calculateLinesOfCode() {
                 } catch (error) {
                     console.log(`❌ Could not fetch ${file.path}:`, error);
                 }
-            } else {
-                // Count images as 1 "line" each
-                totalLines += 1;
-                languageLines[file.type] += 1;
-                console.log(`🖼️ ${file.path}: 1 file (${file.type})`);
             }
         }
         
@@ -261,8 +252,8 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         xml: '#0060ac',
         yml: '#cb171e',
         txt: '#89e051',
-        gitignore: '#f1f2f3',
-        image: '#ff6b9d'
+        gitignore: '#f1f2f3'
+        // Removed image color since we're not counting images
     };
     
     const languageNames = {
@@ -285,8 +276,8 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         xml: 'XML',
         yml: 'YAML',
         txt: 'Text',
-        gitignore: 'Gitignore',
-        image: 'Images'
+        gitignore: 'Gitignore'
+        // Removed image name since we're not counting images
     };
     
     const languagePercentages = {};
