@@ -26,6 +26,67 @@ function calculateDaysSinceFirstCode() {
 
 function getFileType(filename) {
     const extension = filename.split('.').pop().toLowerCase();
+    
+    // Handle files with no extension first (by exact filename)
+    const noExtensionFiles = {
+        '.gitignore': 'gitignore',
+        'gitignore': 'gitignore',
+        'robots.txt': 'txt',
+        '_config.yml': 'yml',
+        'LICENSE': 'txt',
+        'README': 'markdown',
+        'Makefile': 'makefile',
+        'makefile': 'makefile',
+        'Dockerfile': 'dockerfile',
+        'dockerfile': 'dockerfile',
+        'Gemfile': 'ruby',
+        'gemfile': 'ruby',
+        'Rakefile': 'ruby',
+        'rakefile': 'ruby',
+        'Procfile': 'procfile',
+        'procfile': 'procfile',
+        'Vagrantfile': 'vagrant',
+        'vagrantfile': 'vagrant',
+        'Jenkinsfile': 'jenkins',
+        'jenkinsfile': 'jenkins',
+        'Gruntfile': 'javascript',
+        'gruntfile': 'javascript',
+        'gulpfile': 'javascript',
+        'Gulpfile': 'javascript',
+        'webpack.config': 'javascript',
+        'rollup.config': 'javascript',
+        'vite.config': 'javascript',
+        'CHANGELOG': 'markdown',
+        'changelog': 'markdown',
+        'CONTRIBUTING': 'markdown',
+        'contributing': 'markdown',
+        'INSTALL': 'markdown',
+        'install': 'markdown',
+        'AUTHORS': 'txt',
+        'authors': 'txt',
+        'CONTRIBUTORS': 'txt',
+        'contributors': 'txt',
+        'COPYING': 'txt',
+        'copying': 'txt',
+        'NOTICE': 'txt',
+        'notice': 'txt'
+    };
+    
+    // Check if it's a special file without extension
+    if (noExtensionFiles[filename]) {
+        return noExtensionFiles[filename];
+    }
+    
+    // Handle files that are truly "other" (unknown file types)
+    const pathParts = filename.split('/');
+    const justFilename = pathParts[pathParts.length - 1];
+    
+    // If file has no extension and isn't in our known list, it's "other"
+    if (!justFilename.includes('.') && !noExtensionFiles[justFilename]) {
+        return 'other';
+    }
+    
+    // Regular extension mapping
     const extensionMap = {
         'html': 'html',
         'htm': 'html',
@@ -59,17 +120,16 @@ function getFileType(filename) {
         'yml': 'yml',
         'yaml': 'yml',
         'txt': 'txt',
-        'gitignore': 'gitignore',
-
+        'sh': 'shell',
+        'bash': 'shell',
+        'zsh': 'shell',
+        'fish': 'shell',
+        'ps1': 'powershell',
+        'bat': 'batch',
+        'cmd': 'batch'
     };
 
-    if (filename === '.gitignore' || filename === 'gitignore') return 'gitignore';
-    if (filename === 'robots.txt') return 'txt';
-    if (filename === '_config.yml') return 'yml';
-    if (filename === 'LICENSE') return 'txt';
-    if (filename === 'README') return 'markdown';
-    
-    return extensionMap[extension] || 'txt';
+    return extensionMap[extension] || 'other';
 }
 
 async function discoverProjectFiles() {
@@ -93,7 +153,7 @@ async function discoverProjectFiles() {
         'LICENSE',
         'CNAME',
         
-
+        'easter egg json/readme.json',
         
         'scripts/main.js',
         'scripts/utils.js',
@@ -187,7 +247,16 @@ async function calculateLinesOfCode() {
         xml: 0,
         yml: 0,
         txt: 0,
-        gitignore: 0
+        gitignore: 0,
+        makefile: 0,
+        dockerfile: 0,
+        procfile: 0,
+        vagrant: 0,
+        jenkins: 0,
+        shell: 0,
+        powershell: 0,
+        batch: 0,
+        other: 0 
     };
     
     const element = document.getElementById('linesOfCode');
@@ -252,8 +321,16 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         xml: '#0060ac',
         yml: '#cb171e',
         txt: '#89e051',
-        gitignore: '#f1f2f3'
-        // Removed image color since we're not counting images
+        gitignore: '#f1f2f3',
+        makefile: '#427819',
+        dockerfile: '#384d54',
+        procfile: '#3B2F63',
+        vagrant: '#1563FF',
+        jenkins: '#D33833',
+        shell: '#89e051',
+        powershell: '#012456',
+        batch: '#C1F12E',
+        other: '#8B8B8B'  
     };
     
     const languageNames = {
@@ -276,8 +353,16 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         xml: 'XML',
         yml: 'YAML',
         txt: 'Text',
-        gitignore: 'Gitignore'
-        // Removed image name since we're not counting images
+        gitignore: 'Gitignore',
+        makefile: 'Makefile',
+        dockerfile: 'Dockerfile',
+        procfile: 'Procfile',
+        vagrant: 'Vagrantfile',
+        jenkins: 'Jenkinsfile',
+        shell: 'Shell',
+        powershell: 'PowerShell',
+        batch: 'Batch',
+        other: 'Other'
     };
     
     const languagePercentages = {};
@@ -285,7 +370,6 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         languagePercentages[lang] = totalLines > 0 ? (languageLines[lang] / totalLines) * 100 : 0;
     });
     
-    // Log the breakdown for debugging
     console.log('📊 Language breakdown:', languagePercentages);
     
     setTimeout(() => {
