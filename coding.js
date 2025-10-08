@@ -134,6 +134,7 @@ function getFileType(filename) {
 
 async function discoverProjectFiles() {
     const allPossibleFiles = [
+        // Root level files
         'index.html',
         'coding.html', 
         '404.html',
@@ -152,9 +153,59 @@ async function discoverProjectFiles() {
         '.gitignore',
         'LICENSE',
         'CNAME',
+        'callen',  // Added your Callen file
         
+        // Easter egg JSON folder
         'easter egg json/readme.json',
         
+        // More "other" type files that might be useful
+        'CREDITS',
+        'AUTHORS',
+        'CONTRIBUTORS',
+        'MAINTAINERS',
+        'SECURITY',
+        'CODE_OF_CONDUCT',
+        'FUNDING',
+        'SUPPORT',
+        'ISSUE_TEMPLATE',
+        'PULL_REQUEST_TEMPLATE',
+        'CHANGELOG',
+        'HISTORY',
+        'NEWS',
+        'INSTALL',
+        'UPGRADE',
+        'TODO',
+        'ROADMAP',
+        'VERSION',
+        'MANIFEST',
+        'COPYING',
+        'NOTICE',
+        'ACKNOWLEDGMENTS',
+        'THANKS',
+        
+        // Config files without extensions
+        'editorconfig',
+        'gitattributes',
+        'dockerignore',
+        'eslintignore',
+        'prettierignore',
+        'nvmrc',
+        'node-version',
+        'ruby-version',
+        'python-version',
+        
+        // Build/deployment files
+        'netlify.toml',
+        'vercel.json',
+        'now.json',
+        'surge',
+        'firebase.json',
+        'appveyor.yml',
+        'travis.yml',
+        'circle.yml',
+        'buildspec.yml',
+        
+        // Scripts folder
         'scripts/main.js',
         'scripts/utils.js',
         'scripts/animations.js',
@@ -182,12 +233,52 @@ async function discoverProjectFiles() {
         
         '.well-known/discord',
         '.github/workflows/deploy.yml',
+        '.github/workflows/pages.yml',
+        '.github/ISSUE_TEMPLATE',
+        '.github/PULL_REQUEST_TEMPLATE',
+        '.github/FUNDING.yml',
         '.vscode/settings.json',
+        '.vscode/extensions.json',
+        '.vscode/launch.json',
+        '.vscode/tasks.json',
+        
+        '.idea/workspace.xml',
+        '.idea/modules.xml',
+        'workspace.code-workspace',
+        'project.sublime-project',
+        'project.sublime-workspace',
+        
+        'src/main.js',
+        'src/components/App.js',
+        'src/styles/global.css',
+        'public/manifest.json',
+        'public/sw.js',
+        
+        'webpack.config.js',
+        'vite.config.js',
+        'tsconfig.json',
+        'babel.config.js',
+        '.eslintrc.js',
+        '.prettierrc',
+        'rollup.config.js',
+        'gulpfile.js',
+        'Gruntfile.js',
+        
+        'yarn.lock',
+        'pnpm-lock.yaml',
+        'poetry.lock',
+        'Pipfile.lock',
+        'composer.lock',
+        'Gemfile.lock',
         
         'favicon.ico',
-        'apple-touch-icon.png',
         'manifest.json',
-        'sw.js'
+        'sw.js',
+        'service-worker.js',
+        'sitemap.txt',
+        'humans.txt',
+        'ads.txt',
+        'security.txt'
     ];
 
     const discoveredFiles = [];
