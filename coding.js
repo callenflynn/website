@@ -150,7 +150,6 @@ async function discoverProjectFiles() {
         'easter egg json/readme.json'
     ];
     
-    // Less likely files to check
     const additionalFiles = [
         '_config.yml',
         'README.md',
@@ -263,7 +262,6 @@ async function discoverProjectFiles() {
                     };
                 }
             } catch (error) {
-                // File doesn't exist
             }
             return null;
         });
@@ -357,7 +355,7 @@ async function calculateLinesOfCode() {
         
         console.log(`🎯 Total lines calculated: ${totalLines}`);
         
-        animateCounter('linesOfCode', totalLines, 800); /
+        animateCounter('linesOfCode', totalLines, 800); 
         updateLanguageBreakdown(languageLines, totalLines);
         
     } catch (error) {
