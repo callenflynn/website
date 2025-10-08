@@ -133,8 +133,8 @@ function getFileType(filename) {
 }
 
 async function discoverProjectFiles() {
-    const allPossibleFiles = [
-        // Root level files
+    // Prioritize files we know exist first
+    const priorityFiles = [
         'index.html',
         'coding.html', 
         '404.html',
@@ -146,6 +146,12 @@ async function discoverProjectFiles() {
         '404.js',
         'sitemap.xml',
         'robots.txt',
+        'callen',
+        'easter egg json/readme.json'
+    ];
+    
+    // Less likely files to check
+    const additionalFiles = [
         '_config.yml',
         'README.md',
         'package.json',
@@ -153,12 +159,6 @@ async function discoverProjectFiles() {
         '.gitignore',
         'LICENSE',
         'CNAME',
-        'callen',  // Added your Callen file
-        
-        // Easter egg JSON folder
-        'easter egg json/readme.json',
-        
-        // More "other" type files that might be useful
         'CREDITS',
         'AUTHORS',
         'CONTRIBUTORS',
@@ -182,8 +182,6 @@ async function discoverProjectFiles() {
         'NOTICE',
         'ACKNOWLEDGMENTS',
         'THANKS',
-        
-        // Config files without extensions
         'editorconfig',
         'gitattributes',
         'dockerignore',
@@ -193,118 +191,88 @@ async function discoverProjectFiles() {
         'node-version',
         'ruby-version',
         'python-version',
-        
-        // Build/deployment files
-        'netlify.toml',
-        'vercel.json',
-        'now.json',
-        'surge',
-        'firebase.json',
-        'appveyor.yml',
-        'travis.yml',
-        'circle.yml',
-        'buildspec.yml',
-        
-        // Scripts folder
         'scripts/main.js',
         'scripts/utils.js',
         'scripts/animations.js',
         'scripts/config.js',
-        
         'styles/main.css',
         'styles/components.css',
         'styles/variables.css',
         'styles/responsive.css',
-        
         'components/header.html',
         'components/footer.html',
         'components/nav.html',
-        
         'data/projects.json',
         'data/config.json',
         'data/secrets.json',
-        
         'docs/README.md',
         'docs/CHANGELOG.md',
         'docs/CONTRIBUTING.md',
-        
         'config/site.yml',
         'config/build.js',
-        
-        '.well-known/discord',
         '.github/workflows/deploy.yml',
         '.github/workflows/pages.yml',
-        '.github/ISSUE_TEMPLATE',
-        '.github/PULL_REQUEST_TEMPLATE',
-        '.github/FUNDING.yml',
         '.vscode/settings.json',
         '.vscode/extensions.json',
-        '.vscode/launch.json',
-        '.vscode/tasks.json',
-        
-        '.idea/workspace.xml',
-        '.idea/modules.xml',
-        'workspace.code-workspace',
-        'project.sublime-project',
-        'project.sublime-workspace',
-        
-        'src/main.js',
-        'src/components/App.js',
-        'src/styles/global.css',
-        'public/manifest.json',
-        'public/sw.js',
-        
         'webpack.config.js',
         'vite.config.js',
         'tsconfig.json',
         'babel.config.js',
         '.eslintrc.js',
         '.prettierrc',
-        'rollup.config.js',
-        'gulpfile.js',
-        'Gruntfile.js',
-        
-        'yarn.lock',
-        'pnpm-lock.yaml',
-        'poetry.lock',
-        'Pipfile.lock',
-        'composer.lock',
-        'Gemfile.lock',
-        
         'favicon.ico',
         'manifest.json',
-        'sw.js',
-        'service-worker.js',
-        'sitemap.txt',
-        'humans.txt',
-        'ads.txt',
-        'security.txt'
+        'sw.js'
     ];
 
     const discoveredFiles = [];
-    let checkedCount = 0;
-    
-    console.log('🔍 Scanning for project files...');
+    console.log('🔍 Quick scan for known files...');
 
-    for (const filepath of allPossibleFiles) {
+    const priorityPromises = priorityFiles.map(async (filepath) => {
         try {
             const response = await fetch(filepath, { method: 'HEAD' });
             if (response.ok) {
-                discoveredFiles.push({
+                return {
                     name: filepath,
                     type: getFileType(filepath.split('/').pop()),
                     path: filepath
-                });
-                console.log(`✅ Found: ${filepath}`);
+                };
             }
-            checkedCount++;
         } catch (error) {
-            // File doesn't exist, continue silently
-            checkedCount++;
         }
+        return null;
+    });
+
+    const priorityResults = await Promise.all(priorityPromises);
+    const foundPriorityFiles = priorityResults.filter(file => file !== null);
+    discoveredFiles.push(...foundPriorityFiles);
+
+    console.log(`✅ Found ${foundPriorityFiles.length} priority files`);
+
+    const batchSize = 10;
+    for (let i = 0; i < additionalFiles.length; i += batchSize) {
+        const batch = additionalFiles.slice(i, i + batchSize);
+        const batchPromises = batch.map(async (filepath) => {
+            try {
+                const response = await fetch(filepath, { method: 'HEAD' });
+                if (response.ok) {
+                    return {
+                        name: filepath,
+                        type: getFileType(filepath.split('/').pop()),
+                        path: filepath
+                    };
+                }
+            } catch (error) {
+                // File doesn't exist
+            }
+            return null;
+        });
+
+        const batchResults = await Promise.all(batchPromises);
+        const foundBatchFiles = batchResults.filter(file => file !== null);
+        discoveredFiles.push(...foundBatchFiles);
     }
 
-    // Add Discord verification file manually (can't be fetched)
     discoveredFiles.push({
         name: '.well-known/discord',
         type: 'txt',
@@ -312,7 +280,7 @@ async function discoverProjectFiles() {
         path: '.well-known/discord'
     });
 
-    console.log(`📊 Scan complete: Found ${discoveredFiles.length} files out of ${checkedCount} checked`);
+    console.log(`📊 Total files found: ${discoveredFiles.length}`);
     return discoveredFiles;
 }
 
@@ -357,32 +325,39 @@ async function calculateLinesOfCode() {
         
         const files = await discoverProjectFiles();
         
-        console.log('📁 Processing files for line counts...');
+        console.log('📁 Counting lines in parallel...');
         
-        for (const file of files) {
+        const filePromises = files.map(async (file) => {
             if (file.lines) {
-                totalLines += file.lines;
-                languageLines[file.type] += file.lines;
-                console.log(`📄 ${file.path}: ${file.lines} lines (${file.type})`);
+                return { file, lines: file.lines };
             } else {
                 try {
                     const response = await fetch(file.path);
                     if (response.ok) {
                         const content = await response.text();
                         const lines = content.split('\n').length;
-                        totalLines += lines;
-                        languageLines[file.type] += lines;
-                        console.log(`📄 ${file.path}: ${lines} lines (${file.type})`);
+                        return { file, lines };
                     }
                 } catch (error) {
-                    console.log(`❌ Could not fetch ${file.path}:`, error);
+                    console.log(`❌ Could not fetch ${file.path}`);
                 }
+                return { file, lines: 0 };
             }
-        }
+        });
+
+        const results = await Promise.all(filePromises);
+        
+        results.forEach(({ file, lines }) => {
+            if (lines > 0) {
+                totalLines += lines;
+                languageLines[file.type] += lines;
+                console.log(`📄 ${file.path}: ${lines} lines (${file.type})`);
+            }
+        });
         
         console.log(`🎯 Total lines calculated: ${totalLines}`);
         
-        animateCounter('linesOfCode', totalLines, 1200);
+        animateCounter('linesOfCode', totalLines, 800); /
         updateLanguageBreakdown(languageLines, totalLines);
         
     } catch (error) {
@@ -463,14 +438,13 @@ function updateLanguageBreakdown(languageLines, totalLines) {
     
     console.log('📊 Language breakdown:', languagePercentages);
     
-    setTimeout(() => {
-        Object.keys(languagePercentages).forEach(lang => {
-            const segment = document.querySelector(`[data-language="${lang}"]`);
-            if (segment && languagePercentages[lang] > 0) {
-                segment.style.width = `${languagePercentages[lang]}%`;
-            }
-        });
-    }, 500);
+    // Start bar animation immediately (no delay)
+    Object.keys(languagePercentages).forEach(lang => {
+        const segment = document.querySelector(`[data-language="${lang}"]`);
+        if (segment && languagePercentages[lang] > 0) {
+            segment.style.width = `${languagePercentages[lang]}%`;
+        }
+    });
     
     const labelsContainer = document.getElementById('languageLabels');
     labelsContainer.innerHTML = '';
@@ -481,9 +455,19 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         .forEach(lang => {
             const label = document.createElement('div');
             label.className = 'language-label';
+            
+            const percentage = languagePercentages[lang];
+            let formattedPercentage;
+            
+            if (percentage >= 0.1) {
+                formattedPercentage = percentage.toFixed(1);
+            } else {
+                formattedPercentage = percentage.toFixed(2);
+            }
+            
             label.innerHTML = `
                 <div class="language-dot" style="background-color: ${languageColors[lang]};"></div>
-                <span>${languageNames[lang]} ${languagePercentages[lang].toFixed(1)}%</span>
+                <span>${languageNames[lang]} ${formattedPercentage}%</span>
             `;
             labelsContainer.appendChild(label);
         });
@@ -568,6 +552,7 @@ class Typewriter {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
+    // Start both calculations immediately
     calculateDaysSinceFirstCode();
     calculateLinesOfCode();
     
@@ -576,13 +561,13 @@ document.addEventListener('DOMContentLoaded', function() {
     const commands = [
         'npm run showcase',
         'find . -name "*.js" | wc -l',
-        'tree assets/',
+        'tree src/',
         'npm run portfolio',
         'git log --oneline --all',
-        'du -sh *',
-        'ls -la assets/',
+        'wc -l *.html *.css *.js',
+        'ls -la components/',
         'cd scripts && ls',
-        'find . -type f | head -20'
+        'find . -name "*.json" -type f'
     ];
 
     if (typewriterElement) {
