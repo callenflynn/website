@@ -7,146 +7,141 @@
     <style>
         body {
             margin: 0;
-            padding: 20px;
-            background: #000;
-            color: #0f0;
+            padding: 0;
+            background: #f7f7f7;
+            color: #535353;
             font-family: 'Courier New', monospace;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            user-select: none;
         }
         
         .game-container {
             text-align: center;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+            padding: 20px;
         }
         
         .game-area {
-            width: 800px;
-            height: 400px;
-            background: #001122;
-            border: 2px solid #0f0;
+            width: 600px;
+            height: 150px;
+            background: white;
             position: relative;
             overflow: hidden;
             margin: 20px auto;
+            border-bottom: 2px solid #535353;
         }
         
         .player {
             position: absolute;
-            width: 30px;
-            height: 30px;
-            background: #f00;
-            bottom: 50px;
-            left: 100px;
-            border-radius: 5px;
-            transition: none;
+            width: 20px;
+            height: 20px;
+            background: #535353;
+            bottom: 0px;
+            left: 50px;
         }
         
         .obstacle {
             position: absolute;
-            width: 25px;
-            height: 50px;
-            background: #0ff;
-            bottom: 50px;
-            border-radius: 3px;
+            width: 10px;
+            height: 30px;
+            background: #535353;
+            bottom: 0px;
         }
         
-        .ground {
+        .cloud {
+            position: absolute;
+            width: 40px;
+            height: 20px;
+            background: #ccc;
+            border-radius: 20px;
+            opacity: 0.5;
+        }
+        
+        .ground-line {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 50px;
-            background: #333;
-            border-top: 2px solid #0f0;
+            height: 2px;
+            background: #535353;
         }
         
-        .ui {
+        .score {
             position: absolute;
             top: 10px;
-            left: 10px;
-            font-size: 18px;
-            z-index: 10;
+            right: 10px;
+            font-size: 16px;
+            font-weight: bold;
         }
         
-        .start-screen, .game-over-screen {
+        .start-screen {
             position: absolute;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            background: rgba(0, 0, 0, 0.9);
-            padding: 30px;
-            border: 2px solid #0f0;
-            border-radius: 10px;
-            z-index: 100;
         }
         
-        button {
-            background: #0f0;
-            color: #000;
-            border: none;
-            padding: 15px 25px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px;
-            border-radius: 5px;
-            font-weight: bold;
+        .game-over-screen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+            display: none;
         }
         
-        button:hover {
-            background: #0c0;
-            transform: scale(1.05);
+        .high-score {
+            font-size: 12px;
+            margin-top: 5px;
         }
         
-        @media (max-width: 900px) {
-            .game-area {
-                width: 90vw;
-                max-width: 800px;
-            }
+        .instructions {
+            font-size: 12px;
+            margin-top: 20px;
+            color: #888;
         }
     </style>
 </head>
 <body>
     <div class="game-container">
-        <h1>🚀 BefJump</h1>
         <div class="game-area" id="gameArea">
-            <div class="ground"></div>
+            <div class="ground-line"></div>
             <div class="player" id="player"></div>
-            <div class="ui" id="ui">
-                <div>Score: <span id="score">0</span></div>
-                <div>High Score: <span id="highScore">0</span></div>
-                <div style="font-size: 14px; margin-top: 5px;">Jump Height: <span id="jumpHeight">0</span></div>
-            </div>
+            <div class="score" id="score">00000</div>
             
             <div class="start-screen" id="startScreen">
-                <h2>🎮 BefJump Cube Game</h2>
-                <p>Press SPACE or click to jump!</p>
-                <p>Avoid the cyan obstacles</p>
-                <button onclick="startGame()">🚀 Start Game</button>
+                <div style="font-size: 18px; margin-bottom: 10px;">Press SPACE to play</div>
+                <div class="high-score">HI <span id="hiScore">00000</span></div>
             </div>
             
-            <div class="game-over-screen" id="gameOverScreen" style="display: none;">
-                <h2>💥 Game Over!</h2>
-                <p>Score: <span id="finalScore">0</span></p>
-                <p id="newHighScore" style="display: none; color: #ff0;">🎉 New High Score!</p>
-                <button onclick="startGame()">🔄 Play Again</button>
+            <div class="game-over-screen" id="gameOverScreen">
+                <div style="font-size: 18px; margin-bottom: 10px;">G A M E  O V E R</div>
+                <div class="high-score">HI <span id="finalHiScore">00000</span></div>
+                <div style="font-size: 12px; margin-top: 10px;">Press SPACE to restart</div>
             </div>
         </div>
-        <p>Use SPACE or click anywhere to jump over obstacles!</p>
+        <div class="instructions">Use SPACEBAR or ↑ to jump</div>
     </div>
 
     <script>
-        console.log('🎮 BefJump game loading...');
-        
         let gameState = {
             running: false,
+            gameStarted: false,
             score: 0,
-            highScore: parseInt(localStorage.getItem('befjump-high-score') || '0'),
+            highScore: parseInt(localStorage.getItem('cube-runner-high-score') || '0'),
             player: { y: 0, jumping: false, velocity: 0 },
             obstacles: [],
-            gameSpeed: 2,
-            lastObstacle: 0
+            clouds: [],
+            gameSpeed: 4,
+            lastObstacle: 0,
+            lastCloud: 0,
+            groundOffset: 0
         };
         
         const player = document.getElementById('player');
@@ -154,44 +149,57 @@
         const startScreen = document.getElementById('startScreen');
         const gameOverScreen = document.getElementById('gameOverScreen');
         const scoreElement = document.getElementById('score');
-        const highScoreElement = document.getElementById('highScore');
-        const finalScoreElement = document.getElementById('finalScore');
-        const newHighScoreElement = document.getElementById('newHighScore');
-        const jumpHeightElement = document.getElementById('jumpHeight');
+        const hiScoreElement = document.getElementById('hiScore');
+        const finalHiScoreElement = document.getElementById('finalHiScore');
         
-        console.log('High score:', gameState.highScore);
-        highScoreElement.textContent = gameState.highScore;
+        // Initialize
+        hiScoreElement.textContent = String(gameState.highScore).padStart(5, '0');
+        finalHiScoreElement.textContent = String(gameState.highScore).padStart(5, '0');
         
         function startGame() {
-            console.log('🚀 Starting game...');
             gameState.running = true;
+            gameState.gameStarted = true;
             gameState.score = 0;
             gameState.player = { y: 0, jumping: false, velocity: 0 };
             gameState.obstacles = [];
-            gameState.gameSpeed = 2;
+            gameState.clouds = [];
+            gameState.gameSpeed = 4;
             gameState.lastObstacle = Date.now();
+            gameState.lastCloud = Date.now();
+            gameState.groundOffset = 0;
             
             startScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
             
+            // Clear existing elements
             document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            document.querySelectorAll('.cloud').forEach(cloud => cloud.remove());
             
-            player.style.bottom = '50px';
+            player.style.bottom = '0px';
+            
+            // Spawn initial clouds
+            for(let i = 0; i < 3; i++) {
+                spawnCloud();
+            }
             
             gameLoop();
         }
         
         function jump() {
+            if (!gameState.gameStarted) {
+                startGame();
+                return;
+            }
+            
             if (!gameState.running || gameState.player.jumping) return;
             
-            console.log('🦘 Jump!');
             gameState.player.jumping = true;
-            gameState.player.velocity = -20; 
+            gameState.player.velocity = -12;
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.4; 
+                gameState.player.velocity += 0.6; // gravity
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -200,36 +208,63 @@
                     gameState.player.velocity = 0;
                 }
                 
-                player.style.bottom = (50 - gameState.player.y) + 'px';
-                
-                jumpHeightElement.textContent = Math.round(-gameState.player.y);
+                player.style.bottom = gameState.player.y + 'px';
             }
         }
         
         function spawnObstacle() {
-            if (Date.now() - gameState.lastObstacle > 2500) { 
+            if (Date.now() - gameState.lastObstacle > Math.random() * 1000 + 1500) {
                 const obstacle = document.createElement('div');
                 obstacle.className = 'obstacle';
-                obstacle.style.right = '-25px';
+                obstacle.style.right = '-10px';
                 gameArea.appendChild(obstacle);
                 
                 gameState.obstacles.push({
                     element: obstacle,
-                    x: 825
+                    x: 610
                 });
                 
                 gameState.lastObstacle = Date.now();
-                console.log('🚧 Obstacle spawned');
+            }
+        }
+        
+        function spawnCloud() {
+            if (Date.now() - gameState.lastCloud > Math.random() * 2000 + 3000) {
+                const cloud = document.createElement('div');
+                cloud.className = 'cloud';
+                cloud.style.right = '-40px';
+                cloud.style.top = Math.random() * 60 + 20 + 'px';
+                gameArea.appendChild(cloud);
+                
+                gameState.clouds.push({
+                    element: cloud,
+                    x: 640
+                });
+                
+                gameState.lastCloud = Date.now();
             }
         }
         
         function updateObstacles() {
             gameState.obstacles = gameState.obstacles.filter(obstacle => {
                 obstacle.x -= gameState.gameSpeed;
-                obstacle.element.style.right = (825 - obstacle.x) + 'px';
+                obstacle.element.style.right = (610 - obstacle.x) + 'px';
                 
-                if (obstacle.x < -25) {
+                if (obstacle.x < -10) {
                     obstacle.element.remove();
+                    return false;
+                }
+                return true;
+            });
+        }
+        
+        function updateClouds() {
+            gameState.clouds = gameState.clouds.filter(cloud => {
+                cloud.x -= gameState.gameSpeed * 0.5; // clouds move slower
+                cloud.element.style.right = (640 - cloud.x) + 'px';
+                
+                if (cloud.x < -40) {
+                    cloud.element.remove();
                     return false;
                 }
                 return true;
@@ -238,28 +273,25 @@
         
         function checkCollisions() {
             const playerRect = {
-                x: 100,
-                y: -gameState.player.y, // Fixed: invert Y for proper collision
-                width: 30,
-                height: 30
+                x: 50,
+                y: gameState.player.y,
+                width: 20,
+                height: 20
             };
             
             for (let obstacle of gameState.obstacles) {
                 const obstacleRect = {
                     x: obstacle.x,
                     y: 0,
-                    width: 25,
-                    height: 50
+                    width: 10,
+                    height: 30
                 };
                 
-                // More forgiving collision detection
-                const buffer = 5;
-                if (playerRect.x + buffer < obstacleRect.x + obstacleRect.width &&
-                    playerRect.x + playerRect.width - buffer > obstacleRect.x &&
-                    playerRect.y + buffer < obstacleRect.y + obstacleRect.height &&
-                    playerRect.y + playerRect.height - buffer > obstacleRect.y) {
+                if (playerRect.x < obstacleRect.x + obstacleRect.width &&
+                    playerRect.x + playerRect.width > obstacleRect.x &&
+                    playerRect.y < obstacleRect.y + obstacleRect.height &&
+                    playerRect.y + playerRect.height > obstacleRect.y) {
                     
-                    console.log('💥 Collision! Player Y:', playerRect.y, 'Obstacle X:', obstacleRect.x);
                     gameOver();
                     return;
                 }
@@ -268,27 +300,31 @@
         
         function updateScore() {
             gameState.score += 1;
-            scoreElement.textContent = gameState.score;
             
-            // Slower speed increase
-            gameState.gameSpeed = Math.min(2 + (gameState.score / 1000), 4);
+            // Score increases every 6 frames (10fps)
+            if (gameState.score % 6 === 0) {
+                const displayScore = Math.floor(gameState.score / 6);
+                scoreElement.textContent = String(displayScore).padStart(5, '0');
+                
+                // Increase speed every 100 points
+                if (displayScore % 100 === 0 && displayScore > 0) {
+                    gameState.gameSpeed += 0.5;
+                }
+            }
         }
         
         function gameOver() {
-            console.log('💀 Game over! Score:', gameState.score);
             gameState.running = false;
             
-            if (gameState.score > gameState.highScore) {
-                gameState.highScore = gameState.score;
-                localStorage.setItem('befjump-high-score', gameState.highScore.toString());
-                highScoreElement.textContent = gameState.highScore;
-                newHighScoreElement.style.display = 'block';
-                console.log('🎉 New high score!', gameState.highScore);
-            } else {
-                newHighScoreElement.style.display = 'none';
+            const finalScore = Math.floor(gameState.score / 6);
+            
+            if (finalScore > gameState.highScore) {
+                gameState.highScore = finalScore;
+                localStorage.setItem('cube-runner-high-score', gameState.highScore.toString());
+                hiScoreElement.textContent = String(gameState.highScore).padStart(5, '0');
+                finalHiScoreElement.textContent = String(gameState.highScore).padStart(5, '0');
             }
             
-            finalScoreElement.textContent = gameState.score;
             gameOverScreen.style.display = 'block';
         }
         
@@ -297,14 +333,16 @@
             
             updatePlayer();
             spawnObstacle();
+            spawnCloud();
             updateObstacles();
+            updateClouds();
             checkCollisions();
             updateScore();
             
             requestAnimationFrame(gameLoop);
         }
         
-        // Controls
+        // Controls - just like Chrome Dino
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
                 e.preventDefault();
@@ -312,9 +350,19 @@
             }
         });
         
-        document.addEventListener('click', jump);
+        // Mobile support
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            jump();
+        });
         
-        console.log('✅ BefJump game ready!');
+        // Restart after game over
+        document.addEventListener('keydown', (e) => {
+            if (!gameState.running && gameState.gameStarted && (e.code === 'Space' || e.code === 'ArrowUp')) {
+                e.preventDefault();
+                startGame();
+            }
+        });
     </script>
 </body>
 </html>
