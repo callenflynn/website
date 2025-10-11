@@ -153,10 +153,10 @@
             player: { y: 0, jumping: false, velocity: 0 },
             obstacles: [],
             clouds: [],
-            gameSpeed: 10, // Faster starting speed
+            gameSpeed: 8, // Slightly slower starting speed
             lastObstacle: 0,
             lastCloud: 0,
-            obstaclePattern: 0 // Track pattern state
+            obstaclePattern: 0
         };
         
         const player = document.getElementById('player');
@@ -183,7 +183,7 @@
             gameState.player = { y: 0, jumping: false, velocity: 0 };
             gameState.obstacles = [];
             gameState.clouds = [];
-            gameState.gameSpeed = 10;
+            gameState.gameSpeed = 8;
             gameState.lastObstacle = Date.now();
             gameState.lastCloud = Date.now();
             gameState.obstaclePattern = 0;
@@ -215,12 +215,12 @@
             if (!gameState.running || gameState.player.jumping) return;
             
             gameState.player.jumping = true;
-            gameState.player.velocity = -20;
+            gameState.player.velocity = -17; // Reduced from -20 to -17 for shorter jump
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.5;
+                gameState.player.velocity += 0.6; // Slightly stronger gravity (was 0.5)
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -239,7 +239,7 @@
         
         function spawnObstacle() {
             const currentTime = Date.now();
-            const baseDelay = 1200; // Shorter base delay
+            const baseDelay = 1400; // Slightly longer base delay for more fairness
             let delay = baseDelay;
             let obstacleHeight = 80;
             let obstacleWidth = 20;
@@ -247,32 +247,32 @@
             // Create different patterns based on score
             const score = Math.floor(gameState.score / 6);
             
-            if (score > 200) {
+            if (score > 250) {
                 // Very hard: random clusters and varying heights
-                if (Math.random() < 0.3) {
-                    delay = Math.random() * 500 + 400; // Very short gaps sometimes
-                    obstacleHeight = Math.random() * 60 + 60; // 60-120px height
-                    obstacleWidth = Math.random() * 15 + 15; // 15-30px width
+                if (Math.random() < 0.25) { // Reduced cluster frequency
+                    delay = Math.random() * 600 + 500; // Slightly longer gaps
+                    obstacleHeight = Math.random() * 50 + 65; // 65-115px height (slightly lower)
+                    obstacleWidth = Math.random() * 10 + 18; // 18-28px width
                 } else {
-                    delay = Math.random() * 1000 + 800;
+                    delay = Math.random() * 1000 + 1000;
                 }
-            } else if (score > 100) {
+            } else if (score > 150) {
                 // Hard: occasional clusters
-                if (Math.random() < 0.2) {
-                    delay = Math.random() * 600 + 500; // Short gaps
-                    obstacleHeight = Math.random() * 40 + 70; // 70-110px height
+                if (Math.random() < 0.15) { // Reduced cluster frequency
+                    delay = Math.random() * 700 + 600; // Longer gaps
+                    obstacleHeight = Math.random() * 35 + 70; // 70-105px height
                 } else {
-                    delay = Math.random() * 1200 + 1000;
+                    delay = Math.random() * 1200 + 1200;
                 }
-            } else if (score > 50) {
+            } else if (score > 75) {
                 // Medium: slight variation
-                delay = Math.random() * 1000 + 1000;
-                if (Math.random() < 0.15) {
-                    obstacleHeight = Math.random() * 30 + 70; // 70-100px height
+                delay = Math.random() * 1000 + 1200;
+                if (Math.random() < 0.1) {
+                    obstacleHeight = Math.random() * 25 + 70; // 70-95px height
                 }
             } else {
                 // Easy: standard pattern
-                delay = Math.random() * 1000 + 1500;
+                delay = Math.random() * 800 + 1600;
             }
             
             if (currentTime - gameState.lastObstacle > delay) {
@@ -293,8 +293,8 @@
                 gameState.lastObstacle = currentTime;
                 
                 // Sometimes spawn a second obstacle quickly for clusters
-                if (score > 100 && Math.random() < 0.15) {
-                    gameState.lastObstacle = currentTime - delay + 300; // Force quick next spawn
+                if (score > 150 && Math.random() < 0.1) { // Reduced cluster chance
+                    gameState.lastObstacle = currentTime - delay + 400; // Slightly longer gap between cluster obstacles
                 }
             }
         }
@@ -376,9 +376,9 @@
                 const displayScore = Math.floor(gameState.score / 6);
                 scoreElement.textContent = String(displayScore).padStart(5, '0');
                 
-                // More aggressive speed increases
-                if (displayScore % 50 === 0 && displayScore > 0) {
-                    gameState.gameSpeed += 1.5; // Faster speed increases
+                // More gradual speed increases
+                if (displayScore % 75 === 0 && displayScore > 0) { // Every 75 points instead of 50
+                    gameState.gameSpeed += 1; // Smaller speed increases
                 }
             }
         }
