@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BefJump - Cube Game</title>
+    <link rel="icon" type="image/png" href="logo1.png">
     <style>
         body {
             margin: 0;
@@ -183,13 +184,12 @@
             lastCloud: 0,
             obstaclePattern: 0,
             
-            // Jump charging system
             jumpCharging: false,
             jumpStartTime: 0,
             jumpHoldTime: 0,
-            minJumpTime: 50,    // Minimum hold time (ms) 
+            minJumpTime: 100,    // Minimum hold time (ms) 
             maxJumpTime: 400,   // Maximum hold time (ms)
-            minJumpPower: -12,  // Minimum jump velocity
+            minJumpPower: -18,  // Minimum jump velocity
             maxJumpPower: -22   // Maximum jump velocity
         };
         
@@ -265,11 +265,9 @@
             gameState.jumpCharging = false;
             gameState.jumpHoldTime = Date.now() - gameState.jumpStartTime;
             
-            // Clamp hold time between min and max
             const clampedHoldTime = Math.max(gameState.minJumpTime, 
                                    Math.min(gameState.maxJumpTime, gameState.jumpHoldTime));
             
-            // Calculate jump power based on hold time
             const holdRatio = (clampedHoldTime - gameState.minJumpTime) / 
                              (gameState.maxJumpTime - gameState.minJumpTime);
             
@@ -279,7 +277,6 @@
             gameState.player.jumping = true;
             gameState.player.velocity = jumpPower;
             
-            // Reset jump bar
             jumpFill.style.width = '0%';
         }
         
