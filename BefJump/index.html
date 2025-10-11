@@ -186,12 +186,12 @@
             
             console.log('🦘 Jump!');
             gameState.player.jumping = true;
-            gameState.player.velocity = -25; // Much stronger jump!
+            gameState.player.velocity = -20; 
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.8; 
+                gameState.player.velocity += 0.4; 
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
