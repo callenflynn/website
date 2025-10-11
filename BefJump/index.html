@@ -39,6 +39,7 @@
             bottom: 50px;
             left: 100px;
             border-radius: 5px;
+            transition: none;
         }
         
         .obstacle {
@@ -115,6 +116,7 @@
             <div class="ui" id="ui">
                 <div>Score: <span id="score">0</span></div>
                 <div>High Score: <span id="highScore">0</span></div>
+                <div style="font-size: 14px; margin-top: 5px;">Jump Height: <span id="jumpHeight">0</span></div>
             </div>
             
             <div class="start-screen" id="startScreen">
@@ -143,11 +145,10 @@
             highScore: parseInt(localStorage.getItem('befjump-high-score') || '0'),
             player: { y: 0, jumping: false, velocity: 0 },
             obstacles: [],
-            gameSpeed: 3,
+            gameSpeed: 2,
             lastObstacle: 0
         };
         
-        // Get DOM elements
         const player = document.getElementById('player');
         const gameArea = document.getElementById('gameArea');
         const startScreen = document.getElementById('startScreen');
@@ -156,8 +157,8 @@
         const highScoreElement = document.getElementById('highScore');
         const finalScoreElement = document.getElementById('finalScore');
         const newHighScoreElement = document.getElementById('newHighScore');
+        const jumpHeightElement = document.getElementById('jumpHeight');
         
-        // Initialize
         console.log('High score:', gameState.highScore);
         highScoreElement.textContent = gameState.highScore;
         
@@ -167,7 +168,7 @@
             gameState.score = 0;
             gameState.player = { y: 0, jumping: false, velocity: 0 };
             gameState.obstacles = [];
-            gameState.gameSpeed = 3;
+            gameState.gameSpeed = 2;
             gameState.lastObstacle = Date.now();
             
             startScreen.style.display = 'none';
@@ -185,12 +186,12 @@
             
             console.log('🦘 Jump!');
             gameState.player.jumping = true;
-            gameState.player.velocity = -18; // Negative velocity = upward movement
+            gameState.player.velocity = -25; // Much stronger jump!
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 1; 
+                gameState.player.velocity += 0.8; 
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -200,11 +201,13 @@
                 }
                 
                 player.style.bottom = (50 - gameState.player.y) + 'px';
+                
+                jumpHeightElement.textContent = Math.round(-gameState.player.y);
             }
         }
         
         function spawnObstacle() {
-            if (Date.now() - gameState.lastObstacle > 1500) {
+            if (Date.now() - gameState.lastObstacle > 2500) { 
                 const obstacle = document.createElement('div');
                 obstacle.className = 'obstacle';
                 obstacle.style.right = '-25px';
@@ -236,7 +239,7 @@
         function checkCollisions() {
             const playerRect = {
                 x: 100,
-                y: gameState.player.y, 
+                y: -gameState.player.y, // Fixed: invert Y for proper collision
                 width: 30,
                 height: 30
             };
@@ -244,15 +247,17 @@
             for (let obstacle of gameState.obstacles) {
                 const obstacleRect = {
                     x: obstacle.x,
-                    y: 0, 
+                    y: 0,
                     width: 25,
                     height: 50
                 };
                 
-                if (playerRect.x < obstacleRect.x + obstacleRect.width &&
-                    playerRect.x + playerRect.width > obstacleRect.x &&
-                    playerRect.y < obstacleRect.y + obstacleRect.height &&
-                    playerRect.y + playerRect.height > obstacleRect.y) {
+                // More forgiving collision detection
+                const buffer = 5;
+                if (playerRect.x + buffer < obstacleRect.x + obstacleRect.width &&
+                    playerRect.x + playerRect.width - buffer > obstacleRect.x &&
+                    playerRect.y + buffer < obstacleRect.y + obstacleRect.height &&
+                    playerRect.y + playerRect.height - buffer > obstacleRect.y) {
                     
                     console.log('💥 Collision! Player Y:', playerRect.y, 'Obstacle X:', obstacleRect.x);
                     gameOver();
@@ -265,7 +270,8 @@
             gameState.score += 1;
             scoreElement.textContent = gameState.score;
             
-            gameState.gameSpeed = Math.min(3 + (gameState.score / 500), 7);
+            // Slower speed increase
+            gameState.gameSpeed = Math.min(2 + (gameState.score / 1000), 4);
         }
         
         function gameOver() {
