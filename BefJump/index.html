@@ -11,71 +11,59 @@
             background: #f7f7f7;
             color: #535353;
             font-family: 'Courier New', monospace;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
+            overflow: hidden;
             user-select: none;
         }
         
-        .game-container {
-            text-align: center;
-            background: white;
-            border-radius: 10px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.1);
-            padding: 20px;
-        }
-        
         .game-area {
-            width: 600px;
-            height: 150px;
+            width: 100vw;
+            height: 100vh;
             background: white;
             position: relative;
             overflow: hidden;
-            margin: 20px auto;
-            border-bottom: 2px solid #535353;
         }
         
         .player {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 40px;
+            height: 40px;
             background: #535353;
-            bottom: 0px;
-            left: 50px;
+            bottom: 100px;
+            left: 100px;
+            transition: none;
         }
         
         .obstacle {
             position: absolute;
-            width: 10px;
-            height: 30px;
+            width: 20px;
+            height: 80px;
             background: #535353;
-            bottom: 0px;
+            bottom: 100px;
         }
         
         .cloud {
             position: absolute;
-            width: 40px;
-            height: 20px;
+            width: 80px;
+            height: 40px;
             background: #ccc;
-            border-radius: 20px;
+            border-radius: 40px;
             opacity: 0.5;
         }
         
         .ground-line {
             position: absolute;
-            bottom: 0;
+            bottom: 100px;
             left: 0;
             width: 100%;
-            height: 2px;
+            height: 4px;
             background: #535353;
         }
         
         .score {
             position: absolute;
-            top: 10px;
-            right: 10px;
-            font-size: 16px;
+            top: 50px;
+            right: 50px;
+            font-size: 36px;
             font-weight: bold;
         }
         
@@ -97,37 +85,50 @@
         }
         
         .high-score {
-            font-size: 12px;
-            margin-top: 5px;
+            font-size: 24px;
+            margin-top: 20px;
         }
         
         .instructions {
-            font-size: 12px;
-            margin-top: 20px;
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 24px;
             color: #888;
+        }
+        
+        .start-text {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+        
+        .game-over-text {
+            font-size: 48px;
+            margin-bottom: 20px;
+            letter-spacing: 4px;
         }
     </style>
 </head>
 <body>
-    <div class="game-container">
-        <div class="game-area" id="gameArea">
-            <div class="ground-line"></div>
-            <div class="player" id="player"></div>
-            <div class="score" id="score">00000</div>
-            
-            <div class="start-screen" id="startScreen">
-                <div style="font-size: 18px; margin-bottom: 10px;">Press SPACE to play</div>
-                <div class="high-score">HI <span id="hiScore">00000</span></div>
-            </div>
-            
-            <div class="game-over-screen" id="gameOverScreen">
-                <div style="font-size: 18px; margin-bottom: 10px;">G A M E  O V E R</div>
-                <div class="high-score">HI <span id="finalHiScore">00000</span></div>
-                <div style="font-size: 12px; margin-top: 10px;">Press SPACE to restart</div>
-            </div>
+    <div class="game-area" id="gameArea">
+        <div class="ground-line"></div>
+        <div class="player" id="player"></div>
+        <div class="score" id="score">00000</div>
+        
+        <div class="start-screen" id="startScreen">
+            <div class="start-text">Press SPACE to play</div>
+            <div class="high-score">HI <span id="hiScore">00000</span></div>
         </div>
-        <div class="instructions">Use SPACEBAR or ↑ to jump</div>
+        
+        <div class="game-over-screen" id="gameOverScreen">
+            <div class="game-over-text">G A M E  O V E R</div>
+            <div class="high-score">HI <span id="finalHiScore">00000</span></div>
+            <div style="font-size: 24px; margin-top: 30px;">Press SPACE to restart</div>
+        </div>
     </div>
+    
+    <div class="instructions">Use SPACEBAR or ↑ to jump</div>
 
     <script>
         let gameState = {
@@ -138,10 +139,9 @@
             player: { y: 0, jumping: false, velocity: 0 },
             obstacles: [],
             clouds: [],
-            gameSpeed: 4,
+            gameSpeed: 8,
             lastObstacle: 0,
-            lastCloud: 0,
-            groundOffset: 0
+            lastCloud: 0
         };
         
         const player = document.getElementById('player');
@@ -163,10 +163,9 @@
             gameState.player = { y: 0, jumping: false, velocity: 0 };
             gameState.obstacles = [];
             gameState.clouds = [];
-            gameState.gameSpeed = 4;
+            gameState.gameSpeed = 8;
             gameState.lastObstacle = Date.now();
             gameState.lastCloud = Date.now();
-            gameState.groundOffset = 0;
             
             startScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
@@ -175,10 +174,11 @@
             document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
             document.querySelectorAll('.cloud').forEach(cloud => cloud.remove());
             
-            player.style.bottom = '0px';
+            // Reset player position
+            player.style.bottom = '100px';
+            player.style.transform = 'none';
             
-            // Spawn initial clouds
-            for(let i = 0; i < 3; i++) {
+            for(let i = 0; i < 5; i++) {
                 spawnCloud();
             }
             
@@ -194,12 +194,12 @@
             if (!gameState.running || gameState.player.jumping) return;
             
             gameState.player.jumping = true;
-            gameState.player.velocity = -12;
+            gameState.player.velocity = -24; // Stronger jump for bigger screen
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.6; // gravity
+                gameState.player.velocity += 1.2; // gravity
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -208,20 +208,20 @@
                     gameState.player.velocity = 0;
                 }
                 
-                player.style.bottom = gameState.player.y + 'px';
+                player.style.bottom = (100 - gameState.player.y) + 'px';
             }
         }
         
         function spawnObstacle() {
-            if (Date.now() - gameState.lastObstacle > Math.random() * 1000 + 1500) {
+            if (Date.now() - gameState.lastObstacle > Math.random() * 1500 + 2000) {
                 const obstacle = document.createElement('div');
                 obstacle.className = 'obstacle';
-                obstacle.style.right = '-10px';
+                obstacle.style.right = '-20px';
                 gameArea.appendChild(obstacle);
                 
                 gameState.obstacles.push({
                     element: obstacle,
-                    x: 610
+                    x: window.innerWidth + 20
                 });
                 
                 gameState.lastObstacle = Date.now();
@@ -229,16 +229,16 @@
         }
         
         function spawnCloud() {
-            if (Date.now() - gameState.lastCloud > Math.random() * 2000 + 3000) {
+            if (Date.now() - gameState.lastCloud > Math.random() * 3000 + 4000) {
                 const cloud = document.createElement('div');
                 cloud.className = 'cloud';
-                cloud.style.right = '-40px';
-                cloud.style.top = Math.random() * 60 + 20 + 'px';
+                cloud.style.right = '-80px';
+                cloud.style.top = Math.random() * (window.innerHeight - 300) + 100 + 'px';
                 gameArea.appendChild(cloud);
                 
                 gameState.clouds.push({
                     element: cloud,
-                    x: 640
+                    x: window.innerWidth + 80
                 });
                 
                 gameState.lastCloud = Date.now();
@@ -248,9 +248,9 @@
         function updateObstacles() {
             gameState.obstacles = gameState.obstacles.filter(obstacle => {
                 obstacle.x -= gameState.gameSpeed;
-                obstacle.element.style.right = (610 - obstacle.x) + 'px';
+                obstacle.element.style.right = (window.innerWidth - obstacle.x) + 'px';
                 
-                if (obstacle.x < -10) {
+                if (obstacle.x < -20) {
                     obstacle.element.remove();
                     return false;
                 }
@@ -261,9 +261,9 @@
         function updateClouds() {
             gameState.clouds = gameState.clouds.filter(cloud => {
                 cloud.x -= gameState.gameSpeed * 0.5; // clouds move slower
-                cloud.element.style.right = (640 - cloud.x) + 'px';
+                cloud.element.style.right = (window.innerWidth - cloud.x) + 'px';
                 
-                if (cloud.x < -40) {
+                if (cloud.x < -80) {
                     cloud.element.remove();
                     return false;
                 }
@@ -273,18 +273,18 @@
         
         function checkCollisions() {
             const playerRect = {
-                x: 50,
-                y: gameState.player.y,
-                width: 20,
-                height: 20
+                x: 100,
+                y: -gameState.player.y, // Convert to screen coordinates
+                width: 40,
+                height: 40
             };
             
             for (let obstacle of gameState.obstacles) {
                 const obstacleRect = {
                     x: obstacle.x,
                     y: 0,
-                    width: 10,
-                    height: 30
+                    width: 20,
+                    height: 80
                 };
                 
                 if (playerRect.x < obstacleRect.x + obstacleRect.width &&
@@ -308,7 +308,7 @@
                 
                 // Increase speed every 100 points
                 if (displayScore % 100 === 0 && displayScore > 0) {
-                    gameState.gameSpeed += 0.5;
+                    gameState.gameSpeed += 1;
                 }
             }
         }
@@ -342,7 +342,7 @@
             requestAnimationFrame(gameLoop);
         }
         
-        // Controls - just like Chrome Dino
+        // Controls
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
                 e.preventDefault();
@@ -362,6 +362,17 @@
                 e.preventDefault();
                 startGame();
             }
+        });
+        
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Update obstacle and cloud positions on resize
+            gameState.obstacles.forEach(obstacle => {
+                obstacle.element.style.right = (window.innerWidth - obstacle.x) + 'px';
+            });
+            gameState.clouds.forEach(cloud => {
+                cloud.element.style.right = (window.innerWidth - cloud.x) + 'px';
+            });
         });
     </script>
 </body>
