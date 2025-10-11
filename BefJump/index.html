@@ -116,6 +116,25 @@
             font-size: 16px;
             color: #666;
         }
+        
+        .jump-bar {
+            position: absolute;
+            top: 50px;
+            left: 50px;
+            width: 200px;
+            height: 20px;
+            background: #ddd;
+            border: 2px solid #535353;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .jump-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #0f0 0%, #ff0 50%, #f00 100%);
+            width: 0%;
+            transition: width 0.05s;
+        }
     </style>
 </head>
 <body>
@@ -124,15 +143,21 @@
         <div class="player" id="player"></div>
         <div class="score" id="score">00000</div>
         
+        <div class="jump-bar" id="jumpBar" style="display: none;">
+            <div class="jump-fill" id="jumpFill"></div>
+        </div>
+        
         <div class="debug" id="debug">
             <div>Player Y: <span id="playerY">0</span></div>
             <div>Velocity: <span id="velocity">0</span></div>
             <div>Jumping: <span id="jumping">false</span></div>
+            <div>Hold Time: <span id="holdTime">0</span>ms</div>
         </div>
         
         <div class="start-screen" id="startScreen">
             <div class="start-text">Press SPACE to play</div>
             <div class="high-score">HI <span id="hiScore">00000</span></div>
+            <div style="font-size: 18px; margin-top: 20px; color: #888;">Hold SPACE longer for higher jumps!</div>
         </div>
         
         <div class="game-over-screen" id="gameOverScreen">
@@ -142,7 +167,7 @@
         </div>
     </div>
     
-    <div class="instructions">Use SPACEBAR or ↑ to jump</div>
+    <div class="instructions">Hold SPACEBAR or ↑ longer for higher jumps</div>
 
     <script>
         let gameState = {
@@ -153,10 +178,19 @@
             player: { y: 0, jumping: false, velocity: 0 },
             obstacles: [],
             clouds: [],
-            gameSpeed: 8, // Slightly slower starting speed
+            gameSpeed: 8,
             lastObstacle: 0,
             lastCloud: 0,
-            obstaclePattern: 0
+            obstaclePattern: 0,
+            
+            // Jump charging system
+            jumpCharging: false,
+            jumpStartTime: 0,
+            jumpHoldTime: 0,
+            minJumpTime: 50,    // Minimum hold time (ms) 
+            maxJumpTime: 400,   // Maximum hold time (ms)
+            minJumpPower: -12,  // Minimum jump velocity
+            maxJumpPower: -22   // Maximum jump velocity
         };
         
         const player = document.getElementById('player');
@@ -166,11 +200,14 @@
         const scoreElement = document.getElementById('score');
         const hiScoreElement = document.getElementById('hiScore');
         const finalHiScoreElement = document.getElementById('finalHiScore');
+        const jumpBar = document.getElementById('jumpBar');
+        const jumpFill = document.getElementById('jumpFill');
         
         // Debug elements
         const playerYElement = document.getElementById('playerY');
         const velocityElement = document.getElementById('velocity');
         const jumpingElement = document.getElementById('jumping');
+        const holdTimeElement = document.getElementById('holdTime');
         
         // Initialize
         hiScoreElement.textContent = String(gameState.highScore).padStart(5, '0');
@@ -187,9 +224,13 @@
             gameState.lastObstacle = Date.now();
             gameState.lastCloud = Date.now();
             gameState.obstaclePattern = 0;
+            gameState.jumpCharging = false;
+            gameState.jumpStartTime = 0;
+            gameState.jumpHoldTime = 0;
             
             startScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
+            jumpBar.style.display = 'block';
             
             // Clear existing elements
             document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
@@ -206,21 +247,54 @@
             gameLoop();
         }
         
-        function jump() {
+        function startJumpCharge() {
             if (!gameState.gameStarted) {
                 startGame();
                 return;
             }
             
-            if (!gameState.running || gameState.player.jumping) return;
+            if (!gameState.running || gameState.player.jumping || gameState.jumpCharging) return;
+            
+            gameState.jumpCharging = true;
+            gameState.jumpStartTime = Date.now();
+        }
+        
+        function executeJump() {
+            if (!gameState.jumpCharging || gameState.player.jumping) return;
+            
+            gameState.jumpCharging = false;
+            gameState.jumpHoldTime = Date.now() - gameState.jumpStartTime;
+            
+            // Clamp hold time between min and max
+            const clampedHoldTime = Math.max(gameState.minJumpTime, 
+                                   Math.min(gameState.maxJumpTime, gameState.jumpHoldTime));
+            
+            // Calculate jump power based on hold time
+            const holdRatio = (clampedHoldTime - gameState.minJumpTime) / 
+                             (gameState.maxJumpTime - gameState.minJumpTime);
+            
+            const jumpPower = gameState.minJumpPower + 
+                             (gameState.maxJumpPower - gameState.minJumpPower) * holdRatio;
             
             gameState.player.jumping = true;
-            gameState.player.velocity = -17; // Reduced from -20 to -17 for shorter jump
+            gameState.player.velocity = jumpPower;
+            
+            // Reset jump bar
+            jumpFill.style.width = '0%';
+        }
+        
+        function updateJumpBar() {
+            if (gameState.jumpCharging) {
+                const currentHoldTime = Date.now() - gameState.jumpStartTime;
+                const clampedHoldTime = Math.min(gameState.maxJumpTime, currentHoldTime);
+                const fillPercentage = (clampedHoldTime / gameState.maxJumpTime) * 100;
+                jumpFill.style.width = fillPercentage + '%';
+            }
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.6; // Slightly stronger gravity (was 0.5)
+                gameState.player.velocity += 0.6;
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -232,46 +306,43 @@
                 player.style.bottom = (100 + Math.abs(gameState.player.y)) + 'px';
             }
             
+            // Update debug info
             playerYElement.textContent = Math.round(gameState.player.y);
             velocityElement.textContent = Math.round(gameState.player.velocity * 10) / 10;
             jumpingElement.textContent = gameState.player.jumping;
+            holdTimeElement.textContent = gameState.jumpHoldTime;
         }
         
         function spawnObstacle() {
             const currentTime = Date.now();
-            const baseDelay = 1400; // Slightly longer base delay for more fairness
+            const baseDelay = 1400;
             let delay = baseDelay;
             let obstacleHeight = 80;
             let obstacleWidth = 20;
             
-            // Create different patterns based on score
             const score = Math.floor(gameState.score / 6);
             
             if (score > 250) {
-                // Very hard: random clusters and varying heights
-                if (Math.random() < 0.25) { // Reduced cluster frequency
-                    delay = Math.random() * 600 + 500; // Slightly longer gaps
-                    obstacleHeight = Math.random() * 50 + 65; // 65-115px height (slightly lower)
-                    obstacleWidth = Math.random() * 10 + 18; // 18-28px width
+                if (Math.random() < 0.25) {
+                    delay = Math.random() * 600 + 500;
+                    obstacleHeight = Math.random() * 50 + 65;
+                    obstacleWidth = Math.random() * 10 + 18;
                 } else {
                     delay = Math.random() * 1000 + 1000;
                 }
             } else if (score > 150) {
-                // Hard: occasional clusters
-                if (Math.random() < 0.15) { // Reduced cluster frequency
-                    delay = Math.random() * 700 + 600; // Longer gaps
-                    obstacleHeight = Math.random() * 35 + 70; // 70-105px height
+                if (Math.random() < 0.15) {
+                    delay = Math.random() * 700 + 600;
+                    obstacleHeight = Math.random() * 35 + 70;
                 } else {
                     delay = Math.random() * 1200 + 1200;
                 }
             } else if (score > 75) {
-                // Medium: slight variation
                 delay = Math.random() * 1000 + 1200;
                 if (Math.random() < 0.1) {
-                    obstacleHeight = Math.random() * 25 + 70; // 70-95px height
+                    obstacleHeight = Math.random() * 25 + 70;
                 }
             } else {
-                // Easy: standard pattern
                 delay = Math.random() * 800 + 1600;
             }
             
@@ -292,9 +363,8 @@
                 
                 gameState.lastObstacle = currentTime;
                 
-                // Sometimes spawn a second obstacle quickly for clusters
-                if (score > 150 && Math.random() < 0.1) { // Reduced cluster chance
-                    gameState.lastObstacle = currentTime - delay + 400; // Slightly longer gap between cluster obstacles
+                if (score > 150 && Math.random() < 0.1) {
+                    gameState.lastObstacle = currentTime - delay + 400;
                 }
             }
         }
@@ -376,15 +446,17 @@
                 const displayScore = Math.floor(gameState.score / 6);
                 scoreElement.textContent = String(displayScore).padStart(5, '0');
                 
-                // More gradual speed increases
-                if (displayScore % 75 === 0 && displayScore > 0) { // Every 75 points instead of 50
-                    gameState.gameSpeed += 1; // Smaller speed increases
+                if (displayScore % 75 === 0 && displayScore > 0) {
+                    gameState.gameSpeed += 1;
                 }
             }
         }
         
         function gameOver() {
             gameState.running = false;
+            gameState.jumpCharging = false;
+            jumpBar.style.display = 'none';
+            jumpFill.style.width = '0%';
             
             const finalScore = Math.floor(gameState.score / 6);
             
@@ -402,6 +474,7 @@
             if (!gameState.running) return;
             
             updatePlayer();
+            updateJumpBar();
             spawnObstacle();
             spawnCloud();
             updateObstacles();
@@ -412,23 +485,43 @@
             requestAnimationFrame(gameLoop);
         }
         
-        // Controls
+        // Controls - Hold to charge jump
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
                 e.preventDefault();
-                jump();
+                if (!e.repeat) { // Only start charging on first keydown
+                    startJumpCharge();
+                }
             }
         });
         
-        document.addEventListener('touchstart', (e) => {
-            e.preventDefault();
-            jump();
+        document.addEventListener('keyup', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                executeJump();
+            }
         });
         
+        // Mobile support - touch and hold
+        let touchStartTime = 0;
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            touchStartTime = Date.now();
+            startJumpCharge();
+        });
+        
+        document.addEventListener('touchend', (e) => {
+            e.preventDefault();
+            executeJump();
+        });
+        
+        // Restart after game over
         document.addEventListener('keydown', (e) => {
             if (!gameState.running && gameState.gameStarted && (e.code === 'Space' || e.code === 'ArrowUp')) {
-                e.preventDefault();
-                startGame();
+                if (!e.repeat) {
+                    e.preventDefault();
+                    startGame();
+                }
             }
         });
         
