@@ -242,7 +242,6 @@
             gameState.score += 1;
             scoreElement.textContent = gameState.score;
             
-            // Increase speed gradually
             gameState.gameSpeed = Math.min(2 + (gameState.score / 1000), 5);
         }
         
