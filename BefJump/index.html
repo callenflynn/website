@@ -38,7 +38,7 @@
             background: #f00;
             bottom: 50px;
             left: 100px;
-            transition: bottom 0.1s;
+            border-radius: 5px;
         }
         
         .obstacle {
@@ -47,6 +47,7 @@
             height: 50px;
             background: #0ff;
             bottom: 50px;
+            border-radius: 3px;
         }
         
         .ground {
@@ -64,6 +65,7 @@
             top: 10px;
             left: 10px;
             font-size: 18px;
+            z-index: 10;
         }
         
         .start-screen, .game-over-screen {
@@ -72,25 +74,35 @@
             left: 50%;
             transform: translate(-50%, -50%);
             text-align: center;
-            background: rgba(0, 0, 0, 0.8);
+            background: rgba(0, 0, 0, 0.9);
             padding: 30px;
             border: 2px solid #0f0;
             border-radius: 10px;
+            z-index: 100;
         }
         
         button {
             background: #0f0;
             color: #000;
             border: none;
-            padding: 10px 20px;
+            padding: 15px 25px;
             font-size: 16px;
             cursor: pointer;
             margin: 10px;
             border-radius: 5px;
+            font-weight: bold;
         }
         
         button:hover {
             background: #0c0;
+            transform: scale(1.05);
+        }
+        
+        @media (max-width: 900px) {
+            .game-area {
+                width: 90vw;
+                max-width: 800px;
+            }
         }
     </style>
 </head>
@@ -106,33 +118,36 @@
             </div>
             
             <div class="start-screen" id="startScreen">
-                <h2>BefJump Cube Game</h2>
+                <h2>🎮 BefJump Cube Game</h2>
                 <p>Press SPACE or click to jump!</p>
                 <p>Avoid the cyan obstacles</p>
-                <button onclick="startGame()">Start Game</button>
+                <button onclick="startGame()">🚀 Start Game</button>
             </div>
             
             <div class="game-over-screen" id="gameOverScreen" style="display: none;">
-                <h2>Game Over!</h2>
+                <h2>💥 Game Over!</h2>
                 <p>Score: <span id="finalScore">0</span></p>
                 <p id="newHighScore" style="display: none; color: #ff0;">🎉 New High Score!</p>
-                <button onclick="startGame()">Play Again</button>
+                <button onclick="startGame()">🔄 Play Again</button>
             </div>
         </div>
-        <p>Use SPACE or click to jump over obstacles!</p>
+        <p>Use SPACE or click anywhere to jump over obstacles!</p>
     </div>
 
     <script>
+        console.log('🎮 BefJump game loading...');
+        
         let gameState = {
             running: false,
             score: 0,
             highScore: parseInt(localStorage.getItem('befjump-high-score') || '0'),
             player: { y: 0, jumping: false, velocity: 0 },
             obstacles: [],
-            gameSpeed: 2,
+            gameSpeed: 3,
             lastObstacle: 0
         };
         
+        // Get DOM elements
         const player = document.getElementById('player');
         const gameArea = document.getElementById('gameArea');
         const startScreen = document.getElementById('startScreen');
@@ -142,20 +157,27 @@
         const finalScoreElement = document.getElementById('finalScore');
         const newHighScoreElement = document.getElementById('newHighScore');
         
+        // Initialize
+        console.log('High score:', gameState.highScore);
         highScoreElement.textContent = gameState.highScore;
         
         function startGame() {
+            console.log('🚀 Starting game...');
             gameState.running = true;
             gameState.score = 0;
             gameState.player = { y: 0, jumping: false, velocity: 0 };
             gameState.obstacles = [];
-            gameState.gameSpeed = 2;
+            gameState.gameSpeed = 3;
             gameState.lastObstacle = Date.now();
             
             startScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
             
+            // Clear existing obstacles
             document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
+            
+            // Reset player position
+            player.style.bottom = '50px';
             
             gameLoop();
         }
@@ -163,13 +185,14 @@
         function jump() {
             if (!gameState.running || gameState.player.jumping) return;
             
+            console.log('🦘 Jump!');
             gameState.player.jumping = true;
-            gameState.player.velocity = -15;
+            gameState.player.velocity = -18;
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.8; 
+                gameState.player.velocity += 1; // gravity
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -183,7 +206,7 @@
         }
         
         function spawnObstacle() {
-            if (Date.now() - gameState.lastObstacle > 2000) {
+            if (Date.now() - gameState.lastObstacle > 1500) {
                 const obstacle = document.createElement('div');
                 obstacle.className = 'obstacle';
                 obstacle.style.right = '-25px';
@@ -195,6 +218,7 @@
                 });
                 
                 gameState.lastObstacle = Date.now();
+                console.log('🚧 Obstacle spawned');
             }
         }
         
@@ -214,7 +238,7 @@
         function checkCollisions() {
             const playerRect = {
                 x: 100,
-                y: 50 + gameState.player.y,
+                y: 350 - (50 + gameState.player.y), // Convert to top-based coordinates
                 width: 30,
                 height: 30
             };
@@ -222,7 +246,7 @@
             for (let obstacle of gameState.obstacles) {
                 const obstacleRect = {
                     x: obstacle.x,
-                    y: 50,
+                    y: 300, // Convert to top-based coordinates
                     width: 25,
                     height: 50
                 };
@@ -232,6 +256,7 @@
                     playerRect.y < obstacleRect.y + obstacleRect.height &&
                     playerRect.y + playerRect.height > obstacleRect.y) {
                     
+                    console.log('💥 Collision detected!');
                     gameOver();
                     return;
                 }
@@ -242,10 +267,11 @@
             gameState.score += 1;
             scoreElement.textContent = gameState.score;
             
-            gameState.gameSpeed = Math.min(2 + (gameState.score / 1000), 5);
+            gameState.gameSpeed = Math.min(3 + (gameState.score / 500), 7);
         }
         
         function gameOver() {
+            console.log('💀 Game over! Score:', gameState.score);
             gameState.running = false;
             
             if (gameState.score > gameState.highScore) {
@@ -253,6 +279,7 @@
                 localStorage.setItem('befjump-high-score', gameState.highScore.toString());
                 highScoreElement.textContent = gameState.highScore;
                 newHighScoreElement.style.display = 'block';
+                console.log('🎉 New high score!', gameState.highScore);
             } else {
                 newHighScoreElement.style.display = 'none';
             }
@@ -273,14 +300,17 @@
             requestAnimationFrame(gameLoop);
         }
         
+        // Controls
         document.addEventListener('keydown', (e) => {
-            if (e.code === 'Space') {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
                 e.preventDefault();
                 jump();
             }
         });
         
-        gameArea.addEventListener('click', jump);
+        document.addEventListener('click', jump);
+        
+        console.log('✅ BefJump game ready!');
     </script>
 </body>
 </html>
