@@ -173,10 +173,8 @@
             startScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
             
-            // Clear existing obstacles
             document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
             
-            // Reset player position
             player.style.bottom = '50px';
             
             gameLoop();
@@ -187,12 +185,12 @@
             
             console.log('🦘 Jump!');
             gameState.player.jumping = true;
-            gameState.player.velocity = -18;
+            gameState.player.velocity = -18; // Negative velocity = upward movement
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 1; // gravity
+                gameState.player.velocity += 1; 
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -201,7 +199,7 @@
                     gameState.player.velocity = 0;
                 }
                 
-                player.style.bottom = (50 + gameState.player.y) + 'px';
+                player.style.bottom = (50 - gameState.player.y) + 'px';
             }
         }
         
@@ -238,7 +236,7 @@
         function checkCollisions() {
             const playerRect = {
                 x: 100,
-                y: 350 - (50 + gameState.player.y), // Convert to top-based coordinates
+                y: gameState.player.y, 
                 width: 30,
                 height: 30
             };
@@ -246,7 +244,7 @@
             for (let obstacle of gameState.obstacles) {
                 const obstacleRect = {
                     x: obstacle.x,
-                    y: 300, // Convert to top-based coordinates
+                    y: 0, 
                     width: 25,
                     height: 50
                 };
@@ -256,7 +254,7 @@
                     playerRect.y < obstacleRect.y + obstacleRect.height &&
                     playerRect.y + playerRect.height > obstacleRect.y) {
                     
-                    console.log('💥 Collision detected!');
+                    console.log('💥 Collision! Player Y:', playerRect.y, 'Obstacle X:', obstacleRect.x);
                     gameOver();
                     return;
                 }
