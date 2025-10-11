@@ -31,6 +31,7 @@
             bottom: 100px;
             left: 100px;
             transition: none;
+            border-radius: 4px;
         }
         
         .obstacle {
@@ -108,6 +109,14 @@
             margin-bottom: 20px;
             letter-spacing: 4px;
         }
+        
+        .debug {
+            position: absolute;
+            top: 120px;
+            left: 50px;
+            font-size: 16px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -115,6 +124,12 @@
         <div class="ground-line"></div>
         <div class="player" id="player"></div>
         <div class="score" id="score">00000</div>
+        
+        <div class="debug" id="debug">
+            <div>Player Y: <span id="playerY">0</span></div>
+            <div>Velocity: <span id="velocity">0</span></div>
+            <div>Jumping: <span id="jumping">false</span></div>
+        </div>
         
         <div class="start-screen" id="startScreen">
             <div class="start-text">Press SPACE to play</div>
@@ -151,6 +166,11 @@
         const scoreElement = document.getElementById('score');
         const hiScoreElement = document.getElementById('hiScore');
         const finalHiScoreElement = document.getElementById('finalHiScore');
+        
+        // Debug elements
+        const playerYElement = document.getElementById('playerY');
+        const velocityElement = document.getElementById('velocity');
+        const jumpingElement = document.getElementById('jumping');
         
         // Initialize
         hiScoreElement.textContent = String(gameState.highScore).padStart(5, '0');
@@ -194,22 +214,30 @@
             if (!gameState.running || gameState.player.jumping) return;
             
             gameState.player.jumping = true;
-            gameState.player.velocity = -24; // Stronger jump for bigger screen
+
+            gameState.player.velocity = -20; // Strong enough for 144px+ jump
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 1.2; // gravity
+                gameState.player.velocity += 0.5; // Much lighter gravity
                 gameState.player.y += gameState.player.velocity;
                 
+                // Land on ground
                 if (gameState.player.y >= 0) {
                     gameState.player.y = 0;
                     gameState.player.jumping = false;
                     gameState.player.velocity = 0;
                 }
                 
-                player.style.bottom = (100 - gameState.player.y) + 'px';
+                // Update visual position - when y is negative (jumping up), bottom increases
+                player.style.bottom = (100 + Math.abs(gameState.player.y)) + 'px';
             }
+            
+            // Update debug info
+            playerYElement.textContent = Math.round(gameState.player.y);
+            velocityElement.textContent = Math.round(gameState.player.velocity * 10) / 10;
+            jumpingElement.textContent = gameState.player.jumping;
         }
         
         function spawnObstacle() {
@@ -260,7 +288,7 @@
         
         function updateClouds() {
             gameState.clouds = gameState.clouds.filter(cloud => {
-                cloud.x -= gameState.gameSpeed * 0.5; // clouds move slower
+                cloud.x -= gameState.gameSpeed * 0.5;
                 cloud.element.style.right = (window.innerWidth - cloud.x) + 'px';
                 
                 if (cloud.x < -80) {
@@ -274,7 +302,7 @@
         function checkCollisions() {
             const playerRect = {
                 x: 100,
-                y: -gameState.player.y, // Convert to screen coordinates
+                y: Math.abs(gameState.player.y), // Use absolute value for proper collision
                 width: 40,
                 height: 40
             };
@@ -301,12 +329,10 @@
         function updateScore() {
             gameState.score += 1;
             
-            // Score increases every 6 frames (10fps)
             if (gameState.score % 6 === 0) {
                 const displayScore = Math.floor(gameState.score / 6);
                 scoreElement.textContent = String(displayScore).padStart(5, '0');
                 
-                // Increase speed every 100 points
                 if (displayScore % 100 === 0 && displayScore > 0) {
                     gameState.gameSpeed += 1;
                 }
@@ -350,13 +376,11 @@
             }
         });
         
-        // Mobile support
         document.addEventListener('touchstart', (e) => {
             e.preventDefault();
             jump();
         });
         
-        // Restart after game over
         document.addEventListener('keydown', (e) => {
             if (!gameState.running && gameState.gameStarted && (e.code === 'Space' || e.code === 'ArrowUp')) {
                 e.preventDefault();
@@ -364,9 +388,7 @@
             }
         });
         
-        // Handle window resize
         window.addEventListener('resize', () => {
-            // Update obstacle and cloud positions on resize
             gameState.obstacles.forEach(obstacle => {
                 obstacle.element.style.right = (window.innerWidth - obstacle.x) + 'px';
             });
