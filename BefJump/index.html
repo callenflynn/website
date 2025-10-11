@@ -37,7 +37,6 @@
         .obstacle {
             position: absolute;
             width: 20px;
-            height: 80px;
             background: #535353;
             bottom: 100px;
         }
@@ -154,9 +153,10 @@
             player: { y: 0, jumping: false, velocity: 0 },
             obstacles: [],
             clouds: [],
-            gameSpeed: 8,
+            gameSpeed: 10, // Faster starting speed
             lastObstacle: 0,
-            lastCloud: 0
+            lastCloud: 0,
+            obstaclePattern: 0 // Track pattern state
         };
         
         const player = document.getElementById('player');
@@ -183,9 +183,10 @@
             gameState.player = { y: 0, jumping: false, velocity: 0 };
             gameState.obstacles = [];
             gameState.clouds = [];
-            gameState.gameSpeed = 8;
+            gameState.gameSpeed = 10;
             gameState.lastObstacle = Date.now();
             gameState.lastCloud = Date.now();
+            gameState.obstaclePattern = 0;
             
             startScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
@@ -214,45 +215,87 @@
             if (!gameState.running || gameState.player.jumping) return;
             
             gameState.player.jumping = true;
-
-            gameState.player.velocity = -20; // Strong enough for 144px+ jump
+            gameState.player.velocity = -20;
         }
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.5; // Much lighter gravity
+                gameState.player.velocity += 0.5;
                 gameState.player.y += gameState.player.velocity;
                 
-                // Land on ground
                 if (gameState.player.y >= 0) {
                     gameState.player.y = 0;
                     gameState.player.jumping = false;
                     gameState.player.velocity = 0;
                 }
                 
-                // Update visual position - when y is negative (jumping up), bottom increases
                 player.style.bottom = (100 + Math.abs(gameState.player.y)) + 'px';
             }
             
-            // Update debug info
             playerYElement.textContent = Math.round(gameState.player.y);
             velocityElement.textContent = Math.round(gameState.player.velocity * 10) / 10;
             jumpingElement.textContent = gameState.player.jumping;
         }
         
         function spawnObstacle() {
-            if (Date.now() - gameState.lastObstacle > Math.random() * 1500 + 2000) {
+            const currentTime = Date.now();
+            const baseDelay = 1200; // Shorter base delay
+            let delay = baseDelay;
+            let obstacleHeight = 80;
+            let obstacleWidth = 20;
+            
+            // Create different patterns based on score
+            const score = Math.floor(gameState.score / 6);
+            
+            if (score > 200) {
+                // Very hard: random clusters and varying heights
+                if (Math.random() < 0.3) {
+                    delay = Math.random() * 500 + 400; // Very short gaps sometimes
+                    obstacleHeight = Math.random() * 60 + 60; // 60-120px height
+                    obstacleWidth = Math.random() * 15 + 15; // 15-30px width
+                } else {
+                    delay = Math.random() * 1000 + 800;
+                }
+            } else if (score > 100) {
+                // Hard: occasional clusters
+                if (Math.random() < 0.2) {
+                    delay = Math.random() * 600 + 500; // Short gaps
+                    obstacleHeight = Math.random() * 40 + 70; // 70-110px height
+                } else {
+                    delay = Math.random() * 1200 + 1000;
+                }
+            } else if (score > 50) {
+                // Medium: slight variation
+                delay = Math.random() * 1000 + 1000;
+                if (Math.random() < 0.15) {
+                    obstacleHeight = Math.random() * 30 + 70; // 70-100px height
+                }
+            } else {
+                // Easy: standard pattern
+                delay = Math.random() * 1000 + 1500;
+            }
+            
+            if (currentTime - gameState.lastObstacle > delay) {
                 const obstacle = document.createElement('div');
                 obstacle.className = 'obstacle';
-                obstacle.style.right = '-20px';
+                obstacle.style.right = '-' + obstacleWidth + 'px';
+                obstacle.style.height = obstacleHeight + 'px';
+                obstacle.style.width = obstacleWidth + 'px';
                 gameArea.appendChild(obstacle);
                 
                 gameState.obstacles.push({
                     element: obstacle,
-                    x: window.innerWidth + 20
+                    x: window.innerWidth + obstacleWidth,
+                    width: obstacleWidth,
+                    height: obstacleHeight
                 });
                 
-                gameState.lastObstacle = Date.now();
+                gameState.lastObstacle = currentTime;
+                
+                // Sometimes spawn a second obstacle quickly for clusters
+                if (score > 100 && Math.random() < 0.15) {
+                    gameState.lastObstacle = currentTime - delay + 300; // Force quick next spawn
+                }
             }
         }
         
@@ -278,7 +321,7 @@
                 obstacle.x -= gameState.gameSpeed;
                 obstacle.element.style.right = (window.innerWidth - obstacle.x) + 'px';
                 
-                if (obstacle.x < -20) {
+                if (obstacle.x < -obstacle.width) {
                     obstacle.element.remove();
                     return false;
                 }
@@ -302,7 +345,7 @@
         function checkCollisions() {
             const playerRect = {
                 x: 100,
-                y: Math.abs(gameState.player.y), // Use absolute value for proper collision
+                y: Math.abs(gameState.player.y),
                 width: 40,
                 height: 40
             };
@@ -311,8 +354,8 @@
                 const obstacleRect = {
                     x: obstacle.x,
                     y: 0,
-                    width: 20,
-                    height: 80
+                    width: obstacle.width,
+                    height: obstacle.height
                 };
                 
                 if (playerRect.x < obstacleRect.x + obstacleRect.width &&
@@ -333,8 +376,9 @@
                 const displayScore = Math.floor(gameState.score / 6);
                 scoreElement.textContent = String(displayScore).padStart(5, '0');
                 
-                if (displayScore % 100 === 0 && displayScore > 0) {
-                    gameState.gameSpeed += 1;
+                // More aggressive speed increases
+                if (displayScore % 50 === 0 && displayScore > 0) {
+                    gameState.gameSpeed += 1.5; // Faster speed increases
                 }
             }
         }
