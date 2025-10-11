@@ -155,7 +155,6 @@
             startScreen.style.display = 'none';
             gameOverScreen.style.display = 'none';
             
-            // Clear existing obstacles
             document.querySelectorAll('.obstacle').forEach(obs => obs.remove());
             
             gameLoop();
@@ -170,7 +169,7 @@
         
         function updatePlayer() {
             if (gameState.player.jumping) {
-                gameState.player.velocity += 0.8; // gravity
+                gameState.player.velocity += 0.8; 
                 gameState.player.y += gameState.player.velocity;
                 
                 if (gameState.player.y >= 0) {
@@ -250,7 +249,6 @@
         function gameOver() {
             gameState.running = false;
             
-            // Check for new high score
             if (gameState.score > gameState.highScore) {
                 gameState.highScore = gameState.score;
                 localStorage.setItem('befjump-high-score', gameState.highScore.toString());
@@ -276,7 +274,6 @@
             requestAnimationFrame(gameLoop);
         }
         
-        // Controls
         document.addEventListener('keydown', (e) => {
             if (e.code === 'Space') {
                 e.preventDefault();
