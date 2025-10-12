@@ -133,7 +133,6 @@ function getFileType(filename) {
 }
 
 async function discoverProjectFiles() {
-    // Prioritize files we know exist first
     const priorityFiles = [
         'index.html',
         'coding.html', 
