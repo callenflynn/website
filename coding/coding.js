@@ -38,38 +38,18 @@ function getFileType(filename) {
         'Makefile': 'makefile',
         'makefile': 'makefile',
         'Dockerfile': 'dockerfile',
-        'dockerfile': 'dockerfile',
-        'Gemfile': 'ruby',
-        'gemfile': 'ruby',
-        'Rakefile': 'ruby',
-        'rakefile': 'ruby',
-        'Procfile': 'procfile',
-        'procfile': 'procfile',
-        'Vagrantfile': 'vagrant',
-        'vagrantfile': 'vagrant',
-        'Jenkinsfile': 'jenkins',
-        'jenkinsfile': 'jenkins',
-        'Gruntfile': 'javascript',
-        'gruntfile': 'javascript',
-        'gulpfile': 'javascript',
-        'Gulpfile': 'javascript',
-        'webpack.config': 'javascript',
-        'rollup.config': 'javascript',
-        'vite.config': 'javascript',
-        'CHANGELOG': 'markdown',
-        'changelog': 'markdown',
-        'CONTRIBUTING': 'markdown',
-        'contributing': 'markdown',
-        'INSTALL': 'markdown',
-        'install': 'markdown',
+        'CNAME': 'txt',
+        'CREDITS': 'txt',
         'AUTHORS': 'txt',
-        'authors': 'txt',
         'CONTRIBUTORS': 'txt',
-        'contributors': 'txt',
+        'SECURITY': 'txt',
+        'CHANGELOG': 'markdown',
+        'INSTALL': 'markdown',
+        'TODO': 'txt',
+        'VERSION': 'txt',
+        'MANIFEST': 'txt',
         'COPYING': 'txt',
-        'copying': 'txt',
-        'NOTICE': 'txt',
-        'notice': 'txt'
+        'NOTICE': 'txt'
     };
     
     // Check if it's a special file without extension
@@ -126,159 +106,230 @@ function getFileType(filename) {
         'fish': 'shell',
         'ps1': 'powershell',
         'bat': 'batch',
-        'cmd': 'batch'
+        'cmd': 'batch',
+        'bf': 'befunge',
+        'png': 'image',
+        'jpg': 'image',
+        'jpeg': 'image',
+        'gif': 'image',
+        'ico': 'image',
+        'webp': 'image'
     };
 
     return extensionMap[extension] || 'other';
 }
 
-async function discoverProjectFiles() {
-    const priorityFiles = [
-        'index.html',
-        'coding.html', 
-        '404.html',
-        'styles.css',
-        'portfolio.css',
-        '404.css',
-        'script.js',
-        'coding.js',
-        '404.js',
-        'sitemap.xml',
-        'robots.txt',
-        'callen',
-        'easter egg json/readme.json'
+async function scanDirectory(path = '') {
+    const files = [];
+    
+    // Common directory patterns to try
+    const directories = [
+        '',
+        'assets/',
+        'coding/',
+        'BefJump/',
+        'befjump/',
+        'scripts/',
+        'styles/',
+        'css/',
+        'js/',
+        'images/',
+        'img/',
+        'docs/',
+        'config/',
+        '.github/',
+        '.github/workflows/',
+        '.well-known/',
+        'easter egg json/',
+        'components/',
+        'data/',
+        'api/',
+        'src/',
+        'public/',
+        'static/',
+        'build/',
+        'dist/'
     ];
     
-    const additionalFiles = [
-        '_config.yml',
-        'README.md',
-        'package.json',
-        'package-lock.json',
+    const filePatterns = [
+        'index.html',
+        'robots.txt',
+        'sitemap.xml',
+        'manifest.json',
+        'sw.js',
+        'favicon.ico',
         '.gitignore',
+        'README.md',
         'LICENSE',
         'CNAME',
-        'CREDITS',
-        'AUTHORS',
-        'CONTRIBUTORS',
-        'MAINTAINERS',
-        'SECURITY',
-        'CODE_OF_CONDUCT',
-        'FUNDING',
-        'SUPPORT',
-        'ISSUE_TEMPLATE',
-        'PULL_REQUEST_TEMPLATE',
-        'CHANGELOG',
-        'HISTORY',
-        'NEWS',
-        'INSTALL',
-        'UPGRADE',
-        'TODO',
-        'ROADMAP',
-        'VERSION',
-        'MANIFEST',
-        'COPYING',
-        'NOTICE',
-        'ACKNOWLEDGMENTS',
-        'THANKS',
-        'editorconfig',
-        'gitattributes',
-        'dockerignore',
-        'eslintignore',
-        'prettierignore',
-        'nvmrc',
-        'node-version',
-        'ruby-version',
-        'python-version',
-        'scripts/main.js',
-        'scripts/utils.js',
-        'scripts/animations.js',
-        'scripts/config.js',
-        'styles/main.css',
-        'styles/components.css',
-        'styles/variables.css',
-        'styles/responsive.css',
-        'components/header.html',
-        'components/footer.html',
-        'components/nav.html',
-        'data/projects.json',
-        'data/config.json',
-        'data/secrets.json',
-        'docs/README.md',
-        'docs/CHANGELOG.md',
-        'docs/CONTRIBUTING.md',
-        'config/site.yml',
-        'config/build.js',
-        '.github/workflows/deploy.yml',
-        '.github/workflows/pages.yml',
-        '.vscode/settings.json',
-        '.vscode/extensions.json',
+        'package.json',
+        '_config.yml',
+        
+        'styles.css',
+        'style.css',
+        'main.css',
+        'app.css',
+        'global.css',
+        'portfolio.css',
+        'home.css',
+        '404.css',
+        'responsive.css',
+        'components.css',
+        'variables.css',
+        'normalize.css',
+        'reset.css',
+        
+        'script.js',
+        'scripts.js',
+        'main.js',
+        'app.js',
+        'index.js',
+        'coding.js',
+        '404.js',
+        'utils.js',
+        'config.js',
+        'api.js',
+        'animations.js',
+        'typewriter.js',
+        
+        // HTML files
+        'coding.html',
+        '404.html',
+        'about.html',
+        'contact.html',
+        'portfolio.html',
+        'projects.html',
+        'home.html',
+        
+        // Config files
+        'tsconfig.json',
+        'package-lock.json',
+        'yarn.lock',
         'webpack.config.js',
         'vite.config.js',
-        'tsconfig.json',
-        'babel.config.js',
+        'rollup.config.js',
         '.eslintrc.js',
+        '.eslintrc.json',
         '.prettierrc',
-        'favicon.ico',
-        'manifest.json',
-        'sw.js'
+        'babel.config.js',
+        
+        // Asset files
+        'logo.png',
+        'logo1.png',
+        'logo2.png',
+        'icon.png',
+        'C.png',
+        'snake-gaem.png',
+        'yes-majesty.png',
+        'rj-logo.png',
+        'favicon.png',
+        'avatar.jpg',
+        'background.jpg',
+        'hero.jpg',
+        
+        // Special files
+        'discord',
+        'callen',
+        'readme.json',
+        'secrets.json',
+        'data.json',
+        'config.json',
+        'settings.json',
+        
+        // Game files
+        'game.bf',
+        'source.html',
+        
+        // GitHub files
+        'deploy.yml',
+        'pages.yml',
+        'ci.yml',
+        'build.yml',
+        'test.yml'
     ];
-
-    const discoveredFiles = [];
-    console.log('🔍 Quick scan for known files...');
-
-    const priorityPromises = priorityFiles.map(async (filepath) => {
-        try {
-            const response = await fetch(filepath, { method: 'HEAD' });
-            if (response.ok) {
-                return {
-                    name: filepath,
-                    type: getFileType(filepath.split('/').pop()),
-                    path: filepath
-                };
-            }
-        } catch (error) {
-        }
-        return null;
+    
+    console.log('🔍 Scanning all directories and files...');
+    
+    // Try each directory + file combination
+    const allPossiblePaths = [];
+    
+    // Add root files
+    filePatterns.forEach(file => {
+        allPossiblePaths.push(file);
     });
-
-    const priorityResults = await Promise.all(priorityPromises);
-    const foundPriorityFiles = priorityResults.filter(file => file !== null);
-    discoveredFiles.push(...foundPriorityFiles);
-
-    console.log(`✅ Found ${foundPriorityFiles.length} priority files`);
-
-    const batchSize = 10;
-    for (let i = 0; i < additionalFiles.length; i += batchSize) {
-        const batch = additionalFiles.slice(i, i + batchSize);
+    
+    // Add directory + file combinations
+    directories.forEach(dir => {
+        filePatterns.forEach(file => {
+            if (dir) {
+                allPossiblePaths.push(dir + file);
+            }
+        });
+    });
+    
+    // Also try some common nested patterns
+    const nestedPatterns = [
+        'coding/styles.css',
+        'coding/script.js',
+        'coding/portfolio.css',
+        'coding/coding.js',
+        'BefJump/index.html',
+        'BefJump/game.bf',
+        'BefJump/logo1.png',
+        'BefJump/source.html',
+        'assets/C.png',
+        'assets/snake-gaem.png',
+        'assets/yes-majesty.png',
+        'assets/rj-logo.png',
+        '.well-known/discord',
+        'easter egg json/readme.json',
+        '.github/workflows/deploy.yml',
+        '.github/workflows/pages.yml'
+    ];
+    
+    allPossiblePaths.push(...nestedPatterns);
+    
+    // Remove duplicates
+    const uniquePaths = [...new Set(allPossiblePaths)];
+    
+    console.log(`🎯 Checking ${uniquePaths.length} possible file paths...`);
+    
+    // Check files in batches to avoid overwhelming the server
+    const batchSize = 20;
+    for (let i = 0; i < uniquePaths.length; i += batchSize) {
+        const batch = uniquePaths.slice(i, i + batchSize);
+        
         const batchPromises = batch.map(async (filepath) => {
             try {
                 const response = await fetch(filepath, { method: 'HEAD' });
                 if (response.ok) {
+                    const filename = filepath.split('/').pop();
                     return {
-                        name: filepath,
-                        type: getFileType(filepath.split('/').pop()),
-                        path: filepath
+                        name: filename,
+                        path: filepath,
+                        type: getFileType(filename)
                     };
                 }
             } catch (error) {
+                // File doesn't exist, ignore
             }
             return null;
         });
-
+        
         const batchResults = await Promise.all(batchPromises);
-        const foundBatchFiles = batchResults.filter(file => file !== null);
-        discoveredFiles.push(...foundBatchFiles);
+        const foundFiles = batchResults.filter(file => file !== null);
+        files.push(...foundFiles);
+        
+        // Show progress
+        if (foundFiles.length > 0) {
+            console.log(`✅ Batch ${Math.floor(i/batchSize) + 1}: Found ${foundFiles.length} files`);
+        }
     }
-
-    discoveredFiles.push({
-        name: '.well-known/discord',
-        type: 'txt',
-        lines: 1,
-        path: '.well-known/discord'
-    });
-
-    console.log(`📊 Total files found: ${discoveredFiles.length}`);
-    return discoveredFiles;
+    
+    console.log(`📁 Total files discovered: ${files.length}`);
+    files.forEach(file => console.log(`   📄 ${file.path} (${file.type})`));
+    
+    return files;
 }
 
 async function calculateLinesOfCode() {
@@ -304,15 +355,12 @@ async function calculateLinesOfCode() {
         yml: 0,
         txt: 0,
         gitignore: 0,
-        makefile: 0,
-        dockerfile: 0,
-        procfile: 0,
-        vagrant: 0,
-        jenkins: 0,
         shell: 0,
         powershell: 0,
         batch: 0,
-        other: 0 
+        befunge: 0,
+        image: 0,
+        other: 0
     };
     
     const element = document.getElementById('linesOfCode');
@@ -320,26 +368,35 @@ async function calculateLinesOfCode() {
     try {
         element.textContent = '0';
         
-        const files = await discoverProjectFiles();
+        const files = await scanDirectory();
         
-        console.log('📁 Counting lines in parallel...');
+        if (files.length === 0) {
+            console.log('⚠️ No files found, using fallback count');
+            element.textContent = '2,000+';
+            return;
+        }
+        
+        console.log('📊 Counting lines in all discovered files...');
         
         const filePromises = files.map(async (file) => {
-            if (file.lines) {
-                return { file, lines: file.lines };
-            } else {
-                try {
-                    const response = await fetch(file.path);
-                    if (response.ok) {
-                        const content = await response.text();
-                        const lines = content.split('\n').length;
-                        return { file, lines };
-                    }
-                } catch (error) {
-                    console.log(`❌ Could not fetch ${file.path}`);
+            try {
+                // Skip binary files (images)
+                if (file.type === 'image') {
+                    return { file, lines: 0 };
                 }
-                return { file, lines: 0 };
+                
+                const response = await fetch(file.path);
+                if (response.ok) {
+                    const content = await response.text();
+                    const lines = content.split('\n').length;
+                    return { file, lines };
+                } else {
+                    console.log(`❌ Could not fetch ${file.path}: ${response.status}`);
+                }
+            } catch (error) {
+                console.log(`❌ Error fetching ${file.path}:`, error.message);
             }
+            return { file, lines: 0 };
         });
 
         const results = await Promise.all(filePromises);
@@ -347,19 +404,24 @@ async function calculateLinesOfCode() {
         results.forEach(({ file, lines }) => {
             if (lines > 0) {
                 totalLines += lines;
-                languageLines[file.type] += lines;
+                if (languageLines[file.type] !== undefined) {
+                    languageLines[file.type] += lines;
+                } else {
+                    languageLines.other += lines;
+                }
                 console.log(`📄 ${file.path}: ${lines} lines (${file.type})`);
             }
         });
         
         console.log(`🎯 Total lines calculated: ${totalLines}`);
+        console.log(`📊 Language breakdown:`, languageLines);
         
         animateCounter('linesOfCode', totalLines, 800); 
         updateLanguageBreakdown(languageLines, totalLines);
         
     } catch (error) {
-        console.error('Error calculating lines of code:', error);
-        element.textContent = '1,200+';
+        console.error('❌ Error calculating lines of code:', error);
+        element.textContent = '2,000+';
     }
 }
 
@@ -385,15 +447,12 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         yml: '#cb171e',
         txt: '#89e051',
         gitignore: '#f1f2f3',
-        makefile: '#427819',
-        dockerfile: '#384d54',
-        procfile: '#3B2F63',
-        vagrant: '#1563FF',
-        jenkins: '#D33833',
         shell: '#89e051',
         powershell: '#012456',
         batch: '#C1F12E',
-        other: '#8B8B8B'  
+        befunge: '#ff6b6b',
+        image: '#8B8B8B',
+        other: '#8B8B8B'
     };
     
     const languageNames = {
@@ -417,14 +476,11 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         yml: 'YAML',
         txt: 'Text',
         gitignore: 'Gitignore',
-        makefile: 'Makefile',
-        dockerfile: 'Dockerfile',
-        procfile: 'Procfile',
-        vagrant: 'Vagrantfile',
-        jenkins: 'Jenkinsfile',
         shell: 'Shell',
         powershell: 'PowerShell',
         batch: 'Batch',
+        befunge: 'Befunge',
+        image: 'Images',
         other: 'Other'
     };
     
@@ -433,9 +489,7 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         languagePercentages[lang] = totalLines > 0 ? (languageLines[lang] / totalLines) * 100 : 0;
     });
     
-    console.log('📊 Language breakdown:', languagePercentages);
-    
-    // Start bar animation immediately (no delay)
+    // Update the visual bar
     Object.keys(languagePercentages).forEach(lang => {
         const segment = document.querySelector(`[data-language="${lang}"]`);
         if (segment && languagePercentages[lang] > 0) {
@@ -443,6 +497,7 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         }
     });
     
+    // Update labels
     const labelsContainer = document.getElementById('languageLabels');
     labelsContainer.innerHTML = '';
     
@@ -454,13 +509,7 @@ function updateLanguageBreakdown(languageLines, totalLines) {
             label.className = 'language-label';
             
             const percentage = languagePercentages[lang];
-            let formattedPercentage;
-            
-            if (percentage >= 0.1) {
-                formattedPercentage = percentage.toFixed(1);
-            } else {
-                formattedPercentage = percentage.toFixed(2);
-            }
+            const formattedPercentage = percentage >= 0.1 ? percentage.toFixed(1) : percentage.toFixed(2);
             
             label.innerHTML = `
                 <div class="language-dot" style="background-color: ${languageColors[lang]};"></div>
@@ -556,15 +605,15 @@ document.addEventListener('DOMContentLoaded', function() {
     const typewriterElement = document.getElementById('typewriter');
     
     const commands = [
-        'npm run showcase',
-        'find . -name "*.js" | wc -l',
-        'tree src/',
-        'npm run portfolio',
-        'git log --oneline --all',
-        'wc -l *.html *.css *.js',
-        'ls -la components/',
-        'cd scripts && ls',
-        'find . -name "*.json" -type f'
+        'find . -name "*.js" -o -name "*.html" -o -name "*.css" | wc -l',
+        'tree -a',
+        'ls -la */',
+        'find . -type f | wc -l',
+        'grep -r "function" --include="*.js" .',
+        'du -sh *',
+        'find . -name "*.bf"',
+        'ls -la assets/ BefJump/ coding/',
+        'wc -l **/*.{html,css,js,bf}'
     ];
 
     if (typewriterElement) {
