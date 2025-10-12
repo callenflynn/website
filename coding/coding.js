@@ -20,14 +20,12 @@ function calculateDaysSinceFirstCode() {
     const timeDiff = today.getTime() - firstCodeDate.getTime();
     const daysDiff = Math.floor(timeDiff / (1000 * 3600 * 24));
     
-    // Animate the counter with smooth counting
     animateCounter('daysSinceCoding', daysDiff, 1500);
 }
 
 function getFileType(filename) {
     const extension = filename.split('.').pop().toLowerCase();
     
-    // Handle files with no extension first (by exact filename)
     const noExtensionFiles = {
         '.gitignore': 'gitignore',
         'gitignore': 'gitignore',
@@ -43,21 +41,17 @@ function getFileType(filename) {
         'callen': 'other'
     };
     
-    // Check if it's a special file without extension
     if (noExtensionFiles[filename]) {
         return noExtensionFiles[filename];
     }
     
-    // Handle files that are truly "other" (unknown file types)
     const pathParts = filename.split('/');
     const justFilename = pathParts[pathParts.length - 1];
     
-    // If file has no extension and isn't in our known list, it's "other"
     if (!justFilename.includes('.') && !noExtensionFiles[justFilename]) {
         return 'other';
     }
     
-    // Regular extension mapping
     const extensionMap = {
         'html': 'html',
         'htm': 'html',
@@ -359,7 +353,6 @@ function animateCounter(elementId, targetValue, duration = 1500) {
         const elapsed = Date.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         
-        // Use easing function for smooth animation
         const easeOut = 1 - Math.pow(1 - progress, 3);
         const currentValue = Math.floor(easeOut * targetValue);
         
