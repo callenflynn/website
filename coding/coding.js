@@ -92,28 +92,26 @@ function getFileType(filename) {
         'ps1': 'powershell',
         'bat': 'batch',
         'cmd': 'batch',
-        'bf': 'befunge',
-        'png': 'image',
-        'jpg': 'image',
-        'jpeg': 'image',
-        'gif': 'image',
-        'ico': 'image',
-        'webp': 'image'
+        'bf': 'befunge'
     };
 
     return extensionMap[extension] || 'other';
 }
 
-// Known files that definitely exist - for instant results
+// Complete list of all actual CODE files in your project (no images)
 const KNOWN_FILES = [
     // Root files
     { path: 'index.html', type: 'html' },
     { path: 'styles.css', type: 'css' },
     { path: 'script.js', type: 'javascript' },
+    { path: 'ta-xbox.js', type: 'javascript' },
     { path: '404.html', type: 'html' },
     { path: '404.css', type: 'css' },
-    { path: '404.js', type: 'javascript' },
     { path: 'robots.txt', type: 'txt' },
+    { path: 'sitemap.xml', type: 'xml' },
+    { path: 'CNAME', type: 'txt' },
+    { path: '_config.yml', type: 'yml' },
+    { path: 'google526c7f9cda034c56.html', type: 'html' },
     
     // Coding folder
     { path: 'coding/index.html', type: 'html' },
@@ -125,16 +123,13 @@ const KNOWN_FILES = [
     { path: 'BefJump/index.html', type: 'html' },
     { path: 'BefJump/game.bf', type: 'befunge' },
     { path: 'BefJump/source.html', type: 'html' },
-    { path: 'BefJump/logo1.png', type: 'image' },
     
-    // Assets folder
-    { path: 'assets/C.png', type: 'image' },
-    { path: 'assets/snake-gaem.png', type: 'image' },
-    { path: 'assets/yes-majesty.png', type: 'image' },
-    { path: 'assets/rj-logo.png', type: 'image' },
+    // Assets folder - code files only
+    { path: 'assets/404.js', type: 'javascript' },
     
     // Special files
     { path: '.well-known/discord', type: 'other' },
+    { path: '.well-known/callen', type: 'other' },
     { path: 'easter egg json/readme.json', type: 'json' }
 ];
 
@@ -143,32 +138,22 @@ async function discoverAdditionalFiles() {
     
     const additionalFiles = [];
     
-    // Quick scan of common additional paths
+    // Quick scan of common additional paths that might exist (no images)
     const additionalPaths = [
         'manifest.json',
         'sw.js',
-        'CNAME',
         '.gitignore',
         'README.md',
         'LICENSE',
-        '_config.yml',
         'package.json',
-        'sitemap.xml',
-        'favicon.ico',
         'coding/script.js',
         'coding/main.js',
         'coding/app.js',
         'BefJump/style.css',
         'BefJump/main.js',
         'BefJump/config.json',
-        'assets/favicon.png',
-        'assets/icon.png',
-        'assets/logo.png',
         '.github/workflows/deploy.yml',
-        '.github/workflows/pages.yml',
-        'scripts/main.js',
-        'css/main.css',
-        'js/app.js'
+        '.github/workflows/pages.yml'
     ];
     
     console.log(`🎯 Checking ${additionalPaths.length} additional paths...`);
@@ -182,10 +167,18 @@ async function discoverAdditionalFiles() {
             
             if (response.ok) {
                 const filename = filepath.split('/').pop();
+                const fileType = getFileType(filename);
+                
+                // Skip if it's an image type
+                if (fileType === 'image') {
+                    console.log(`⏭️ Skipping image file: ${filepath}`);
+                    continue;
+                }
+                
                 const file = {
                     name: filename,
                     path: filepath,
-                    type: getFileType(filename)
+                    type: fileType
                 };
                 additionalFiles.push(file);
                 console.log(`✅ Found additional file: ${filepath} (${file.type})`);
@@ -231,7 +224,6 @@ async function calculateLinesOfCode() {
         powershell: 0,
         batch: 0,
         befunge: 0,
-        image: 0,
         other: 0
     };
     
@@ -245,12 +237,6 @@ async function calculateLinesOfCode() {
         // Count known files first for instant results
         for (const file of KNOWN_FILES) {
             try {
-                // Skip binary files (images)
-                if (file.type === 'image') {
-                    console.log(`⏭️ Skipping image: ${file.path}`);
-                    continue;
-                }
-                
                 console.log(`🔍 Counting lines in ${file.path}...`);
                 
                 const response = await fetch(file.path, { cache: 'no-cache' });
@@ -273,7 +259,7 @@ async function calculateLinesOfCode() {
             }
             
             // Small delay to show progress
-            await new Promise(resolve => setTimeout(resolve, 100));
+            await new Promise(resolve => setTimeout(resolve, 50));
         }
         
         // Update display with known files
@@ -289,12 +275,6 @@ async function calculateLinesOfCode() {
             
             for (const file of additionalFiles) {
                 try {
-                    // Skip binary files (images)
-                    if (file.type === 'image') {
-                        console.log(`⏭️ Skipping additional image: ${file.path}`);
-                        continue;
-                    }
-                    
                     console.log(`🔍 Counting lines in additional file ${file.path}...`);
                     
                     const response = await fetch(file.path, { cache: 'no-cache' });
@@ -314,7 +294,7 @@ async function calculateLinesOfCode() {
                     console.log(`❌ Error processing additional file ${file.path}:`, error.message);
                 }
                 
-                await new Promise(resolve => setTimeout(resolve, 100));
+                await new Promise(resolve => setTimeout(resolve, 50));
             }
             
             // Final update with all files
@@ -383,7 +363,6 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         powershell: '#012456',
         batch: '#C1F12E',
         befunge: '#ff6b6b',
-        image: '#8B8B8B',
         other: '#8B8B8B'
     };
     
@@ -412,7 +391,6 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         powershell: 'PowerShell',
         batch: 'Batch',
         befunge: 'Befunge',
-        image: 'Images',
         other: 'Other'
     };
     
