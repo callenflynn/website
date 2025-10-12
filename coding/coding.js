@@ -98,39 +98,41 @@ function getFileType(filename) {
     return extensionMap[extension] || 'other';
 }
 
-// Complete list of all actual CODE files in your project (no images)
+// Update the KNOWN_FILES array with correct relative paths from the coding/ folder:
 const KNOWN_FILES = [
-    // Root files
+    // Root files (need ../ prefix since we're in coding/ folder)
+    { path: '../index.html', type: 'html' },
+    { path: '../styles.css', type: 'css' },
+    { path: '../script.js', type: 'javascript' },
+    { path: '../ta-xbox.js', type: 'javascript' },
+    { path: '../404.html', type: 'html' },
+    { path: '../404.css', type: 'css' },
+    { path: '../robots.txt', type: 'txt' },
+    { path: '../sitemap.xml', type: 'xml' },
+    { path: '../CNAME', type: 'txt' },
+    { path: '../_config.yml', type: 'yml' },
+    { path: '../google526c7f9cda034c56.html', type: 'html' },
+    { path: '../README.md', type: 'markdown' }, // Add this since you have it
+    { path: '../CREDITS', type: 'txt' }, // Add this since you have it
+    { path: '../Callen', type: 'other' }, // Add this since you have it
+    
+    // Coding folder (current directory, so no prefix needed)
     { path: 'index.html', type: 'html' },
-    { path: 'styles.css', type: 'css' },
-    { path: 'script.js', type: 'javascript' },
-    { path: 'ta-xbox.js', type: 'javascript' },
-    { path: '404.html', type: 'html' },
-    { path: '404.css', type: 'css' },
-    { path: 'robots.txt', type: 'txt' },
-    { path: 'sitemap.xml', type: 'xml' },
-    { path: 'CNAME', type: 'txt' },
-    { path: '_config.yml', type: 'yml' },
-    { path: 'google526c7f9cda034c56.html', type: 'html' },
+    { path: 'portfolio.css', type: 'css' },
+    { path: 'coding.js', type: 'javascript' },
+    // Note: Remove 'coding/styles.css' since it doesn't exist based on your structure
     
-    // Coding folder
-    { path: 'coding/index.html', type: 'html' },
-    { path: 'coding/styles.css', type: 'css' },
-    { path: 'coding/portfolio.css', type: 'css' },
-    { path: 'coding/coding.js', type: 'javascript' },
-    
-    // BefJump folder  
-    { path: 'BefJump/index.html', type: 'html' },
-    { path: 'BefJump/game.bf', type: 'befunge' },
-    { path: 'BefJump/source.html', type: 'html' },
+    // BefJump folder (sibling directory)
+    { path: '../BefJump/index.html', type: 'html' },
+    { path: '../BefJump/game.bf', type: 'befunge' },
+    { path: '../BefJump/source.html', type: 'html' },
     
     // Assets folder - code files only
-    { path: 'assets/404.js', type: 'javascript' },
+    { path: '../assets/404.js', type: 'javascript' },
     
     // Special files
-    { path: '.well-known/discord', type: 'other' },
-    { path: '.well-known/callen', type: 'other' },
-    { path: 'easter egg json/readme.json', type: 'json' }
+    { path: '../.well-known/discord', type: 'other' },
+    { path: '../easter egg json/readme.json', type: 'json' }
 ];
 
 async function discoverAdditionalFiles() {
