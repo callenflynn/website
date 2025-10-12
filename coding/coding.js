@@ -104,8 +104,172 @@ function getFileType(filename) {
     return extensionMap[extension] || 'other';
 }
 
+async function discoverAllFiles() {
+    console.log('🔍 Starting comprehensive file discovery...');
+    
+    const discoveredFiles = [];
+    
+    // All possible directories to scan
+    const directories = [
+        '',
+        'assets/',
+        'coding/',
+        'BefJump/',
+        'befjump/',
+        'scripts/',
+        'styles/',
+        'css/',
+        'js/',
+        'images/',
+        'img/',
+        'docs/',
+        'config/',
+        '.github/',
+        '.github/workflows/',
+        '.well-known/',
+        'easter egg json/',
+        'components/',
+        'data/',
+        'api/',
+        'src/',
+        'public/',
+        'static/',
+        'build/',
+        'dist/',
+        'lib/',
+        'vendor/',
+        'node_modules/',
+        'includes/',
+        'partials/',
+        'templates/',
+        'views/',
+        'assets/css/',
+        'assets/js/',
+        'assets/images/',
+        'assets/fonts/',
+        'coding/assets/',
+        'BefJump/assets/'
+    ];
+    
+    // All possible file extensions to look for
+    const extensions = [
+        'html', 'htm', 'css', 'scss', 'sass', 'less', 'js', 'jsx', 'mjs', 'ts', 'tsx',
+        'py', 'php', 'java', 'cpp', 'c', 'cc', 'cxx', 'cs', 'go', 'rs', 'swift', 'kt',
+        'rb', 'md', 'markdown', 'json', 'xml', 'svg', 'yml', 'yaml', 'txt', 'sh',
+        'bash', 'zsh', 'fish', 'ps1', 'bat', 'cmd', 'bf', 'png', 'jpg', 'jpeg',
+        'gif', 'ico', 'webp'
+    ];
+    
+    // Common filenames to check
+    const commonNames = [
+        'index', 'main', 'app', 'style', 'styles', 'script', 'scripts', 'config',
+        'settings', 'portfolio', 'home', 'about', 'contact', 'projects', 'coding',
+        'game', 'source', 'logo', 'logo1', 'logo2', 'favicon', 'icon', 'C',
+        'snake-gaem', 'yes-majesty', 'rj-logo', 'README', 'LICENSE', 'robots',
+        'sitemap', 'manifest', 'sw', 'service-worker', '404', 'error'
+    ];
+    
+    // Special files without extensions
+    const specialFiles = [
+        '.gitignore', 'robots.txt', 'CNAME', 'LICENSE', 'README', 'Makefile',
+        'Dockerfile', '_config.yml', 'discord', 'callen', 'readme.json'
+    ];
+    
+    console.log('🎯 Generating file paths to check...');
+    
+    const pathsToCheck = new Set();
+    
+    // Add special files
+    specialFiles.forEach(file => {
+        pathsToCheck.add(file);
+        directories.forEach(dir => {
+            if (dir) pathsToCheck.add(dir + file);
+        });
+    });
+    
+    // Add combinations of names + extensions
+    commonNames.forEach(name => {
+        extensions.forEach(ext => {
+            const filename = `${name}.${ext}`;
+            pathsToCheck.add(filename);
+            
+            directories.forEach(dir => {
+                if (dir) pathsToCheck.add(dir + filename);
+            });
+        });
+    });
+    
+    // Add numbered variations
+    for (let i = 1; i <= 5; i++) {
+        commonNames.forEach(name => {
+            extensions.forEach(ext => {
+                const filename = `${name}${i}.${ext}`;
+                pathsToCheck.add(filename);
+                
+                directories.forEach(dir => {
+                    if (dir) pathsToCheck.add(dir + filename);
+                });
+            });
+        });
+    }
+    
+    const allPaths = Array.from(pathsToCheck);
+    console.log(`🎯 Generated ${allPaths.length} potential file paths to check`);
+    
+    // Check files in batches
+    const batchSize = 15;
+    let totalChecked = 0;
+    
+    for (let i = 0; i < allPaths.length; i += batchSize) {
+        const batch = allPaths.slice(i, i + batchSize);
+        
+        const batchPromises = batch.map(async (filepath) => {
+            try {
+                const response = await fetch(filepath, { 
+                    method: 'HEAD',
+                    cache: 'no-cache'
+                });
+                
+                if (response.ok) {
+                    const filename = filepath.split('/').pop();
+                    return {
+                        name: filename,
+                        path: filepath,
+                        type: getFileType(filename)
+                    };
+                }
+            } catch (error) {
+                // File doesn't exist
+            }
+            return null;
+        });
+        
+        const batchResults = await Promise.all(batchPromises);
+        const foundFiles = batchResults.filter(file => file !== null);
+        
+        if (foundFiles.length > 0) {
+            discoveredFiles.push(...foundFiles);
+            console.log(`✅ Batch ${Math.floor(i/batchSize) + 1}: Found ${foundFiles.length} files`);
+            foundFiles.forEach(file => console.log(`   📄 ${file.path} (${file.type})`));
+        }
+        
+        totalChecked += batch.length;
+        
+        // Show progress
+        if (totalChecked % 100 === 0) {
+            console.log(`🔍 Progress: ${totalChecked}/${allPaths.length} paths checked, ${discoveredFiles.length} files found`);
+        }
+        
+        // Small delay to avoid overwhelming the server
+        await new Promise(resolve => setTimeout(resolve, 50));
+    }
+    
+    console.log(`🎉 File discovery complete! Found ${discoveredFiles.length} total files`);
+    return discoveredFiles;
+}
+
 async function calculateLinesOfCode() {
-    console.log('🚀 Starting line count calculation...');
+    console.log('🚀 Starting comprehensive line count calculation...');
     
     let totalLines = 0;
     let languageLines = {
@@ -140,35 +304,41 @@ async function calculateLinesOfCode() {
     const element = document.getElementById('linesOfCode');
     
     try {
-        element.textContent = 'Scanning...';
+        element.textContent = 'Discovering files...';
         
-        // Known files that definitely exist - let's start simple
-        const knownFiles = [
-            { path: 'index.html', type: 'html' },
-            { path: 'styles.css', type: 'css' },
-            { path: 'script.js', type: 'javascript' },
-            { path: 'coding/index.html', type: 'html' },
-            { path: 'coding/styles.css', type: 'css' },
-            { path: 'coding/portfolio.css', type: 'css' },
-            { path: 'coding/coding.js', type: 'javascript' },
-            { path: 'BefJump/index.html', type: 'html' },
-            { path: 'BefJump/game.bf', type: 'befunge' },
-            { path: 'BefJump/source.html', type: 'html' },
-            { path: '404.html', type: 'html' },
-            { path: '404.css', type: 'css' },
-            { path: '404.js', type: 'javascript' },
-            { path: 'robots.txt', type: 'txt' },
-            { path: '.well-known/discord', type: 'other' },
-            { path: 'easter egg json/readme.json', type: 'json' }
-        ];
+        // Discover ALL files
+        const allFiles = await discoverAllFiles();
         
-        console.log('📊 Counting lines in known files...');
+        if (allFiles.length === 0) {
+            console.log('⚠️ No files discovered, using fallback');
+            element.textContent = '2,500+';
+            const fallbackLanguageLines = {
+                html: 800,
+                css: 700,
+                javascript: 600,
+                befunge: 200,
+                json: 100,
+                txt: 100
+            };
+            updateLanguageBreakdown(fallbackLanguageLines, 2500);
+            return;
+        }
         
-        for (const file of knownFiles) {
+        element.textContent = `Counting lines in ${allFiles.length} files...`;
+        console.log(`📊 Counting lines in ${allFiles.length} discovered files...`);
+        
+        // Count lines in all discovered files
+        for (const file of allFiles) {
             try {
-                console.log(`🔍 Checking ${file.path}...`);
+                // Skip binary files (images)
+                if (file.type === 'image') {
+                    console.log(`⏭️ Skipping image: ${file.path}`);
+                    continue;
+                }
                 
-                const response = await fetch(file.path);
+                console.log(`🔍 Counting lines in ${file.path}...`);
+                
+                const response = await fetch(file.path, { cache: 'no-cache' });
                 if (response.ok) {
                     const content = await response.text();
                     const lines = content.split('\n').length;
@@ -179,51 +349,51 @@ async function calculateLinesOfCode() {
                     console.log(`✅ ${file.path}: ${lines} lines (${file.type})`);
                     
                     // Update counter in real-time
-                    element.textContent = totalLines.toLocaleString();
+                    element.textContent = `${totalLines.toLocaleString()} lines`;
                 } else {
-                    console.log(`❌ ${file.path}: ${response.status}`);
+                    console.log(`❌ Could not fetch content of ${file.path}: ${response.status}`);
                 }
             } catch (error) {
-                console.log(`❌ Error fetching ${file.path}:`, error.message);
+                console.log(`❌ Error processing ${file.path}:`, error.message);
             }
             
             // Small delay to show progress
             await new Promise(resolve => setTimeout(resolve, 100));
         }
         
-        console.log(`🎯 Total lines calculated: ${totalLines}`);
+        console.log(`🎯 FINAL TOTAL: ${totalLines} lines across ${allFiles.length} files`);
         console.log(`📊 Language breakdown:`, languageLines);
         
         if (totalLines === 0) {
-            console.log('⚠️ No files found, using fallback');
-            element.textContent = '2,000+';
-            // Use a default breakdown for the visual
-            languageLines = {
+            console.log('⚠️ No lines counted, using fallback');
+            element.textContent = '2,500+';
+            const fallbackLanguageLines = {
                 html: 800,
-                css: 600,
-                javascript: 500,
-                befunge: 100,
-                other: 100
+                css: 700,
+                javascript: 600,
+                befunge: 200,
+                json: 100,
+                txt: 100
             };
-            totalLines = 2100;
+            updateLanguageBreakdown(fallbackLanguageLines, 2500);
+        } else {
+            animateCounter('linesOfCode', totalLines, 800); 
+            updateLanguageBreakdown(languageLines, totalLines);
         }
         
-        animateCounter('linesOfCode', totalLines, 800); 
-        updateLanguageBreakdown(languageLines, totalLines);
-        
     } catch (error) {
-        console.error('❌ Error calculating lines of code:', error);
-        element.textContent = '2,000+';
+        console.error('❌ Error in line count calculation:', error);
+        element.textContent = '2,500+';
         
-        // Fallback breakdown
         const fallbackLanguageLines = {
             html: 800,
-            css: 600,
-            javascript: 500,
-            befunge: 100,
-            other: 100
+            css: 700,
+            javascript: 600,
+            befunge: 200,
+            json: 100,
+            txt: 100
         };
-        updateLanguageBreakdown(fallbackLanguageLines, 2100);
+        updateLanguageBreakdown(fallbackLanguageLines, 2500);
     }
 }
 
@@ -423,7 +593,7 @@ class Typewriter {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Page loaded, starting calculations...');
+    console.log('🚀 Page loaded, starting comprehensive calculations...');
     
     calculateDaysSinceFirstCode();
     calculateLinesOfCode();
