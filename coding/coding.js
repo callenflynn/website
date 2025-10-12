@@ -39,17 +39,8 @@ function getFileType(filename) {
         'makefile': 'makefile',
         'Dockerfile': 'dockerfile',
         'CNAME': 'txt',
-        'CREDITS': 'txt',
-        'AUTHORS': 'txt',
-        'CONTRIBUTORS': 'txt',
-        'SECURITY': 'txt',
-        'CHANGELOG': 'markdown',
-        'INSTALL': 'markdown',
-        'TODO': 'txt',
-        'VERSION': 'txt',
-        'MANIFEST': 'txt',
-        'COPYING': 'txt',
-        'NOTICE': 'txt'
+        'discord': 'other',
+        'callen': 'other'
     };
     
     // Check if it's a special file without extension
@@ -119,220 +110,9 @@ function getFileType(filename) {
     return extensionMap[extension] || 'other';
 }
 
-async function scanDirectory(path = '') {
-    const files = [];
-    
-    // Common directory patterns to try
-    const directories = [
-        '',
-        'assets/',
-        'coding/',
-        'BefJump/',
-        'befjump/',
-        'scripts/',
-        'styles/',
-        'css/',
-        'js/',
-        'images/',
-        'img/',
-        'docs/',
-        'config/',
-        '.github/',
-        '.github/workflows/',
-        '.well-known/',
-        'easter egg json/',
-        'components/',
-        'data/',
-        'api/',
-        'src/',
-        'public/',
-        'static/',
-        'build/',
-        'dist/'
-    ];
-    
-    const filePatterns = [
-        'index.html',
-        'robots.txt',
-        'sitemap.xml',
-        'manifest.json',
-        'sw.js',
-        'favicon.ico',
-        '.gitignore',
-        'README.md',
-        'LICENSE',
-        'CNAME',
-        'package.json',
-        '_config.yml',
-        
-        'styles.css',
-        'style.css',
-        'main.css',
-        'app.css',
-        'global.css',
-        'portfolio.css',
-        'home.css',
-        '404.css',
-        'responsive.css',
-        'components.css',
-        'variables.css',
-        'normalize.css',
-        'reset.css',
-        
-        'script.js',
-        'scripts.js',
-        'main.js',
-        'app.js',
-        'index.js',
-        'coding.js',
-        '404.js',
-        'utils.js',
-        'config.js',
-        'api.js',
-        'animations.js',
-        'typewriter.js',
-        
-        // HTML files
-        'coding.html',
-        '404.html',
-        'about.html',
-        'contact.html',
-        'portfolio.html',
-        'projects.html',
-        'home.html',
-        
-        // Config files
-        'tsconfig.json',
-        'package-lock.json',
-        'yarn.lock',
-        'webpack.config.js',
-        'vite.config.js',
-        'rollup.config.js',
-        '.eslintrc.js',
-        '.eslintrc.json',
-        '.prettierrc',
-        'babel.config.js',
-        
-        // Asset files
-        'logo.png',
-        'logo1.png',
-        'logo2.png',
-        'icon.png',
-        'C.png',
-        'snake-gaem.png',
-        'yes-majesty.png',
-        'rj-logo.png',
-        'favicon.png',
-        'avatar.jpg',
-        'background.jpg',
-        'hero.jpg',
-        
-        // Special files
-        'discord',
-        'callen',
-        'readme.json',
-        'secrets.json',
-        'data.json',
-        'config.json',
-        'settings.json',
-        
-        // Game files
-        'game.bf',
-        'source.html',
-        
-        // GitHub files
-        'deploy.yml',
-        'pages.yml',
-        'ci.yml',
-        'build.yml',
-        'test.yml'
-    ];
-    
-    console.log('🔍 Scanning all directories and files...');
-    
-    // Try each directory + file combination
-    const allPossiblePaths = [];
-    
-    // Add root files
-    filePatterns.forEach(file => {
-        allPossiblePaths.push(file);
-    });
-    
-    // Add directory + file combinations
-    directories.forEach(dir => {
-        filePatterns.forEach(file => {
-            if (dir) {
-                allPossiblePaths.push(dir + file);
-            }
-        });
-    });
-    
-    // Also try some common nested patterns
-    const nestedPatterns = [
-        'coding/styles.css',
-        'coding/script.js',
-        'coding/portfolio.css',
-        'coding/coding.js',
-        'BefJump/index.html',
-        'BefJump/game.bf',
-        'BefJump/logo1.png',
-        'BefJump/source.html',
-        'assets/C.png',
-        'assets/snake-gaem.png',
-        'assets/yes-majesty.png',
-        'assets/rj-logo.png',
-        '.well-known/discord',
-        'easter egg json/readme.json',
-        '.github/workflows/deploy.yml',
-        '.github/workflows/pages.yml'
-    ];
-    
-    allPossiblePaths.push(...nestedPatterns);
-    
-    // Remove duplicates
-    const uniquePaths = [...new Set(allPossiblePaths)];
-    
-    console.log(`🎯 Checking ${uniquePaths.length} possible file paths...`);
-    
-    // Check files in batches to avoid overwhelming the server
-    const batchSize = 20;
-    for (let i = 0; i < uniquePaths.length; i += batchSize) {
-        const batch = uniquePaths.slice(i, i + batchSize);
-        
-        const batchPromises = batch.map(async (filepath) => {
-            try {
-                const response = await fetch(filepath, { method: 'HEAD' });
-                if (response.ok) {
-                    const filename = filepath.split('/').pop();
-                    return {
-                        name: filename,
-                        path: filepath,
-                        type: getFileType(filename)
-                    };
-                }
-            } catch (error) {
-                // File doesn't exist, ignore
-            }
-            return null;
-        });
-        
-        const batchResults = await Promise.all(batchPromises);
-        const foundFiles = batchResults.filter(file => file !== null);
-        files.push(...foundFiles);
-        
-        // Show progress
-        if (foundFiles.length > 0) {
-            console.log(`✅ Batch ${Math.floor(i/batchSize) + 1}: Found ${foundFiles.length} files`);
-        }
-    }
-    
-    console.log(`📁 Total files discovered: ${files.length}`);
-    files.forEach(file => console.log(`   📄 ${file.path} (${file.type})`));
-    
-    return files;
-}
-
 async function calculateLinesOfCode() {
+    console.log('🚀 Starting line count calculation...');
+    
     let totalLines = 0;
     let languageLines = {
         html: 0,
@@ -366,55 +146,73 @@ async function calculateLinesOfCode() {
     const element = document.getElementById('linesOfCode');
     
     try {
-        element.textContent = '0';
+        element.textContent = 'Scanning...';
         
-        const files = await scanDirectory();
+        // Known files that definitely exist - let's start simple
+        const knownFiles = [
+            { path: 'index.html', type: 'html' },
+            { path: 'styles.css', type: 'css' },
+            { path: 'script.js', type: 'javascript' },
+            { path: 'coding/index.html', type: 'html' },
+            { path: 'coding/styles.css', type: 'css' },
+            { path: 'coding/portfolio.css', type: 'css' },
+            { path: 'coding/coding.js', type: 'javascript' },
+            { path: 'BefJump/index.html', type: 'html' },
+            { path: 'BefJump/game.bf', type: 'befunge' },
+            { path: 'BefJump/source.html', type: 'html' },
+            { path: '404.html', type: 'html' },
+            { path: '404.css', type: 'css' },
+            { path: '404.js', type: 'javascript' },
+            { path: 'robots.txt', type: 'txt' },
+            { path: '.well-known/discord', type: 'other' },
+            { path: 'easter egg json/readme.json', type: 'json' }
+        ];
         
-        if (files.length === 0) {
-            console.log('⚠️ No files found, using fallback count');
-            element.textContent = '2,000+';
-            return;
-        }
+        console.log('📊 Counting lines in known files...');
         
-        console.log('📊 Counting lines in all discovered files...');
-        
-        const filePromises = files.map(async (file) => {
+        for (const file of knownFiles) {
             try {
-                // Skip binary files (images)
-                if (file.type === 'image') {
-                    return { file, lines: 0 };
-                }
+                console.log(`🔍 Checking ${file.path}...`);
                 
                 const response = await fetch(file.path);
                 if (response.ok) {
                     const content = await response.text();
                     const lines = content.split('\n').length;
-                    return { file, lines };
+                    
+                    totalLines += lines;
+                    languageLines[file.type] += lines;
+                    
+                    console.log(`✅ ${file.path}: ${lines} lines (${file.type})`);
+                    
+                    // Update counter in real-time
+                    element.textContent = totalLines.toLocaleString();
                 } else {
-                    console.log(`❌ Could not fetch ${file.path}: ${response.status}`);
+                    console.log(`❌ ${file.path}: ${response.status}`);
                 }
             } catch (error) {
                 console.log(`❌ Error fetching ${file.path}:`, error.message);
             }
-            return { file, lines: 0 };
-        });
-
-        const results = await Promise.all(filePromises);
-        
-        results.forEach(({ file, lines }) => {
-            if (lines > 0) {
-                totalLines += lines;
-                if (languageLines[file.type] !== undefined) {
-                    languageLines[file.type] += lines;
-                } else {
-                    languageLines.other += lines;
-                }
-                console.log(`📄 ${file.path}: ${lines} lines (${file.type})`);
-            }
-        });
+            
+            // Small delay to show progress
+            await new Promise(resolve => setTimeout(resolve, 100));
+        }
         
         console.log(`🎯 Total lines calculated: ${totalLines}`);
         console.log(`📊 Language breakdown:`, languageLines);
+        
+        if (totalLines === 0) {
+            console.log('⚠️ No files found, using fallback');
+            element.textContent = '2,000+';
+            // Use a default breakdown for the visual
+            languageLines = {
+                html: 800,
+                css: 600,
+                javascript: 500,
+                befunge: 100,
+                other: 100
+            };
+            totalLines = 2100;
+        }
         
         animateCounter('linesOfCode', totalLines, 800); 
         updateLanguageBreakdown(languageLines, totalLines);
@@ -422,10 +220,22 @@ async function calculateLinesOfCode() {
     } catch (error) {
         console.error('❌ Error calculating lines of code:', error);
         element.textContent = '2,000+';
+        
+        // Fallback breakdown
+        const fallbackLanguageLines = {
+            html: 800,
+            css: 600,
+            javascript: 500,
+            befunge: 100,
+            other: 100
+        };
+        updateLanguageBreakdown(fallbackLanguageLines, 2100);
     }
 }
 
 function updateLanguageBreakdown(languageLines, totalLines) {
+    console.log('🎨 Updating language breakdown visualization...');
+    
     const languageColors = {
         html: '#e34c26',
         css: '#1572B6', 
@@ -489,38 +299,60 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         languagePercentages[lang] = totalLines > 0 ? (languageLines[lang] / totalLines) * 100 : 0;
     });
     
+    console.log('📊 Language percentages:', languagePercentages);
+    
     // Update the visual bar
     Object.keys(languagePercentages).forEach(lang => {
         const segment = document.querySelector(`[data-language="${lang}"]`);
-        if (segment && languagePercentages[lang] > 0) {
-            segment.style.width = `${languagePercentages[lang]}%`;
+        if (segment) {
+            const percentage = languagePercentages[lang];
+            if (percentage > 0) {
+                segment.style.width = `${percentage}%`;
+                segment.style.backgroundColor = languageColors[lang];
+                console.log(`🎨 Updated ${lang}: ${percentage.toFixed(1)}%`);
+            } else {
+                segment.style.width = '0%';
+            }
+        } else {
+            console.log(`❌ No segment found for ${lang}`);
         }
     });
     
     // Update labels
     const labelsContainer = document.getElementById('languageLabels');
-    labelsContainer.innerHTML = '';
-    
-    Object.keys(languagePercentages)
-        .filter(lang => languagePercentages[lang] > 0)
-        .sort((a, b) => languagePercentages[b] - languagePercentages[a])
-        .forEach(lang => {
-            const label = document.createElement('div');
-            label.className = 'language-label';
-            
-            const percentage = languagePercentages[lang];
-            const formattedPercentage = percentage >= 0.1 ? percentage.toFixed(1) : percentage.toFixed(2);
-            
-            label.innerHTML = `
-                <div class="language-dot" style="background-color: ${languageColors[lang]};"></div>
-                <span>${languageNames[lang]} ${formattedPercentage}%</span>
-            `;
-            labelsContainer.appendChild(label);
-        });
+    if (labelsContainer) {
+        labelsContainer.innerHTML = '';
+        
+        Object.keys(languagePercentages)
+            .filter(lang => languagePercentages[lang] > 0)
+            .sort((a, b) => languagePercentages[b] - languagePercentages[a])
+            .forEach(lang => {
+                const label = document.createElement('div');
+                label.className = 'language-label';
+                
+                const percentage = languagePercentages[lang];
+                const formattedPercentage = percentage >= 0.1 ? percentage.toFixed(1) : percentage.toFixed(2);
+                
+                label.innerHTML = `
+                    <div class="language-dot" style="background-color: ${languageColors[lang]};"></div>
+                    <span>${languageNames[lang]} ${formattedPercentage}%</span>
+                `;
+                labelsContainer.appendChild(label);
+            });
+        
+        console.log('✅ Language labels updated');
+    } else {
+        console.log('❌ Language labels container not found');
+    }
 }
 
 function animateCounter(elementId, targetValue, duration = 1500) {
     const element = document.getElementById(elementId);
+    if (!element) {
+        console.log(`❌ Element ${elementId} not found`);
+        return;
+    }
+    
     const startTime = Date.now();
     
     function updateCounter() {
@@ -598,7 +430,8 @@ class Typewriter {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Start both calculations immediately
+    console.log('🚀 Page loaded, starting calculations...');
+    
     calculateDaysSinceFirstCode();
     calculateLinesOfCode();
     
