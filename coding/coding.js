@@ -140,17 +140,16 @@ async function discoverAdditionalFiles() {
     
     const additionalFiles = [];
     
-    // Quick scan of common additional paths that might exist (no images)
     const additionalPaths = [
         '../manifest.json',
         '../sw.js',
         '../.gitignore',
         '../LICENSE',
         '../package.json',
-        'script.js', // coding folder files
+        'script.js', 
         'main.js',
         'app.js',
-        'styles.css', // Check if this exists in coding/
+        'styles.css', 
         '../BefJump/style.css',
         '../BefJump/main.js',
         '../BefJump/config.json',
@@ -530,11 +529,63 @@ class Typewriter {
     }
 }
 
+async function updateDiscordStatus() {
+    try {
+        const response = await fetch('https://api.lanyard.rest/v1/users/558761755509776384');
+        const data = await response.json();
+        
+        if (data.success && data.data) {
+            const user = data.data;
+            const statusElement = document.getElementById('discord-status');
+            
+            if (statusElement) {
+                const statusDot = statusElement.querySelector('.status-dot');
+                const statusText = statusElement.querySelector('.status-text');
+                
+                if (statusDot && statusText) {
+                    statusDot.className = `status-dot ${user.discord_status}`;
+                    
+                    const statusMessages = {
+                        'online': '🟢 Online',
+                        'idle': '🟡 Away',
+                        'dnd': '🔴 Do Not Disturb',
+                        'offline': '⚫ Offline'
+                    };
+                    
+                    statusText.textContent = statusMessages[user.discord_status] || '⚫ Offline';
+                }
+                
+                const activityElement = document.getElementById('discord-activity');
+                if (activityElement && user.activities && user.activities.length > 0) {
+                    const activity = user.activities[0];
+                    activityElement.textContent = `🎮 ${activity.name}`;
+                    activityElement.style.display = 'block';
+                } else if (activityElement) {
+                    activityElement.style.display = 'none';
+                }
+            }
+        }
+    } catch (error) {
+        console.log('Discord status fetch failed:', error);
+        const statusElement = document.getElementById('discord-status');
+        if (statusElement) {
+            const statusText = statusElement.querySelector('.status-text');
+            if (statusText) {
+                statusText.textContent = '⚫ Offline';
+            }
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 Page loaded, starting calculations...');
     
     calculateDaysSinceFirstCode();
     calculateLinesOfCode();
+    updateDiscordStatus(); // Add this line
+    
+    // Update Discord status every 30 seconds
+    setInterval(updateDiscordStatus, 30000); // Add this line
     
     const typewriterElement = document.getElementById('typewriter');
     
