@@ -142,20 +142,20 @@ async function discoverAdditionalFiles() {
     
     // Quick scan of common additional paths that might exist (no images)
     const additionalPaths = [
-        'manifest.json',
-        'sw.js',
-        '.gitignore',
-        'README.md',
-        'LICENSE',
-        'package.json',
-        'coding/script.js',
-        'coding/main.js',
-        'coding/app.js',
-        'BefJump/style.css',
-        'BefJump/main.js',
-        'BefJump/config.json',
-        '.github/workflows/deploy.yml',
-        '.github/workflows/pages.yml'
+        '../manifest.json',
+        '../sw.js',
+        '../.gitignore',
+        '../LICENSE',
+        '../package.json',
+        'script.js', // coding folder files
+        'main.js',
+        'app.js',
+        'styles.css', // Check if this exists in coding/
+        '../BefJump/style.css',
+        '../BefJump/main.js',
+        '../BefJump/config.json',
+        '../.github/workflows/deploy.yml',
+        '../.github/workflows/pages.yml'
     ];
     
     console.log(`🎯 Checking ${additionalPaths.length} additional paths...`);
