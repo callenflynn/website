@@ -98,9 +98,7 @@ function getFileType(filename) {
     return extensionMap[extension] || 'other';
 }
 
-// Update the KNOWN_FILES array with correct relative paths from the coding/ folder:
 const KNOWN_FILES = [
-    // Root files (need ../ prefix since we're in coding/ folder)
     { path: '../index.html', type: 'html' },
     { path: '../styles.css', type: 'css' },
     { path: '../script.js', type: 'javascript' },
@@ -112,31 +110,22 @@ const KNOWN_FILES = [
     { path: '../CNAME', type: 'txt' },
     { path: '../_config.yml', type: 'yml' },
     { path: '../google526c7f9cda034c56.html', type: 'html' },
-    { path: '../README.md', type: 'markdown' }, // Add this since you have it
-    { path: '../CREDITS', type: 'txt' }, // Add this since you have it
-    { path: '../Callen', type: 'other' }, // Add this since you have it
-    
-    // Coding folder (current directory, so no prefix needed)
+    { path: '../README.md', type: 'markdown' },
+    { path: '../CREDITS', type: 'txt' },
+    { path: '../Callen', type: 'other' },
     { path: 'index.html', type: 'html' },
     { path: 'portfolio.css', type: 'css' },
     { path: 'coding.js', type: 'javascript' },
-    // Note: Remove 'coding/styles.css' since it doesn't exist based on your structure
-    
-    // BefJump folder (sibling directory)
     { path: '../BefJump/index.html', type: 'html' },
     { path: '../BefJump/game.bf', type: 'befunge' },
     { path: '../BefJump/source.html', type: 'html' },
-    
-    // Assets folder - code files only
     { path: '../assets/404.js', type: 'javascript' },
-    
-    // Special files
     { path: '../.well-known/discord', type: 'other' },
     { path: '../easter egg json/readme.json', type: 'json' }
 ];
 
 async function discoverAdditionalFiles() {
-    console.log('🔍 Scanning for additional files in background...');
+    console.log('Scanning for additional files in background...');
     
     const additionalFiles = [];
     
@@ -157,7 +146,7 @@ async function discoverAdditionalFiles() {
         '../.github/workflows/pages.yml'
     ];
     
-    console.log(`🎯 Checking ${additionalPaths.length} additional paths...`);
+    console.log(`Checking ${additionalPaths.length} additional paths...`);
     
     for (const filepath of additionalPaths) {
         try {
@@ -170,9 +159,8 @@ async function discoverAdditionalFiles() {
                 const filename = filepath.split('/').pop();
                 const fileType = getFileType(filename);
                 
-                // Skip if it's an image type
                 if (fileType === 'image') {
-                    console.log(`⏭️ Skipping image file: ${filepath}`);
+                    console.log(`Skipping image file: ${filepath}`);
                     continue;
                 }
                 
@@ -182,22 +170,21 @@ async function discoverAdditionalFiles() {
                     type: fileType
                 };
                 additionalFiles.push(file);
-                console.log(`✅ Found additional file: ${filepath} (${file.type})`);
+                console.log(`Found additional file: ${filepath} (${file.type})`);
             }
         } catch (error) {
-            // File doesn't exist, ignore
+            
         }
         
-        // Small delay
         await new Promise(resolve => setTimeout(resolve, 50));
     }
     
-    console.log(`🎉 Background scan complete! Found ${additionalFiles.length} additional files`);
+    console.log(`Background scan complete! Found ${additionalFiles.length} additional files`);
     return additionalFiles;
 }
 
 async function calculateLinesOfCode() {
-    console.log('🚀 Starting line count calculation...');
+    console.log('Starting line count calculation...');
     
     let totalLines = 0;
     let languageLines = {
@@ -233,12 +220,11 @@ async function calculateLinesOfCode() {
     try {
         element.textContent = 'Counting lines...';
         
-        console.log(`📊 Counting lines in ${KNOWN_FILES.length} known files...`);
+        console.log(`Counting lines in ${KNOWN_FILES.length} known files...`);
         
-        // Count known files first for instant results
         for (const file of KNOWN_FILES) {
             try {
-                console.log(`🔍 Counting lines in ${file.path}...`);
+                console.log(`Counting lines in ${file.path}...`);
                 
                 const response = await fetch(file.path, { cache: 'no-cache' });
                 if (response.ok) {
@@ -248,35 +234,31 @@ async function calculateLinesOfCode() {
                     totalLines += lines;
                     languageLines[file.type] += lines;
                     
-                    console.log(`✅ ${file.path}: ${lines} lines (${file.type})`);
+                    console.log(`${file.path}: ${lines} lines (${file.type})`);
                     
-                    // Update counter in real-time
                     element.textContent = `${totalLines.toLocaleString()}`;
                 } else {
-                    console.log(`❌ Could not fetch ${file.path}: ${response.status}`);
+                    console.log(`Could not fetch ${file.path}: ${response.status}`);
                 }
             } catch (error) {
-                console.log(`❌ Error processing ${file.path}:`, error.message);
+                console.log(`Error processing ${file.path}:`, error.message);
             }
             
-            // Small delay to show progress
             await new Promise(resolve => setTimeout(resolve, 50));
         }
         
-        // Update display with known files
-        console.log(`🎯 Known files total: ${totalLines} lines`);
+        console.log(`Known files total: ${totalLines} lines`);
         animateCounter('linesOfCode', totalLines, 800);
         updateLanguageBreakdown(languageLines, totalLines);
         
-        // Now scan for additional files in background
         const additionalFiles = await discoverAdditionalFiles();
         
         if (additionalFiles.length > 0) {
-            console.log(`📊 Counting lines in ${additionalFiles.length} additional files...`);
+            console.log(`Counting lines in ${additionalFiles.length} additional files...`);
             
             for (const file of additionalFiles) {
                 try {
-                    console.log(`🔍 Counting lines in additional file ${file.path}...`);
+                    console.log(`Counting lines in additional file ${file.path}...`);
                     
                     const response = await fetch(file.path, { cache: 'no-cache' });
                     if (response.ok) {
@@ -286,28 +268,26 @@ async function calculateLinesOfCode() {
                         totalLines += lines;
                         languageLines[file.type] += lines;
                         
-                        console.log(`✅ ${file.path}: ${lines} lines (${file.type})`);
+                        console.log(`${file.path}: ${lines} lines (${file.type})`);
                         
-                        // Update counter in real-time
                         element.textContent = `${totalLines.toLocaleString()}`;
                     }
                 } catch (error) {
-                    console.log(`❌ Error processing additional file ${file.path}:`, error.message);
+                    console.log(`Error processing additional file ${file.path}:`, error.message);
                 }
                 
                 await new Promise(resolve => setTimeout(resolve, 50));
             }
             
-            // Final update with all files
-            console.log(`🎯 FINAL TOTAL: ${totalLines} lines across ${KNOWN_FILES.length + additionalFiles.length} files`);
+            console.log(`FINAL TOTAL: ${totalLines} lines across ${KNOWN_FILES.length + additionalFiles.length} files`);
             animateCounter('linesOfCode', totalLines, 500);
             updateLanguageBreakdown(languageLines, totalLines);
         }
         
-        console.log(`📊 Final language breakdown:`, languageLines);
+        console.log(`Final language breakdown:`, languageLines);
         
         if (totalLines === 0) {
-            console.log('⚠️ No lines counted, using fallback');
+            console.log('No lines counted, using fallback');
             element.textContent = '2,500+';
             const fallbackLanguageLines = {
                 html: 800,
@@ -321,7 +301,7 @@ async function calculateLinesOfCode() {
         }
         
     } catch (error) {
-        console.error('❌ Error in line count calculation:', error);
+        console.error('Error in line count calculation:', error);
         element.textContent = '2,500+';
         
         const fallbackLanguageLines = {
@@ -337,7 +317,7 @@ async function calculateLinesOfCode() {
 }
 
 function updateLanguageBreakdown(languageLines, totalLines) {
-    console.log('🎨 Updating language breakdown visualization...');
+    console.log('Updating language breakdown visualization...');
     
     const languageColors = {
         html: '#e34c26',
@@ -400,9 +380,8 @@ function updateLanguageBreakdown(languageLines, totalLines) {
         languagePercentages[lang] = totalLines > 0 ? (languageLines[lang] / totalLines) * 100 : 0;
     });
     
-    console.log('📊 Language percentages:', languagePercentages);
+    console.log('Language percentages:', languagePercentages);
     
-    // Update the visual bar
     Object.keys(languagePercentages).forEach(lang => {
         const segment = document.querySelector(`[data-language="${lang}"]`);
         if (segment) {
@@ -410,16 +389,15 @@ function updateLanguageBreakdown(languageLines, totalLines) {
             if (percentage > 0) {
                 segment.style.width = `${percentage}%`;
                 segment.style.backgroundColor = languageColors[lang];
-                console.log(`🎨 Updated ${lang}: ${percentage.toFixed(1)}%`);
+                console.log(`Updated ${lang}: ${percentage.toFixed(1)}%`);
             } else {
                 segment.style.width = '0%';
             }
         } else {
-            console.log(`❌ No segment found for ${lang}`);
+            console.log(`No segment found for ${lang}`);
         }
     });
     
-    // Update labels
     const labelsContainer = document.getElementById('languageLabels');
     if (labelsContainer) {
         labelsContainer.innerHTML = '';
@@ -441,16 +419,16 @@ function updateLanguageBreakdown(languageLines, totalLines) {
                 labelsContainer.appendChild(label);
             });
         
-        console.log('✅ Language labels updated');
+        console.log('Language labels updated');
     } else {
-        console.log('❌ Language labels container not found');
+        console.log('Language labels container not found');
     }
 }
 
 function animateCounter(elementId, targetValue, duration = 1500) {
     const element = document.getElementById(elementId);
     if (!element) {
-        console.log(`❌ Element ${elementId} not found`);
+        console.log(`Element ${elementId} not found`);
         return;
     }
     
@@ -530,62 +508,77 @@ class Typewriter {
 }
 
 async function updateDiscordStatus() {
+    const statusElement = document.getElementById('discord-status');
+    if (!statusElement) {
+        console.log('Discord status element not found, skipping...');
+        return;
+    }
+    
     try {
-        const response = await fetch('https://api.lanyard.rest/v1/users/558761755509776384');
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 5000);
+        
+        const response = await fetch('https://api.lanyard.rest/v1/users/558761755509776384', {
+            signal: controller.signal,
+            cache: 'no-cache'
+        });
+        
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}`);
+        }
+        
         const data = await response.json();
         
         if (data.success && data.data) {
             const user = data.data;
-            const statusElement = document.getElementById('discord-status');
+            const statusDot = statusElement.querySelector('.status-dot');
+            const statusText = statusElement.querySelector('.status-text');
             
-            if (statusElement) {
-                const statusDot = statusElement.querySelector('.status-dot');
-                const statusText = statusElement.querySelector('.status-text');
+            if (statusDot && statusText) {
+                statusDot.className = `status-dot ${user.discord_status}`;
                 
-                if (statusDot && statusText) {
-                    statusDot.className = `status-dot ${user.discord_status}`;
-                    
-                    const statusMessages = {
-                        'online': '🟢 Online',
-                        'idle': '🟡 Away',
-                        'dnd': '🔴 Do Not Disturb',
-                        'offline': '⚫ Offline'
-                    };
-                    
-                    statusText.textContent = statusMessages[user.discord_status] || '⚫ Offline';
-                }
+                const statusMessages = {
+                    'online': 'Online',
+                    'idle': 'Away',
+                    'dnd': 'Do Not Disturb',
+                    'offline': 'Offline'
+                };
                 
-                const activityElement = document.getElementById('discord-activity');
-                if (activityElement && user.activities && user.activities.length > 0) {
-                    const activity = user.activities[0];
-                    activityElement.textContent = `🎮 ${activity.name}`;
-                    activityElement.style.display = 'block';
-                } else if (activityElement) {
-                    activityElement.style.display = 'none';
-                }
+                statusText.textContent = statusMessages[user.discord_status] || 'Offline';
             }
+            
+            const activityElement = document.getElementById('discord-activity');
+            if (activityElement && user.activities && user.activities.length > 0) {
+                const activity = user.activities[0];
+                activityElement.textContent = activity.name;
+                activityElement.style.display = 'block';
+            } else if (activityElement) {
+                activityElement.style.display = 'none';
+            }
+            
+            console.log('Discord status updated successfully');
         }
     } catch (error) {
-        console.log('Discord status fetch failed:', error);
-        const statusElement = document.getElementById('discord-status');
-        if (statusElement) {
-            const statusText = statusElement.querySelector('.status-text');
-            if (statusText) {
-                statusText.textContent = '⚫ Offline';
-            }
+        console.log('Discord status fetch failed:', error.name);
+        const statusText = statusElement.querySelector('.status-text');
+        if (statusText) {
+            statusText.textContent = 'Offline';
         }
     }
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 Page loaded, starting calculations...');
+    console.log('Page loaded, starting calculations...');
     
     calculateDaysSinceFirstCode();
     calculateLinesOfCode();
-    updateDiscordStatus(); // Add this line
     
-    // Update Discord status every 30 seconds
-    setInterval(updateDiscordStatus, 30000); // Add this line
+    setTimeout(() => {
+        updateDiscordStatus();
+        setInterval(updateDiscordStatus, 30000);
+    }, 1000);
     
     const typewriterElement = document.getElementById('typewriter');
     
