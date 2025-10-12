@@ -507,78 +507,11 @@ class Typewriter {
     }
 }
 
-async function updateDiscordStatus() {
-    const statusElement = document.getElementById('discord-status');
-    if (!statusElement) {
-        console.log('Discord status element not found, skipping...');
-        return;
-    }
-    
-    try {
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 5000);
-        
-        const response = await fetch('https://api.lanyard.rest/v1/users/558761755509776384', {
-            signal: controller.signal,
-            cache: 'no-cache'
-        });
-        
-        clearTimeout(timeoutId);
-        
-        if (!response.ok) {
-            throw new Error(`HTTP ${response.status}`);
-        }
-        
-        const data = await response.json();
-        
-        if (data.success && data.data) {
-            const user = data.data;
-            const statusDot = statusElement.querySelector('.status-dot');
-            const statusText = statusElement.querySelector('.status-text');
-            
-            if (statusDot && statusText) {
-                statusDot.className = `status-dot ${user.discord_status}`;
-                
-                const statusMessages = {
-                    'online': 'Online',
-                    'idle': 'Away',
-                    'dnd': 'Do Not Disturb',
-                    'offline': 'Offline'
-                };
-                
-                statusText.textContent = statusMessages[user.discord_status] || 'Offline';
-            }
-            
-            const activityElement = document.getElementById('discord-activity');
-            if (activityElement && user.activities && user.activities.length > 0) {
-                const activity = user.activities[0];
-                activityElement.textContent = activity.name;
-                activityElement.style.display = 'block';
-            } else if (activityElement) {
-                activityElement.style.display = 'none';
-            }
-            
-            console.log('Discord status updated successfully');
-        }
-    } catch (error) {
-        console.log('Discord status fetch failed:', error.name);
-        const statusText = statusElement.querySelector('.status-text');
-        if (statusText) {
-            statusText.textContent = 'Offline';
-        }
-    }
-}
-
 document.addEventListener('DOMContentLoaded', function() {
     console.log('Page loaded, starting calculations...');
     
     calculateDaysSinceFirstCode();
     calculateLinesOfCode();
-    
-    setTimeout(() => {
-        updateDiscordStatus();
-        setInterval(updateDiscordStatus, 30000);
-    }, 1000);
     
     const typewriterElement = document.getElementById('typewriter');
     
