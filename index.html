@@ -16,6 +16,11 @@
     <link rel="icon" type="image/png" href="assets/C.png">
     <link rel="stylesheet" href="styles.css">
     <script src="https://unpkg.com/twemoji@latest/dist/twemoji.min.js"></script>
+    <script>
+      if (location.hostname.startsWith('n8n.')) {
+        location.href = 'https://callen.is-a.dev/n8n';
+      }
+    </script>
 </head>
 <body>
     <div id="discordBanner" class="discord-banner" aria-label="Live Discord Status">
