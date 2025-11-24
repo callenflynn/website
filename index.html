@@ -53,7 +53,7 @@
                 <div class="project-icon" id="aboutIcon">👋</div>
                 <h2 class="project-title">About Me</h2>
                 <p class="project-description">
-                    Hi! I'm Cal, a high school student who loves coding, videogames (especially sim racing), and skiing. My favorite game is <a href="https://store.steampowered.com/app/573090/Stormworks_Build_and_Rescue/" target="_blank" style="color: inherit; text-decoration: underline;">Stormworks: Build and Rescue</a>.
+                    Hi! I'm Cal, a high school student who loves coding, videogames (especially sim racing), and skiing. My favorite game is <a href="https://store.steampowered.com/app/573090/Stormworks_Build_and_Rescue/" target="_blank" style="color: #4a9eff; text-decoration: underline;">Stormworks: Build and Rescue</a>.
                 </p>
             </div>
 
@@ -65,7 +65,6 @@
                 </p>
                 <div class="project-links">
                     <a href="coding/" class="btn btn-primary">
-                        💻 View Coding Projects
                     </a>
                     <a href="https://github.com/callenflynn" class="btn" target="_blank">
                         🐙 GitHub
@@ -149,6 +148,96 @@
                 ext: '.svg'
             });
         }
+    </script>
+    <script>
+        async function updateDiscordStatus() {
+            try {
+                const response = await fetch('https://api.lanyard.rest/v1/users/558761755509776384');
+                const data = await response.json();
+                
+                if (data.success && data.data) {
+                    const user = data.data;
+                    const banner = document.getElementById('discordBanner');
+                    const bannerContent = banner.querySelector('.discord-banner-content');
+                    
+                    const statusEmojis = {
+                        'online': '🟢',
+                        'idle': '🟡',
+                        'dnd': '🔴',
+                        'offline': '⚫'
+                    };
+                    
+                    const statusNames = {
+                        'online': 'Online',
+                        'idle': 'Away',
+                        'dnd': 'Do Not Disturb',
+                        'offline': 'Offline'
+                    };
+                    
+                    const emoji = statusEmojis[user.discord_status] || '⚫';
+                    const statusName = statusNames[user.discord_status] || 'Offline';
+                    
+                    const activity = user.activities.find(a => a.type !== 4);
+                    
+                    if (activity) {
+                        const activityName = activity.name;
+                        const activityDetails = activity.details || '';
+                        const activityState = activity.state || '';
+                        const largeImage = activity.assets?.large_image;
+                        
+                        let activityDisplay = activityName;
+                        if (activityDetails) {
+                            activityDisplay += ` - ${activityDetails}`;
+                        }
+                        if (activityState) {
+                            activityDisplay += ` (${activityState})`;
+                        }
+                        
+                        let imageHtml = '';
+                        if (largeImage) {
+                            const imageUrl = largeImage.startsWith('mp:')
+                                ? `https://media.discordapp.net/${largeImage.replace('mp:', '')}`
+                                : `https://cdn.discordapp.com/app-assets/${activity.application_id}/${largeImage}.png`;
+                            
+                            imageHtml = `<img src="${imageUrl}" alt="${activityName}" style="width: 32px; height: 32px; vertical-align: middle; margin-right: 8px; border-radius: 4px;">`;
+                        }
+                        
+                        bannerContent.innerHTML = `${imageHtml}${emoji} ${activityDisplay}`;
+                    } else {
+                        bannerContent.innerHTML = `${emoji} ${statusName}`;
+                    }
+                    
+                    const thoughtBubble = document.getElementById('thoughtBubble');
+                    const thoughtContent = document.getElementById('thoughtBubbleContent');
+                    
+                    const customStatus = user.activities.find(a => a.type === 4);
+                    if (customStatus && customStatus.state) {
+                        let customStatusText = customStatus.state;
+                        
+                        if (customStatus.emoji) {
+                            const emojiDisplay = customStatus.emoji.id 
+                                ? `<img src="https://cdn.discordapp.com/emojis/${customStatus.emoji.id}.${customStatus.emoji.animated ? 'gif' : 'png'}" alt="${customStatus.emoji.name}" style="width: 20px; height: 20px; vertical-align: middle; margin-right: 4px;">` 
+                                : customStatus.emoji.name;
+                            customStatusText = `${emojiDisplay} ${customStatusText}`;
+                        }
+                        
+                        thoughtContent.innerHTML = customStatusText;
+                        thoughtBubble.style.display = 'block';
+                    } else {
+                        thoughtBubble.style.display = 'none';
+                    }
+                    
+                }
+            } catch (error) {
+                console.error('Error fetching Discord status:', error);
+                const banner = document.getElementById('discordBanner');
+                const bannerContent = banner.querySelector('.discord-banner-content');
+                bannerContent.textContent = '⚫ Offline';
+            }
+        }
+
+        updateDiscordStatus();
+        setInterval(updateDiscordStatus, 30000);
     </script>
 </body>
 </html>
