@@ -125,6 +125,39 @@ h1.hanging::before {
     opacity: 1;
 }
 
+.terminal-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--bg-secondary);
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--border-color);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.875rem;
+    margin-top: 1.5rem;
+}
+
+.terminal-prompt {
+    color: var(--accent-primary);
+    font-weight: 600;
+}
+
+.terminal-text {
+    color: var(--text-secondary);
+}
+
+.cursor {
+    color: var(--accent-primary);
+    font-weight: bold;
+    animation: blink 1.2s infinite;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
 .controls {
     position: fixed;
     top: 70px; 

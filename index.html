@@ -41,6 +41,10 @@
 
         <header>
             <h1 id="nameTitle">Cal</h1>
+            <div class="terminal-indicator">
+                <span class="terminal-prompt">$</span>
+                <span class="terminal-text" id="typewriter"><span class="cursor">|</span></span>
+            </div>
         </header>
 
         <div class="projects-grid">
@@ -123,6 +127,78 @@
 
     <script src="script.js"></script>
     <script>
+        class Typewriter {
+            constructor(element, commands, options = {}) {
+                this.element = element;
+                this.commands = commands;
+                this.currentCommandIndex = 0;
+                this.typeSpeed = options.typeSpeed || 100;
+                this.deleteSpeed = options.deleteSpeed || 60;
+                this.pauseTime = options.pauseTime || 2500;
+                this.deletePauseTime = options.deletePauseTime || 800;
+            }
+
+            async wait(ms) {
+                return new Promise(resolve => setTimeout(resolve, ms));
+            }
+
+            async type(text) {
+                const cursorSpan = this.element.querySelector('.cursor');
+                for (let i = 0; i < text.length; i++) {
+                    const textNode = document.createTextNode(text[i]);
+                    this.element.insertBefore(textNode, cursorSpan);
+                    await this.wait(this.typeSpeed);
+                }
+            }
+
+            async delete() {
+                const cursorSpan = this.element.querySelector('.cursor');
+                while (this.element.firstChild !== cursorSpan) {
+                    this.element.removeChild(this.element.firstChild);
+                    await this.wait(this.deleteSpeed);
+                }
+            }
+
+            async start() {
+                while (true) {
+                    const currentCommand = this.commands[this.currentCommandIndex];
+                    await this.type(currentCommand);
+                    await this.wait(this.pauseTime);
+                    await this.delete();
+                    await this.wait(this.deletePauseTime);
+                    
+                    this.currentCommandIndex = (this.currentCommandIndex + 1) % this.commands.length;
+                }
+            }
+        }
+
+        const typewriterCommands = [
+            'find . -name "*.js" -o -name "*.html" -o -name "*.css" | wc -l',
+            'tree -a',
+            'ls -la */',
+            '"Yo bro watch this!"',
+            'skill-issue',
+            'cat /proc/rank | grep Diamond',
+            'echo "FIND YOUR WINGS"',
+            'ls ~/garden/IGOR',
+            'aplay "Gone, Gone/Thank You"',
+            'Late night gaming...'
+        ];
+
+        const typewriterElement = document.getElementById('typewriter');
+        if (typewriterElement) {
+            const typewriter = new Typewriter(typewriterElement, typewriterCommands, {
+                typeSpeed: 100,
+                deleteSpeed: 60,
+                pauseTime: 2500,
+                deletePauseTime: 800
+            });
+            
+            setTimeout(() => {
+                typewriter.start();
+            }, 1000);
+        }
+
         function isAppleDevice() {
             return /iPad|iPhone|iPod/.test(navigator.userAgent) || 
                    (navigator.userAgent.includes('Mac') && 'ontouchend' in document) ||
