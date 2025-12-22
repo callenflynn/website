@@ -198,6 +198,17 @@
     padding: 4rem 2rem;
 }
 
+.section-divider {
+    max-width: 1200px;
+    margin: 3rem auto 2rem;
+    padding: 0 2rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: rgba(161, 161, 170, 0.3);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
 .projects-container {
     max-width: 1200px;
     margin: 0 auto;
