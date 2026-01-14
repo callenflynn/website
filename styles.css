@@ -451,6 +451,16 @@ h1.hanging::before {
     color: var(--text-secondary);
 }
 
+.socials-list li a {
+    cursor: pointer;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.socials-list li a:hover {
+    color: var(--primary-color);
+    transform: translateX(5px);
+}
+
 .socials-list li:last-child {
     margin-bottom: 0;
 }
