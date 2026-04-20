@@ -458,6 +458,41 @@ h1.hanging::before {
     flex-wrap: wrap;
 }
 
+.techspecs-card {
+    position: relative;
+}
+
+.specs-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 0.9rem;
+}
+
+.spec-item {
+    background: var(--bg-tertiary);
+    border: 1px solid var(--border-color);
+    border-radius: 0.75rem;
+    padding: 0.85rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.2rem;
+    min-height: 72px;
+}
+
+.spec-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    font-weight: 600;
+}
+
+.spec-value {
+    color: var(--text-primary);
+    font-weight: 500;
+    line-height: 1.35;
+}
+
 .socials-list {
     list-style: none;
     padding: 0;
@@ -737,5 +772,9 @@ body.light-theme h1 {
         height: 36px;
         padding: 0;
         font-size: 0.9rem;
+    }
+
+    .specs-grid {
+        grid-template-columns: 1fr;
     }
 }
