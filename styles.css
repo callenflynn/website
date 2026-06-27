@@ -13,7 +13,7 @@
 body{
     background:var(--bg);
     color:var(--text);
-    font-family:"Manrope",sans-serif;
+    font-family: "Inter", system-ui, sans-serif;
 
     min-height:100vh;
     display:flex;
@@ -67,7 +67,7 @@ p{
     transition:0.25s ease;
 }
 
-/* hidden icon */
+
 .socials a img{
     width:18px;
     height:18px;
@@ -77,19 +77,18 @@ p{
     transition:0.25s ease;
 }
 
-/* hover text shift */
+
 .socials a:hover{
     color:var(--accent);
     transform:translateX(6px);
 }
 
-/* reveal icon */
 .socials a:hover img{
     opacity:1;
     transform:translateX(0) scale(1);
 }
 
-/* underline animation */
+
 .socials a::after{
     content:"";
     position:absolute;
@@ -108,7 +107,7 @@ p{
     width:100%;
 }
 
-/* FOOTER */
+
 footer{
     margin-top:60px;
     display:flex;

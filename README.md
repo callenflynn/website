@@ -1,7 +1,6 @@
-# Callen.is-a.dev
+# callenflynn.github.io
 This is my website which has links to all my things such as projects, minecraft server, and social medias.
 
 
 # more
-## https://projects.callen.is-a.dev
-https://github.com/callenflynn/projects.callen.is-a.dev/tree/main
+
