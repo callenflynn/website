@@ -13,7 +13,7 @@
 body{
     background:var(--bg);
     color:var(--text);
-    font-family: "Cormorant Garamond", serif;
+    font-family: "Fraunces", serif;
     
     min-height:100vh;
     display:flex;
@@ -27,9 +27,9 @@ main{
     width:min(700px,100%);
 }
 
-h1{
-    font-size:clamp(3rem,8vw,6rem);
-    letter-spacing:-0.05em;
+h1 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
 }
 
 h1 span{
