@@ -1,5 +1,5 @@
 :root{
-    --bg:#f5efe6;
+    --bg:#ffefe0;
     --text:#242424;
     --accent:#ed5001;
 }
@@ -23,17 +23,6 @@ body{
     padding:50px;
 }
 
-.blnking-dots {
-  width: 120px;
-  height: 30px; /* aspect-ratio: 4/1 */
-  background: radial-gradient(circle closest-side, #f72585 90%, #0000) 0 / 
-              calc(100% / 3) 100% no-repeat;
-  animation: blink 1s steps(3) infinite;
-}
-
-@keyframes blink {
-  to { background-position: 150%; }
-}
 
 
 main{
