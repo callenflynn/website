@@ -13,8 +13,8 @@
 body{
     background:var(--bg);
     color:var(--text);
-    font-family: "Fraunces", serif;
-    
+    font-family:"Fraunces", serif;
+
     min-height:100vh;
     display:flex;
     justify-content:center;
@@ -23,16 +23,13 @@ body{
     padding:50px;
 }
 
-
-
 main{
     width:min(700px,100%);
-    
 }
 
 h1 {
-  font-weight: 600;
-  letter-spacing: -0.02em;
+    font-weight:600;
+    letter-spacing:-0.02em;
 }
 
 h1 span{
@@ -47,6 +44,7 @@ p{
 }
 
 /* SOCIALS */
+
 .socials{
     margin-top:50px;
     display:flex;
@@ -70,7 +68,6 @@ p{
     transition:0.25s ease;
 }
 
-
 .socials a img{
     width:18px;
     height:18px;
@@ -79,7 +76,6 @@ p{
     transform:translateX(-8px) scale(0.9);
     transition:0.25s ease;
 }
-
 
 .socials a:hover{
     color:var(--accent);
@@ -90,7 +86,6 @@ p{
     opacity:1;
     transform:translateX(0) scale(1);
 }
-
 
 .socials a::after{
     content:"";
@@ -123,4 +118,49 @@ footer{
     transform:scale(0.85);
     opacity:0.7;
     transform-origin:right;
+}
+
+.preview{
+    position:fixed;
+    right:50px;
+    top:50%;
+    transform:translateY(-50%);
+
+    width:360px;
+    height:260px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    pointer-events:none;
+}
+
+.preview-img{
+    width:100%;
+    border-radius:14px;
+
+    opacity:0;
+    transform:translateY(10px);
+
+    transition:0.35s ease;
+}
+.preview{
+    position:fixed;
+    right:60px;
+    top:50%;
+    transform:translateY(-50%);
+
+    width:360px;
+
+    pointer-events:none;
+}
+
+.preview img{
+    width:100%;
+    border-radius:14px;
+
+    opacity:0;
+    transform:translateY(10px);
+    transition:0.35s ease;
 }
