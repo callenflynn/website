@@ -23,21 +23,22 @@ body{
     padding:50px;
 }
 
-body::after {
-  content: "";
-  position: fixed;
-  top: 0;
-  right: 0;
-  width: 50%;
-  height: 100%;
-  background:
-    radial-gradient(circle at 30% 20%, rgba(237,80,1,0.08), transparent 60%),
-    repeating-linear-gradient(45deg, transparent, transparent 40px, rgba(0,0,0,0.03) 40px, rgba(0,0,0,0.03) 41px);
-  pointer-events: none;
+.blnking-dots {
+  width: 120px;
+  height: 30px; /* aspect-ratio: 4/1 */
+  background: radial-gradient(circle closest-side, #f72585 90%, #0000) 0 / 
+              calc(100% / 3) 100% no-repeat;
+  animation: blink 1s steps(3) infinite;
 }
+
+@keyframes blink {
+  to { background-position: 150%; }
+}
+
 
 main{
     width:min(700px,100%);
+    
 }
 
 h1 {
