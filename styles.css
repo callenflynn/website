@@ -165,32 +165,25 @@ footer{
     transition:0.35s ease;
 }
 
-.social-link{
+.socials a .icon{
+    width:18px;
+    height:18px;
+
     display:flex;
     align-items:center;
-    gap:10px;
+    justify-content:center;
 
-    text-decoration:none;
-    color:var(--text);
+    flex-shrink:0;
 
-    width:fit-content;
+    font-size:16px;
+    line-height:1;
 
-    transition:0.25s ease;
-}
-
-.icon-link .icon{
     opacity:0;
     transform:translateX(-8px) scale(0.9);
     transition:0.25s ease;
-    color:var(--text);
 }
 
-.icon-link:hover{
-    color:var(--accent);
-    transform:translateX(6px);
-}
-
-.icon-link:hover .icon{
+.socials a:hover .icon{
     opacity:1;
     transform:translateX(0) scale(1);
     color:var(--accent);
