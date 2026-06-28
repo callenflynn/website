@@ -38,7 +38,7 @@ document.querySelectorAll(".socials a").forEach(link => {
         link.addEventListener("mouseleave", hide);
     }
 
-    if (href.includes("trueachievements")){
+    if (href.includes("xbox")){
         link.addEventListener("mouseenter", () => show(cards.xbox));
         link.addEventListener("mouseleave", hide);
     }
