@@ -3,6 +3,7 @@ document.querySelector("footer span").textContent =
 // too lazy to manually update year
 
 
+
 const preview = document.getElementById("previewImage");
 
 const cards = {
@@ -20,15 +21,57 @@ Object.values(cards).forEach((url) => {
     preloadedCards.set(url, img);
 });
 
-function show(img){
-    preview.src = img;
+
+
+const CARD_SWAP_MS = 170;
+const CARD_HIDE_DELAY_MS = 90;
+let activeCard = "";
+let hideTimer;
+let swapTimer;
+
+function showFrame() {
     preview.style.opacity = "1";
-    preview.style.transform = "translateY(0)";
+    preview.style.transform = "translateY(0) scale(1)";
+}
+
+function hideFrame() {
+    preview.style.opacity = "0";
+    preview.style.transform = "translateY(10px) scale(0.99)";
+}
+
+function show(img){
+    if (!preview) return;
+
+    clearTimeout(hideTimer);
+    clearTimeout(swapTimer);
+
+    if (!activeCard) {
+        preview.src = img;
+        activeCard = img;
+        requestAnimationFrame(showFrame);
+        return;
+    }
+
+    if (img === activeCard) {
+        requestAnimationFrame(showFrame);
+        return;
+    }
+
+    hideFrame();
+    swapTimer = setTimeout(() => {
+        preview.src = img;
+        activeCard = img;
+        requestAnimationFrame(showFrame);
+    }, CARD_SWAP_MS);
 }
 
 function hide(){
-    preview.style.opacity = "0";
-    preview.style.transform = "translateY(10px)";
+    if (!preview) return;
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+        hideFrame();
+        activeCard = "";
+    }, CARD_HIDE_DELAY_MS);
 }
 
 document.querySelectorAll(".socials a").forEach(link => {
@@ -50,6 +93,7 @@ document.querySelectorAll(".socials a").forEach(link => {
         link.addEventListener("mouseleave", hide);
     }
 
+  
     if (href.includes("steamcommunity")){
         link.addEventListener("mouseenter", () => show(cards.steam));
         link.addEventListener("mouseleave", hide);

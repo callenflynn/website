@@ -150,9 +150,12 @@ footer{
     border-radius:14px;
 
     opacity:0;
-    transform:translateY(10px);
+    transform:translateY(10px) scale(0.99);
 
-    transition:0.35s ease;
+    transition:
+        opacity 280ms cubic-bezier(0.22, 1, 0.36, 1),
+        transform 280ms cubic-bezier(0.22, 1, 0.36, 1);
+    will-change:opacity, transform;
 }
 
 .socials a .icon{
