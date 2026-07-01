@@ -2,8 +2,6 @@ document.querySelector("footer span").textContent =
 `© ${new Date().getFullYear()} Callen`;
 // too lazy to manually update year
 
-
-
 const preview = document.getElementById("previewImage");
 
 const cards = {
@@ -21,13 +19,16 @@ Object.values(cards).forEach((url) => {
     preloadedCards.set(url, img);
 });
 
-
-
 const CARD_SWAP_MS = 170;
 const CARD_HIDE_DELAY_MS = 90;
 let activeCard = "";
 let hideTimer;
 let swapTimer;
+
+function clearPreviewTimers() {
+    clearTimeout(hideTimer);
+    clearTimeout(swapTimer);
+}
 
 function showFrame() {
     preview.style.opacity = "1";
@@ -39,11 +40,17 @@ function hideFrame() {
     preview.style.transform = "translateY(10px) scale(0.99)";
 }
 
+function hideImmediate() {
+    if (!preview) return;
+    clearPreviewTimers();
+    hideFrame();
+    activeCard = "";
+}
+
 function show(img){
     if (!preview) return;
 
-    clearTimeout(hideTimer);
-    clearTimeout(swapTimer);
+    clearPreviewTimers();
 
     if (!activeCard) {
         preview.src = img;
@@ -67,41 +74,56 @@ function show(img){
 
 function hide(){
     if (!preview) return;
-    clearTimeout(hideTimer);
+    clearPreviewTimers();
     hideTimer = setTimeout(() => {
         hideFrame();
         activeCard = "";
     }, CARD_HIDE_DELAY_MS);
 }
 
-document.querySelectorAll(".socials a").forEach(link => {
+function getCardForLinkHref(href) {
+    if (href.includes("github.com/callenflynn")) return cards.github;
+    if (href.includes("exophase")) return cards.exophase;
+    if (href.includes("xbox")) return cards.xbox;
+    if (href.includes("steamcommunity")) return cards.steam;
+    if (href.includes("spotify")) return cards.spotify;
+    return "";
+}
 
+const socialLinks = document.querySelectorAll(".socials a");
+socialLinks.forEach((link) => {
     const href = (link.getAttribute("href") || "").toLowerCase();
+    const card = getCardForLinkHref(href);
 
-    if (href.includes("github.com/callenflynn")){
-        link.addEventListener("mouseenter", () => show(cards.github));
-        link.addEventListener("mouseleave", hide);
-    }
+    link.addEventListener("mouseenter", () => {
+        if (card) {
+            show(card);
+        } else {
+            hide();
+        }
+    });
 
-    if (href.includes("exophase")){
-        link.addEventListener("mouseenter", () => show(cards.exophase));
-        link.addEventListener("mouseleave", hide);
-    }
+    link.addEventListener("mouseleave", hide);
 
-    if (href.includes("xbox")){
-        link.addEventListener("mouseenter", () => show(cards.xbox));
-        link.addEventListener("mouseleave", hide);
-    }
+    link.addEventListener("focus", () => {
+        if (card) {
+            show(card);
+        }
+    });
 
-  
-    if (href.includes("steamcommunity")){
-        link.addEventListener("mouseenter", () => show(cards.steam));
-        link.addEventListener("mouseleave", hide);
-    }
-
-    if (href.includes("spotify")){
-        link.addEventListener("mouseenter", () => show(cards.spotify));
-        link.addEventListener("mouseleave", hide);
-    }
-
+    link.addEventListener("blur", hide);
 });
+
+const socials = document.querySelector(".socials");
+if (socials) {
+    socials.addEventListener("mouseleave", hide);
+}
+
+window.addEventListener("blur", hideImmediate);
+window.addEventListener("pagehide", hideImmediate);
+document.addEventListener("visibilitychange", () => {
+    if (document.hidden) {
+        hideImmediate();
+    }
+});
+document.addEventListener("touchstart", hideImmediate, { passive: true });
