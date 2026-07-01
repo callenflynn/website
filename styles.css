@@ -1,6 +1,6 @@
 @font-face{
     font-family:"Apple Color Emoji Web";
-    src:url("https://github.com/GORAlexComp/AppleColorEmojiFont/raw/refs/heads/main/fonts/AppleColorEmoji.ttf") format("truetype");
+    src:url("https://raw.githubusercontent.com/GORAlexComp/AppleColorEmojiFont/refs/heads/main/fonts/AppleColorEmoji.ttf") format("truetype");
     font-display:swap;
     unicode-range:
         U+1F000-1FAFF,
@@ -30,7 +30,7 @@
 body{
     background:var(--bg);
     color:var(--text);
-    font-family:"Fraunces","Apple Color Emoji Web",serif;
+    font-family:"Apple Color Emoji Web","Fraunces",serif;
 
     min-height:100vh;
     display:flex;
