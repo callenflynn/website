@@ -13,6 +13,13 @@ const cards = {
     spotify: "https://spotify-recently-played-readme.vercel.app/api?user=8mhqni5h0nxmjouk24zlf2x6u"
 };
 
+const preloadedCards = new Map();
+Object.values(cards).forEach((url) => {
+    const img = new Image();
+    img.src = url;
+    preloadedCards.set(url, img);
+});
+
 function show(img){
     preview.src = img;
     preview.style.opacity = "1";
