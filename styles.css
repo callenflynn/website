@@ -55,6 +55,22 @@ main{
     transform:translateY(-1px);
 }
 
+.home-link{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.home-link svg{
+    width:20px;
+    height:20px;
+    display:block;
+}
+
+.home-link svg path{
+    stroke:currentColor;
+}
+
 h1 {
     font-weight:600;
     letter-spacing:-0.02em;
