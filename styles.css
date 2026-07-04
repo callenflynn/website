@@ -61,14 +61,11 @@ main{
     justify-content:center;
 }
 
-.home-link svg{
+.map-link img{
     width:20px;
     height:20px;
     display:block;
-}
-
-.home-link svg path{
-    stroke:currentColor;
+    object-fit:contain;
 }
 
 h1 {
