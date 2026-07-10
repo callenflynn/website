@@ -29,6 +29,22 @@ body{
     overflow-x:hidden;
 }
 
+.bg-canvas{
+    position:fixed;
+    top:0;
+    left:0;
+    width:100vw;
+    height:100vh;
+    z-index:-1;
+    pointer-events:none;
+}
+
+.reveal-item{
+    opacity:0;
+    transform:translateY(15px);
+    will-change:transform, opacity;
+}
+
 main{
     width:min(var(--content-width),100%);
 }

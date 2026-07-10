@@ -127,3 +127,82 @@ document.addEventListener("visibilitychange", () => {
     }
 });
 document.addEventListener("touchstart", hideImmediate, { passive: true });
+
+document.addEventListener("DOMContentLoaded", () => {
+    if (window.anime) {
+        anime({
+            targets: ".reveal-item",
+            opacity: [0, 1],
+            translateY: [15, 0],
+            duration: 700,
+            delay: anime.stagger(120),
+            easing: "easeOutCubic"
+        });
+    }
+
+    const canvas = document.querySelector(".bg-canvas");
+    if (!canvas) return;
+
+    const ctx = canvas.getContext("2d", { alpha: true });
+    if (!ctx) return;
+
+    const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
+    let rafId;
+    const spacing = 34;
+    const dotSize = 1;
+    const drift = 8;
+    let t = 0;
+
+    function resizeCanvas() {
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        const width = Math.floor(window.innerWidth);
+        const height = Math.floor(window.innerHeight);
+        canvas.width = Math.floor(width * dpr);
+        canvas.height = Math.floor(height * dpr);
+        canvas.style.width = `${width}px`;
+        canvas.style.height = `${height}px`;
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function draw() {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+
+        pointer.x += (pointer.tx - pointer.x) * 0.04;
+        pointer.y += (pointer.ty - pointer.y) * 0.04;
+        t += 0.006;
+
+        ctx.clearRect(0, 0, w, h);
+        ctx.fillStyle = "rgba(36, 36, 36, 0.08)";
+
+        const autoX = Math.sin(t) * 2.5;
+        const autoY = Math.cos(t * 0.9) * 2.5;
+        const ox = pointer.x * drift + autoX;
+        const oy = pointer.y * drift + autoY;
+
+        for (let y = -spacing; y <= h + spacing; y += spacing) {
+            for (let x = -spacing; x <= w + spacing; x += spacing) {
+                ctx.beginPath();
+                ctx.arc(x + ox, y + oy, dotSize, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        rafId = requestAnimationFrame(draw);
+    }
+
+    function onPointerMove(event) {
+        pointer.tx = (event.clientX / window.innerWidth - 0.5) * 2;
+        pointer.ty = (event.clientY / window.innerHeight - 0.5) * 2;
+    }
+
+    resizeCanvas();
+    draw();
+
+    window.addEventListener("resize", resizeCanvas);
+    window.addEventListener("mousemove", onPointerMove, { passive: true });
+
+    window.addEventListener("pagehide", () => {
+        cancelAnimationFrame(rafId);
+    });
+});
