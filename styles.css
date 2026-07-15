@@ -15,6 +15,9 @@ html {
     /* track / bg color */
 }
 
+p {
+    text-wrap:pretty;
+}
 
 *{
     margin:0;
