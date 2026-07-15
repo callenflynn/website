@@ -8,6 +8,13 @@
     --preview-width:clamp(220px,24vw,360px);
 }
 
+html {
+    scroll-behavior: smooth;
+    scrollbar-color: var(--bg) var(--accent);
+    scrollbar-width: auto;
+    /* track / bg color */
+}
+
 
 *{
     margin:0;
