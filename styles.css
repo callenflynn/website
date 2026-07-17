@@ -21,9 +21,9 @@ p {
 
 
 ::selection {
-    background: rgba(237, 80, 1, 0.2);
-    color: #242424;
-
+    background: rgba(237, 80, 1, 0.3);
+    color: var(--text);
+}
 *{
     margin:0;
     padding:0;
