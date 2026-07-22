@@ -1,8 +1,8 @@
-name: Deploy Static Content to Pages
+name: Deploy Dev Static Content to Pages
 
 on:
   push:
-    branches: ["main"] 
+    branches: ["GxPanda-is-taking-control-over-your-amazing-digital-footprint"]
 
 permissions:
   contents: read
@@ -10,15 +10,17 @@ permissions:
   id-token: write
 
 concurrency:
-  group: "pages"
+  group: "pages-dev"
   cancel-in-progress: true
 
 jobs:
   deploy:
     environment:
-      name: github-pages
+      name: github-pages-dev
       url: ${{ steps.deployment.outputs.page_url }}
+
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v4
@@ -29,8 +31,8 @@ jobs:
       - name: Upload Entire Root Folder
         uses: actions/upload-pages-artifact@v3
         with:
-          path: '.' 
+          path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4 
+        uses: actions/deploy-pages@v4
