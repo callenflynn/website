@@ -1,133 +1,80 @@
 document.querySelector("footer span").textContent =
 `\u00a9 ${new Date().getFullYear()} Callen`;
 
-const preview = document.getElementById("previewImage");
+async function buildGameMosaic() {
+    const mosaic = document.getElementById("gameMosaic");
+    if (!mosaic) return;
 
-const cards = {
-    github: "https://streak-stats.demolab.com?user=callenflynn&theme=github-light&hide_border=true",
-    exophase: "https://card.exophase.com/2/0/290206.png?1782584284",
-    xbox: "https://www.trueachievements.com/gamercards/TinnyImp7960770.png",
-    steam: "https://steeeam.vercel.app/api/76561199166083823",
-    spotify: "https://spotify-recently-played-readme.vercel.app/api?user=8mhqni5h0nxmjouk24zlf2x6u"
-};
+    const fallbackSources = [
+        "assets/sections/battlefield6/bg.jpg",
+        "assets/sections/battlefield6/IMG_0676.webp",
+        "assets/sections/battlefield6/IMG_0677.webp",
+        "assets/sections/battlefield6/IMG_0678.webp",
+        "assets/sections/cod/Ghost wallpaper.jpg",
+        "assets/sections/forza/IMG_0679.webp",
+        "assets/sections/forza/IMG_0682.webp",
+        "assets/sections/forza/IMG_0684.webp",
+        "assets/sections/nomansky/IMG_0916.webp",
+        "assets/sections/nomansky/IMG_0925.webp",
+        "assets/sections/nomansky/IMG_0926.webp",
+        "assets/sections/readyornot/IMG_0924.webp",
+        "assets/sections/readyornot/IMG_0927.webp",
+        "assets/sections/readyornot/IMG_0930.webp",
+        "assets/sections/readyornot/IMG_0931.webp",
+        "assets/sections/readyornot/Ready or Not.jpg"
+    ];
 
-const preloadedCards = new Map();
-Object.values(cards).forEach((url) => {
-    const img = new Image();
-    img.src = url;
-    preloadedCards.set(url, img);
-});
-
-const CARD_SWAP_MS = 170;
-const CARD_HIDE_DELAY_MS = 90;
-let activeCard = "";
-let hideTimer;
-let swapTimer;
-
-function clearPreviewTimers() {
-    clearTimeout(hideTimer);
-    clearTimeout(swapTimer);
-}
-
-function showFrame() {
-    preview.style.opacity = "1";
-    preview.style.transform = "translateY(0) scale(1)";
-}
-
-function hideFrame() {
-    preview.style.opacity = "0";
-    preview.style.transform = "translateY(10px) scale(0.99)";
-}
-
-function hideImmediate() {
-    if (!preview) return;
-    clearPreviewTimers();
-    hideFrame();
-    activeCard = "";
-}
-
-function show(img){
-    if (!preview) return;
-
-    clearPreviewTimers();
-
-    if (!activeCard) {
-        preview.src = img;
-        activeCard = img;
-        requestAnimationFrame(showFrame);
-        return;
-    }
-
-    if (img === activeCard) {
-        requestAnimationFrame(showFrame);
-        return;
-    }
-
-    hideFrame();
-    swapTimer = setTimeout(() => {
-        preview.src = img;
-        activeCard = img;
-        requestAnimationFrame(showFrame);
-    }, CARD_SWAP_MS);
-}
-
-function hide(){
-    if (!preview) return;
-    clearPreviewTimers();
-    hideTimer = setTimeout(() => {
-        hideFrame();
-        activeCard = "";
-    }, CARD_HIDE_DELAY_MS);
-}
-
-function getCardForLinkHref(href) {
-    if (href.includes("github.com/callenflynn")) return cards.github;
-    if (href.includes("exophase")) return cards.exophase;
-    if (href.includes("xbox")) return cards.xbox;
-    if (href.includes("steamcommunity")) return cards.steam;
-    if (href.includes("spotify")) return cards.spotify;
-    return "";
-}
-
-const socialLinks = document.querySelectorAll(".socials a");
-socialLinks.forEach((link) => {
-    const href = (link.getAttribute("href") || "").toLowerCase();
-    const card = getCardForLinkHref(href);
-
-    link.addEventListener("mouseenter", () => {
-        if (card) {
-            show(card);
-        } else {
-            hide();
+    let sources = fallbackSources;
+    try {
+        const response = await fetch("assets/sections/manifest.json");
+        if (response.ok) {
+            const manifestSources = await response.json();
+            if (Array.isArray(manifestSources) && manifestSources.length) sources = manifestSources;
         }
+    } catch {
+        // File previews cannot fetch JSON. The checked-in fallback still builds the wall.
+    }
+
+    const loadedImages = await Promise.all(sources.map((src) => new Promise((resolve) => {
+        const image = new Image();
+        image.onload = () => resolve({ src, width: image.naturalWidth, height: image.naturalHeight });
+        image.onerror = () => resolve(null);
+        image.src = src;
+    })));
+
+    const tiles = loadedImages.filter(Boolean).map(({ src, width, height }) => {
+        const tile = document.createElement("div");
+        const image = document.createElement("img");
+        image.src = src;
+        image.alt = "";
+        tile.className = "game-mosaic-item";
+        tile.append(image);
+        mosaic.append(tile);
+        return { tile, width, height };
     });
 
-    link.addEventListener("mouseleave", hide);
+    const layoutTiles = () => {
+        const columns = window.innerWidth <= 700 ? 5 : 16;
+        const gap = window.innerWidth <= 700 ? 5 : 8;
+        const rowHeight = 10;
+        const columnWidth = (mosaic.clientWidth - ((columns - 1) * gap) - (gap * 2)) / columns;
 
-    link.addEventListener("focus", () => {
-        if (card) {
-            show(card);
-        }
-    });
+        tiles.forEach(({ tile, width, height }) => {
+            const ratio = width / height;
+            const columnSpan = Math.min(columns, Math.max(2, Math.round(ratio * (columns <= 5 ? 1.4 : 2.6))));
+            const tileHeight = (columnWidth * columnSpan) / ratio;
+            const rowSpan = Math.max(6, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
+            tile.style.gridColumn = `span ${columnSpan}`;
+            tile.style.gridRow = `span ${rowSpan}`;
+        });
+    };
 
-    link.addEventListener("blur", hide);
-});
-
-const socials = document.querySelector(".socials");
-if (socials) {
-    socials.addEventListener("mouseleave", hide);
+    layoutTiles();
+    window.addEventListener("resize", layoutTiles, { passive: true });
 }
-
-window.addEventListener("blur", hideImmediate);
-window.addEventListener("pagehide", hideImmediate);
-document.addEventListener("visibilitychange", () => {
-    if (document.hidden) {
-        hideImmediate();
-    }
-});
-document.addEventListener("touchstart", hideImmediate, { passive: true });
 
 document.addEventListener("DOMContentLoaded", () => {
+    buildGameMosaic();
     // Reveal items on load
     if (window.anime) {
         anime({

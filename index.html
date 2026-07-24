@@ -33,16 +33,6 @@
             Github
         </a>
 
-        <a href="https://steamcommunity.com/id/Cal151/" target="_blank" class="reveal-item">
-            <img src="assets/steam.ico" alt="">
-            Steam
-        </a>
-
-        <a href="https://www.xbox.com/en-US/play/user/TinnyImp7960770" target="_blank" class="reveal-item">
-            <img src="assets/xbox.ico" alt="">
-            Xbox
-        </a>
-
         <a href="https://discord.com/users/1409705687159668736" target="_blank" class="reveal-item">
             <img src="assets/discord.ico" alt="">
             Discord
@@ -51,11 +41,6 @@
         <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" class="reveal-item">
             <img src="assets/spotify.ico" alt="">
             Spotify
-        </a>
-
-        <a href="https://www.exophase.com/user/Tinnyimp7960770" target="_blank" class="reveal-item">
-            <img src="assets/exophase.ico" alt="">
-            Exophase
         </a>
 
         <a href="https://cstaks.github.io/" target="_blank" class="icon-link reveal-item">
@@ -71,10 +56,7 @@
             <img src="https://raw.githubusercontent.com/callenflynn/website/main/assets/blog-assets/quack.png" alt="">
             Quack Notes
         </a>
-    </div>
 
-    <div class="preview">
-        <img id="previewImage" class="preview-img" />
     </div>
 
     <footer>
@@ -89,49 +71,35 @@
 <!-- SECTIONS -->
 <div class="sections">
 
-    <!-- INTERESTS -->
-    <section class="section reveal-section" aria-label="Interests">
-        <h2>Interests</h2>
-        <div class="interests-grid">
-            <span class="interest-tag">Gaming</span>
-            <span class="interest-tag">Linux</span>
-            <span class="interest-tag">Self-hosting</span>
-            <span class="interest-tag">Coding</span>
-            <span class="interest-tag">Minecraft</span>
-            <span class="interest-tag">Music</span>
+    <!-- GAMING -->
+    <section class="section reveal-section gaming-section" aria-label="Gaming profiles">
+        <div class="game-mosaic" aria-hidden="true">
+            <div id="gameMosaic" class="game-mosaic-grid"></div>
         </div>
-    </section>
-
-    <!-- GAMES -->
-    <section class="section reveal-section" aria-label="Games I play">
-        <h2>Games</h2>
-        <div class="games-grid">
-            <a href="https://www.ea.com/games/battlefield/battlefield-6" target="_blank" rel="noopener" class="game-card">
-                <div class="game-img-wrap">
-                    <img src="assets/sections/battlefield6/IMG_0678.webp" alt="Battlefield 6" loading="lazy">
-                </div>
-                <div class="game-info">
-                    <h3>Battlefield 6</h3>
-                    <span class="game-status">Playing now</span>
-                </div>
+        <h2>Gaming</h2>
+        <p class="section-intro">Find me wherever I play.</p>
+        <div class="profile-grid">
+            <a href="https://www.exophase.com/user/Tinnyimp7960770" target="_blank" rel="noopener" class="profile-card profile-card-exophase">
+                <span class="profile-card-label"><img src="assets/exophase.ico" alt="">Exophase <b>↗</b></span>
+                <img class="profile-card-image" src="https://card.exophase.com/2/0/290206.png?1782584284" alt="Callen's Exophase profile card" loading="lazy">
             </a>
-            <a href="https://store.steampowered.com/app/1330900/Ready_or_Not/" target="_blank" rel="noopener" class="game-card">
-                <div class="game-img-wrap">
-                    <img src="assets/sections/readyornot/IMG_0931.webp" alt="Ready or Not" loading="lazy">
-                </div>
-                <div class="game-info">
-                    <h3>Ready or Not</h3>
-                    <span class="game-status">Playing now</span>
-                </div>
+            <a href="https://www.xbox.com/en-US/play/user/TinnyImp7960770" target="_blank" rel="noopener" class="profile-card">
+                <span class="profile-card-label"><img src="assets/xbox.ico" alt="">Xbox <b>↗</b></span>
+                <img class="profile-card-image" src="https://www.trueachievements.com/gamercards/TinnyImp7960770.png" alt="Callen's Xbox gamer card" loading="lazy">
+            </a>
+            <a href="https://steamcommunity.com/id/Cal151/" target="_blank" rel="noopener" class="profile-card">
+                <span class="profile-card-label"><img src="assets/steam.ico" alt="">Steam <b>↗</b></span>
+                <img class="profile-card-image" src="https://steeeam.vercel.app/api/76561199166083823" alt="Callen's Steam profile card" loading="lazy">
             </a>
         </div>
     </section>
 
     <!-- MINECRAFT -->
-    <section class="section reveal-section" aria-label="Minecraft">
+    <section class="section reveal-section minecraft-section" aria-label="Minecraft">
         <h2>Minecraft</h2>
         <div class="mc-grid">
             <a href="https://concord-smp.vercel.app" target="_blank" rel="noopener" class="mc-card">
+                <img class="mc-bg" src="https://concord-smp.vercel.app/images/screenshot-43.png" alt="" aria-hidden="true" loading="lazy">
                 <h3>Concord SMP</h3>
                 <span class="mc-season">Season 3</span>
                 <p>A Minecraft server built for friends.</p>
@@ -150,9 +118,6 @@
     <section class="section reveal-section" aria-label="Coding">
         <h2>Coding</h2>
         <div class="coding-grid">
-            <div class="coding-card">
-                <img src="https://github-readme-stats.vercel.app/api?username=callenflynn&show_icons=true&theme=default&hide_border=true&bg_color=ffefe0&title_color=242424&text_color=242424&icon_color=ed5001" alt="GitHub Stats" loading="lazy">
-            </div>
             <div class="coding-card">
                 <img src="https://github-readme-streak-stats.herokuapp.com/?user=callenflynn&theme=default&hide_border=true&background=ffefe0&stroke=242424&ring=ed5001&fire=ed5001&currStreakLabel=242424&sideLabels=242424&currStreakNum=242424&sideNums=242424&dates=777777" alt="GitHub Streak" loading="lazy">
             </div>
