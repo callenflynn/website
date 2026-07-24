@@ -86,46 +86,80 @@
 
 </main>
 
-<!-- TIMELINE -->
-<section class="timeline" aria-label="Project timeline">
-    <div class="timeline-line" aria-hidden="true"></div>
+<!-- SECTIONS -->
+<div class="sections">
 
-    <div class="timeline-item timeline-item--above reveal-timeline">
-        <div class="timeline-card">
-            <span class="timeline-date">2023</span>
-            <h3>Concord SMP</h3>
-            <p>A Minecraft server built for friends that introduced me to Linux servers, hosting, and infrastructure.</p>
-            <a href="https://concord-smp.vercel.app" target="_blank" rel="noopener">Website &#8599;</a>
+    <!-- INTERESTS -->
+    <section class="section reveal-section" aria-label="Interests">
+        <h2>Interests</h2>
+        <div class="interests-grid">
+            <span class="interest-tag">Gaming</span>
+            <span class="interest-tag">Linux</span>
+            <span class="interest-tag">Self-hosting</span>
+            <span class="interest-tag">Coding</span>
+            <span class="interest-tag">Minecraft</span>
+            <span class="interest-tag">Music</span>
         </div>
-    </div>
+    </section>
 
-    <div class="timeline-item timeline-item--below reveal-timeline">
-        <div class="timeline-card">
-            <span class="timeline-date">September 2024</span>
-            <h3>Linux Journey</h3>
-            <p>Installed Ubuntu on a Microsoft Surface, which started my interest in Linux, open-source software, servers, and self-hosting.</p>
+    <!-- GAMES -->
+    <section class="section reveal-section" aria-label="Games I play">
+        <h2>Games</h2>
+        <div class="games-grid">
+            <a href="https://www.ea.com/games/battlefield/battlefield-6" target="_blank" rel="noopener" class="game-card">
+                <div class="game-img-wrap">
+                    <img src="assets/sections/battlefield6/IMG_0678.webp" alt="Battlefield 6" loading="lazy">
+                </div>
+                <div class="game-info">
+                    <h3>Battlefield 6</h3>
+                    <span class="game-status">Playing now</span>
+                </div>
+            </a>
+            <a href="https://store.steampowered.com/app/1330900/Ready_or_Not/" target="_blank" rel="noopener" class="game-card">
+                <div class="game-img-wrap">
+                    <img src="assets/sections/readyornot/IMG_0931.webp" alt="Ready or Not" loading="lazy">
+                </div>
+                <div class="game-info">
+                    <h3>Ready or Not</h3>
+                    <span class="game-status">Playing now</span>
+                </div>
+            </a>
         </div>
-    </div>
+    </section>
 
-    <div class="timeline-item timeline-item--above reveal-timeline">
-        <div class="timeline-card">
-            <span class="timeline-date">June 2025</span>
-            <h3>Snake-Gaem</h3>
-            <p>A simple Snake game that introduced me to game development concepts.</p>
-            <a href="https://github.com/callenflynn/snake-gaem" target="_blank" rel="noopener">GitHub &#8599;</a>
+    <!-- MINECRAFT -->
+    <section class="section reveal-section" aria-label="Minecraft">
+        <h2>Minecraft</h2>
+        <div class="mc-grid">
+            <a href="https://concord-smp.vercel.app" target="_blank" rel="noopener" class="mc-card">
+                <h3>Concord SMP</h3>
+                <span class="mc-season">Season 3</span>
+                <p>A Minecraft server built for friends.</p>
+                <span class="mc-link">Website &#8599;</span>
+            </a>
+            <a href="https://mc.callen.page" target="_blank" rel="noopener" class="mc-card">
+                <h3>Concord SMP</h3>
+                <span class="mc-season">Season 4</span>
+                <p>The latest season, now live.</p>
+                <span class="mc-link">Play &#8599;</span>
+            </a>
         </div>
-    </div>
+    </section>
 
-    <div class="timeline-item timeline-item--below reveal-timeline">
-        <div class="timeline-card">
-            <span class="timeline-date">July 2026</span>
-            <h3>Kalamari Notes</h3>
-            <p>A local-first open-source Markdown notes application. Helped me understand databases, backend architecture, and full-stack development.</p>
-            <a href="https://callenflynn.github.io/kalamari-notes/" target="_blank" rel="noopener">Website &#8599;</a>
-            <a href="https://github.com/callenflynn/kalamari-notes" target="_blank" rel="noopener">GitHub &#8599;</a>
+    <!-- CODING -->
+    <section class="section reveal-section" aria-label="Coding">
+        <h2>Coding</h2>
+        <div class="coding-grid">
+            <div class="coding-card">
+                <img src="https://github-readme-stats.vercel.app/api?username=callenflynn&show_icons=true&theme=default&hide_border=true&bg_color=ffefe0&title_color=242424&text_color=242424&icon_color=ed5001" alt="GitHub Stats" loading="lazy">
+            </div>
+            <div class="coding-card">
+                <img src="https://github-readme-streak-stats.herokuapp.com/?user=callenflynn&theme=default&hide_border=true&background=ffefe0&stroke=242424&ring=ed5001&fire=ed5001&currStreakLabel=242424&sideLabels=242424&currStreakNum=242424&sideNums=242424&dates=777777" alt="GitHub Streak" loading="lazy">
+            </div>
         </div>
-    </div>
-</section>
+    </section>
+
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
 <script src="script.js"></script>

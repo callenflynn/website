@@ -140,9 +140,9 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    // Timeline scroll reveal
-    const timelineItems = document.querySelectorAll(".reveal-timeline");
-    if (timelineItems.length) {
+    // Section scroll reveal
+    const revealSections = document.querySelectorAll(".reveal-section");
+    if (revealSections.length) {
         const observer = new IntersectionObserver((entries) => {
             entries.forEach((entry) => {
                 if (entry.isIntersecting) {
@@ -150,9 +150,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     observer.unobserve(entry.target);
                 }
             });
-        }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+        }, { threshold: 0.1, rootMargin: "0px 0px -40px 0px" });
 
-        timelineItems.forEach((item) => observer.observe(item));
+        revealSections.forEach((item) => observer.observe(item));
     }
 
     // Canvas dot grid
