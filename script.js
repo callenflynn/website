@@ -1,6 +1,5 @@
 document.querySelector("footer span").textContent =
-`© ${new Date().getFullYear()} Callen`;
-// too lazy to manually update year
+`\u00a9 ${new Date().getFullYear()} Callen`;
 
 const preview = document.getElementById("previewImage");
 
@@ -129,17 +128,34 @@ document.addEventListener("visibilitychange", () => {
 document.addEventListener("touchstart", hideImmediate, { passive: true });
 
 document.addEventListener("DOMContentLoaded", () => {
+    // Reveal items on load
     if (window.anime) {
         anime({
             targets: ".reveal-item",
             opacity: [0, 1],
             translateY: [15, 0],
-            duration: 700,
-            delay: anime.stagger(120),
+            duration: 600,
+            delay: anime.stagger(80),
             easing: "easeOutCubic"
         });
     }
 
+    // Timeline scroll reveal
+    const timelineItems = document.querySelectorAll(".reveal-timeline");
+    if (timelineItems.length) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach((entry) => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add("revealed");
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, { threshold: 0.15, rootMargin: "0px 0px -40px 0px" });
+
+        timelineItems.forEach((item) => observer.observe(item));
+    }
+
+    // Canvas dot grid
     const canvas = document.querySelector(".bg-canvas");
     if (!canvas) return;
 
