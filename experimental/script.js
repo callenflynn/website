@@ -35,6 +35,12 @@ async function buildGameMosaic() {
         // File previews cannot fetch JSON. The checked-in fallback still builds the wall.
     }
 
+    // Shuffle so every page load feels fresh
+    for (let i = sources.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [sources[i], sources[j]] = [sources[j], sources[i]];
+    }
+
     const loadedImages = await Promise.all(sources.map((src) => new Promise((resolve) => {
         const image = new Image();
         image.onload = () => resolve({ src, width: image.naturalWidth, height: image.naturalHeight });
@@ -59,11 +65,26 @@ async function buildGameMosaic() {
         const rowHeight = 10;
         const columnWidth = (mosaic.clientWidth - ((columns - 1) * gap) - (gap * 2)) / columns;
 
-        tiles.forEach(({ tile, width, height }) => {
+        // Puzzle-like: vary column spans more aggressively so tiles interlock
+        const puzzleSpans = [2, 3, 4, 2, 3, 2, 5, 2, 3, 4, 2, 3, 2, 4, 3, 2];
+
+        tiles.forEach(({ tile, width, height }, i) => {
             const ratio = width / height;
-            const columnSpan = Math.min(columns, Math.max(2, Math.round(ratio * (columns <= 5 ? 1.4 : 2.6))));
+            let columnSpan;
+
+            if (ratio > 1.6) {
+                // Wide landscape — take up more columns
+                columnSpan = Math.min(columns, Math.max(3, Math.round(ratio * (columns <= 5 ? 1.6 : 2.8))));
+            } else if (ratio < 0.7) {
+                // Tall portrait — fewer columns, more rows
+                columnSpan = Math.min(columns, Math.max(2, Math.round(ratio * (columns <= 5 ? 1.0 : 2.0))));
+            } else {
+                // Near-square — cycle through puzzle sizes
+                columnSpan = Math.min(columns, puzzleSpans[i % puzzleSpans.length]);
+            }
+
             const tileHeight = (columnWidth * columnSpan) / ratio;
-            const rowSpan = Math.max(6, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
+            const rowSpan = Math.max(5, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
             tile.style.gridColumn = `span ${columnSpan}`;
             tile.style.gridRow = `span ${rowSpan}`;
         });

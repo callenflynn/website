@@ -88,7 +88,7 @@ main{
     grid-auto-flow:dense;
     gap:8px;
     padding:8px;
-    animation:mosaic-drift 18s linear infinite;
+    animation:mosaic-drift 25s linear infinite alternate;
 }
 
 .game-mosaic-item{
@@ -106,7 +106,7 @@ main{
 }
 
 @keyframes mosaic-drift{
-    from{ transform:translateX(4%); }
+    from{ transform:translateX(0%); }
     to{ transform:translateX(-10%); }
 }
 
