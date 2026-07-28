@@ -5,3 +5,43 @@ projects site coming soon?
 # fonts
 milker.regular.otf - bold, heavy font 
 Allura-Regular.ttf - fancy, elegant font
+
+# COmni AI notes
+
+run it
+```
+cd ~/comniai-webui
+docker build -t comni-ai-webui .
+docker stop open-webui
+docker rm open-webui
+```
+```
+docker run -d \
+  --name open-webui \
+  -p 3000:8080 \
+  -v open-webui:/app/backend/data \
+  -e WEBUI_NAME="COmni AI" \
+  comni-ai-webui
+  ```
+
+## new verion:
+
+Example:
+
+FROM ghcr.io/open-webui/open-webui:v0.11.1
+
+(or whatever version you want)
+
+2. Rebuild your branded image
+cd ~/comniai-webui
+docker build -t comni-ai-webui .
+3. Replace the container
+docker stop open-webui
+docker rm open-webui
+4. Start it again
+docker run -d \
+  --name open-webui \
+  -p 3000:8080 \
+  -v open-webui:/app/backend/data \
+  -e WEBUI_NAME="COmni AI" \
+  comni-ai-webui
