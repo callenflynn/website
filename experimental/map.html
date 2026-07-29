@@ -7,88 +7,97 @@
     <link rel="apple-touch-icon" href="/assets/site-icon/web/apple-touch-icon.png">
     <title>Site Map</title>
 
-    <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <a class="map-link home-link" href="index.html" aria-label="Go home" title="Home">
-        <img src="assets/site-icon/home/web/icon-512.png" width="24" height="24" alt="" aria-hidden="true">
-        <span class="label">home</span>
-    </a>
-
-<main>
-
-    <h1>
-        site <span>map</span>
-    </h1>
-
-    <p>
-        where things live on this domain. nothing crazy, just doors.
-    </p>
-
-    <div class="socials">
-
-        <a href="https://callen.page" target="_blank" title="Main website with my socials.">
-            <span class="icon">🏠</span>
-            callen.page
-        </a>
-
-        <a href="https://cflix.callen.page" target="_blank" title="My Jellyfin client.">
-            <img src="assets/jellyfin.svg" alt="">
-            cflix.callen.page
-        </a>
-        <a href="https://blog.callen.page" target="_blank" title="My blog. (built on writefreely)">
-            <img src="assets/writefreely.svg" alt="">
-            blog.callen.page
-        </a>
-        <a href="https://mastodon.callen.page" target="_blank" title="My Mastodon account.">
-            <img src="assets/mastodon.svg" alt="">
-            mastodon.callen.page
-        </a>
-        <a href="https://rss.callen.page" target="_blank" title="My FreshRSS feed.">
-            <img src="assets/freshrss.svg" alt="">
-            rss.callen.page
-        </a>
-
-        <a href="https://dash.callen.page/" target="_blank" title="Homarr Dashboard">
-            <img src="assets/homarr.svg" alt="">
-            dash.callen.page
-        </a>
-        <a href="https://netdata.callen.page" target="_blank" title="Netdata (monitor)">
-            <img src="assets/netdata.svg" alt="">
-            netdata.callen.page
-        </a>
-        <a href="https://uptime-kuma.callen.page/status/default" target="_blank" title="Uptime Kuma (monitor)">
-            <img src="assets/uptime-kuma.svg" alt="">
-            uptime-kuma.callen.page
-        </a>
-        <a href="https://n8n.callen.page" target="_blank" title="n8n (workflow)">
-            <img src="assets/n8n.svg" alt="">
-            n8n.callen.page
-        </a>
-        <a href="https://omniroute.callen.page/dashboard/endpoint" target="_blank" title="COmniRoute">
-            <img src="assets/omniroute-dark.svg" alt="">
-            omniroute.callen.page
-        </a>
-        <a href="https://webui.callen.page" target="_blank" title="">
-            <img src="assets/open-webui.svg" alt="">
-            webui.callen.page
-        </a>
-
-
+    <div class="bg-mosaic" aria-hidden="true">
+        <div class="bg-mosaic-track" id="bgMosaicTrack">
+            <div class="bg-mosaic-grid" id="gameMosaic"></div>
+        </div>
     </div>
 
-    <footer>
-        <div>callen.page network</div>
-    </footer>
+    <div class="noise-overlay" aria-hidden="true"></div>
 
-</main>
+    <a class="map-link reveal-item" href="index.html" aria-label="Go home" title="Home">
+        <img src="assets/site-icon/home/web/icon-512.png" width="24" height="24" alt="" aria-hidden="true">
+    </a>
 
-<div class="preview">
-    <img class="preview-img" src="" alt="">
-</div>
+    <main class="hero-panel reveal-section">
+        <header class="sys-header">
+            <span class="sys-label" aria-hidden="true">[SYS.MAP]</span>
+            <h1 class="reveal-item">SITE<span>.</span>MAP</h1>
+        </header>
 
+        <p class="term-text reveal-item">//_Network topology for callen.page. nothing crazy, just doors.</p>
+
+        <div class="tactical-grid">
+            <a href="https://callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="Main website with my socials.">
+                <span class="keycap-icon">🏠</span>
+                <span class="keycap-text">HOME</span>
+            </a>
+
+            <a href="https://cflix.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My Jellyfin client.">
+                <span class="keycap-icon"><img src="assets/jellyfin.svg" alt=""></span>
+                <span class="keycap-text">CFLIX</span>
+            </a>
+
+            <a href="https://blog.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My blog.">
+                <span class="keycap-icon"><img src="assets/writefreely.svg" alt=""></span>
+                <span class="keycap-text">BLOG</span>
+            </a>
+
+            <a href="https://mastodon.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My Mastodon account.">
+                <span class="keycap-icon"><img src="assets/mastodon.svg" alt=""></span>
+                <span class="keycap-text">MASTODON</span>
+            </a>
+
+            <a href="https://rss.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My FreshRSS feed.">
+                <span class="keycap-icon"><img src="assets/freshrss.svg" alt=""></span>
+                <span class="keycap-text">RSS</span>
+            </a>
+
+            <a href="https://dash.callen.page/" target="_blank" rel="noopener" class="keycap reveal-item" title="Homarr Dashboard.">
+                <span class="keycap-icon"><img src="assets/homarr.svg" alt=""></span>
+                <span class="keycap-text">DASH</span>
+            </a>
+
+            <a href="https://netdata.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="Netdata monitor.">
+                <span class="keycap-icon"><img src="assets/netdata.svg" alt=""></span>
+                <span class="keycap-text">NETDATA</span>
+            </a>
+
+            <a href="https://uptime-kuma.callen.page/status/default" target="_blank" rel="noopener" class="keycap reveal-item" title="Uptime Kuma monitor.">
+                <span class="keycap-icon"><img src="assets/uptime-kuma.svg" alt=""></span>
+                <span class="keycap-text">UPTIME</span>
+            </a>
+
+            <a href="https://n8n.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="n8n workflow.">
+                <span class="keycap-icon"><img src="assets/n8n.svg" alt=""></span>
+                <span class="keycap-text">N8N</span>
+            </a>
+
+            <a href="https://omniroute.callen.page/dashboard/endpoint" target="_blank" rel="noopener" class="keycap reveal-item" title="OmniRoute.">
+                <span class="keycap-icon"><img src="assets/omniroute-dark.svg" alt=""></span>
+                <span class="keycap-text">OMNIROUTE</span>
+            </a>
+
+            <a href="https://webui.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="Open WebUI.">
+                <span class="keycap-icon"><img src="assets/open-webui.svg" alt=""></span>
+                <span class="keycap-text">WEBUI</span>
+            </a>
+        </div>
+
+        <footer class="hero-footer">
+            <span class="term-line">&copy; <span id="year"></span> CALLEN_FLYNN // SYS.MAP</span>
+        </footer>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

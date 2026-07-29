@@ -1,9 +1,10 @@
-document.querySelector("footer span").textContent =
-`\u00a9 ${new Date().getFullYear()} Callen`;
+const yearSpan = document.getElementById("year");
+if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
 async function buildGameMosaic() {
     const mosaic = document.getElementById("gameMosaic");
-    if (!mosaic) return;
+    const track = document.getElementById("bgMosaicTrack");
+    if (!mosaic || !track) return;
 
     const fallbackSources = [
         "assets/sections/battlefield6/bg.jpg",
@@ -48,24 +49,47 @@ async function buildGameMosaic() {
         image.src = src;
     })));
 
-    const tiles = loadedImages.filter(Boolean).map(({ src, width, height }) => {
+    const tileData = loadedImages.filter(Boolean);
+
+    const makeTile = ({ src }) => {
         const tile = document.createElement("div");
         const image = document.createElement("img");
         image.src = src;
         image.alt = "";
         tile.className = "game-mosaic-item";
         tile.append(image);
-        mosaic.append(tile);
-        return { tile, width, height };
+        return tile;
+    };
+
+    const grid1 = document.createElement("div");
+    grid1.className = "bg-mosaic-grid";
+    grid1.id = "gameMosaic";
+
+    const grid2 = document.createElement("div");
+    grid2.className = "bg-mosaic-grid";
+    grid2.setAttribute("aria-hidden", "true");
+
+    // Render tile nodes into an array and map them back to data for layout
+    const tiles1 = tileData.map((data) => {
+        const tile = makeTile(data);
+        grid1.append(tile);
+        return { tile, width: data.width, height: data.height };
     });
 
-    const layoutTiles = () => {
+    const tiles2 = tileData.map((data) => {
+        const tile = makeTile(data);
+        grid2.append(tile);
+        return { tile, width: data.width, height: data.height };
+    });
+
+    mosaic.replaceWith(grid1);
+    track.appendChild(grid2);
+
+    const layoutGrid = (grid, tiles) => {
         const columns = window.innerWidth <= 700 ? 5 : 16;
         const gap = window.innerWidth <= 700 ? 5 : 8;
         const rowHeight = 10;
-        const columnWidth = (mosaic.clientWidth - ((columns - 1) * gap) - (gap * 2)) / columns;
-
-        // Puzzle-like: vary column spans more aggressively so tiles interlock
+        const columnWidth = (grid.clientWidth - ((columns - 1) * gap) - (gap * 2)) / columns;
         const puzzleSpans = [2, 3, 4, 2, 3, 2, 5, 2, 3, 4, 2, 3, 2, 4, 3, 2];
 
         tiles.forEach(({ tile, width, height }, i) => {
@@ -73,13 +97,10 @@ async function buildGameMosaic() {
             let columnSpan;
 
             if (ratio > 1.6) {
-                // Wide landscape — take up more columns
                 columnSpan = Math.min(columns, Math.max(3, Math.round(ratio * (columns <= 5 ? 1.6 : 2.8))));
             } else if (ratio < 0.7) {
-                // Tall portrait — fewer columns, more rows
                 columnSpan = Math.min(columns, Math.max(2, Math.round(ratio * (columns <= 5 ? 1.0 : 2.0))));
             } else {
-                // Near-square — cycle through puzzle sizes
                 columnSpan = Math.min(columns, puzzleSpans[i % puzzleSpans.length]);
             }
 
@@ -90,12 +111,18 @@ async function buildGameMosaic() {
         });
     };
 
+    const layoutTiles = () => {
+        layoutGrid(grid1, tiles1);
+        layoutGrid(grid2, tiles2);
+    };
+
     layoutTiles();
     window.addEventListener("resize", layoutTiles, { passive: true });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
     buildGameMosaic();
+
     // Reveal items on load
     if (window.anime) {
         anime({
@@ -122,71 +149,4 @@ document.addEventListener("DOMContentLoaded", () => {
 
         revealSections.forEach((item) => observer.observe(item));
     }
-
-    // Canvas dot grid
-    const canvas = document.querySelector(".bg-canvas");
-    if (!canvas) return;
-
-    const ctx = canvas.getContext("2d", { alpha: true });
-    if (!ctx) return;
-
-    const pointer = { x: 0, y: 0, tx: 0, ty: 0 };
-    let rafId;
-    const spacing = 34;
-    const dotSize = 1;
-    const drift = 8;
-    let t = 0;
-
-    function resizeCanvas() {
-        const dpr = Math.min(window.devicePixelRatio || 1, 2);
-        const width = Math.floor(window.innerWidth);
-        const height = Math.floor(window.innerHeight);
-        canvas.width = Math.floor(width * dpr);
-        canvas.height = Math.floor(height * dpr);
-        canvas.style.width = `${width}px`;
-        canvas.style.height = `${height}px`;
-        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    function draw() {
-        const w = window.innerWidth;
-        const h = window.innerHeight;
-
-        pointer.x += (pointer.tx - pointer.x) * 0.04;
-        pointer.y += (pointer.ty - pointer.y) * 0.04;
-        t += 0.006;
-
-        ctx.clearRect(0, 0, w, h);
-        ctx.fillStyle = "rgba(36, 36, 36, 0.08)";
-
-        const autoX = Math.sin(t) * 2.5;
-        const autoY = Math.cos(t * 0.9) * 2.5;
-        const ox = pointer.x * drift + autoX;
-        const oy = pointer.y * drift + autoY;
-
-        for (let y = -spacing; y <= h + spacing; y += spacing) {
-            for (let x = -spacing; x <= w + spacing; x += spacing) {
-                ctx.beginPath();
-                ctx.arc(x + ox, y + oy, dotSize, 0, Math.PI * 2);
-                ctx.fill();
-            }
-        }
-
-        rafId = requestAnimationFrame(draw);
-    }
-
-    function onPointerMove(event) {
-        pointer.tx = (event.clientX / window.innerWidth - 0.5) * 2;
-        pointer.ty = (event.clientY / window.innerHeight - 0.5) * 2;
-    }
-
-    resizeCanvas();
-    draw();
-
-    window.addEventListener("resize", resizeCanvas);
-    window.addEventListener("mousemove", onPointerMove, { passive: true });
-
-    window.addEventListener("pagehide", () => {
-        cancelAnimationFrame(rafId);
-    });
 });
