@@ -42,6 +42,13 @@ async function buildGameMosaic() {
         [sources[i], sources[j]] = [sources[j], sources[i]];
     }
 
+    // Use a rotating subset so the mosaic doesn't feel repetitive or overcrowded.
+    // The manifest still contains every image; a different slice is shown each load.
+    const MOSAIC_LIMIT = 40;
+    if (sources.length > MOSAIC_LIMIT) {
+        sources = sources.slice(0, MOSAIC_LIMIT);
+    }
+
     const loadedImages = await Promise.all(sources.map((src) => new Promise((resolve) => {
         const image = new Image();
         image.onload = () => resolve({ src, width: image.naturalWidth, height: image.naturalHeight });
@@ -57,6 +64,7 @@ async function buildGameMosaic() {
         image.src = src;
         image.alt = "";
         tile.className = "game-mosaic-item";
+        if (Math.random() < 0.04) image.classList.add("colored");
         tile.append(image);
         return tile;
     };

@@ -91,6 +91,10 @@ body{
     transform: scale(1.05);
 }
 
+.game-mosaic-item img.colored{
+    filter: grayscale(0) contrast(1.1) brightness(0.85);
+}
+
 @keyframes mosaic-drift{
     0%   { transform: translateX(0); }
     100% { transform: translateX(-50%); }
@@ -739,14 +743,7 @@ p, .term-line, .term-text{
     filter: grayscale(0.15) contrast(1.05);
 }
 
-/* Neutralize the bright Xbox embed green, reveal on hover */
 .xbox-card .profile-card-image{
-    filter: grayscale(100%) contrast(1.1);
-    transition: filter 0.3s ease;
-}
-
-.xbox-card:hover .profile-card-image,
-.xbox-card:focus-visible .profile-card-image{
     filter: grayscale(0%) contrast(1);
 }
 
