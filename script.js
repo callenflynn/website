@@ -64,7 +64,7 @@ async function buildGameMosaic() {
         image.src = src;
         image.alt = "";
         tile.className = "game-mosaic-item";
-        if (Math.random() < 0.04) image.classList.add("colored");
+        if (Math.random() < 0.08) image.classList.add("colored");
         tile.append(image);
         return tile;
     };
