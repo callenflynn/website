@@ -19,8 +19,8 @@ html {
 }
 
 ::selection {
-    background: rgba(255, 59, 0, 0.25);
-    color: var(--fg);
+    background: var(--accent);
+    color: var(--bg);
 }
 
 *{
@@ -75,7 +75,6 @@ body{
     flex-shrink: 0;
 }
 
-.bg-mosaic-grid:nth-child(2){ filter: none; }
 
 .game-mosaic-item{
     overflow: hidden;
@@ -355,6 +354,138 @@ p, .term-line, .term-text{
     text-overflow: ellipsis;
 }
 
+/* ── SPOTIFY HOVER POPUP ── */
+
+.spotify-popup{
+    position: absolute;
+    top: calc(100% + 12px);
+    left: 50%;
+    transform: translateX(-50%) translateY(8px);
+    width: min(280px, calc(100vw - 40px));
+    padding: 16px;
+    background: rgba(5, 5, 5, 0.9);
+    border: var(--border);
+    border-radius: var(--radius);
+    box-shadow: 6px 6px 0 var(--accent);
+    backdrop-filter: blur(12px) saturate(130%);
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+    z-index: 30;
+}
+
+.spotify-popup::before{
+    content: "";
+    position: absolute;
+    top: -7px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 7px solid transparent;
+    border-right: 7px solid transparent;
+    border-bottom: 7px solid rgba(224, 224, 224, 0.18);
+    pointer-events: none;
+}
+
+.keycap-wrapper{
+    position: relative;
+    display: flex;
+    align-items: stretch;
+}
+
+.keycap-spotify{
+    width: 100%;
+}
+
+.keycap-wrapper:hover .spotify-popup,
+.keycap-wrapper:focus-within .spotify-popup,
+.spotify-popup:hover,
+.spotify-popup:focus-within{
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+    transform: translateX(-50%) translateY(0);
+}
+
+.spotify-popup-header{
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+    border-bottom: var(--border);
+    font-family: var(--ui-font);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.spotify-popup-header img{
+    width: 18px;
+    height: 18px;
+    filter: invert(1);
+}
+
+.spotify-stat{
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(224, 224, 224, 0.08);
+    font-size: 0.75rem;
+}
+
+.spotify-stat:last-of-type{
+    border-bottom: none;
+}
+
+.spotify-stat .stat-label{
+    color: rgba(224, 224, 224, 0.55);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.spotify-stat .stat-value{
+    color: var(--accent);
+    font-weight: 700;
+    letter-spacing: 0.03em;
+}
+
+.spotify-disclaimer{
+    margin-top: 12px;
+    font-size: 0.65rem;
+    color: rgba(224, 224, 224, 0.45);
+    line-height: 1.5;
+    letter-spacing: 0.02em;
+}
+
+.spotify-recent-svg{
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius);
+    background: #0a0a0a;
+    border: 1px solid rgba(224, 224, 224, 0.08);
+}
+
+@media (max-width: 700px){
+    .spotify-popup{
+        position: fixed;
+        top: auto;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%) translateY(12px);
+        width: calc(100vw - 36px);
+    }
+
+    .spotify-popup::before{
+        display: none;
+    }
+}
+
 /* ── HERO FOOTER ── */
 
 .hero-footer{
@@ -477,6 +608,19 @@ p, .term-line, .term-text{
     color: var(--accent);
 }
 
+/* Blinking terminal cursor on live readout lines */
+.terminal-cursor::after{
+    content: "_";
+    display: inline-block;
+    margin-left: 2px;
+    animation: terminal-blink 1s step-end infinite;
+}
+
+@keyframes terminal-blink{
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+}
+
 .term-text{
     font-size: 0.75rem;
     line-height: 1.6;
@@ -556,6 +700,17 @@ p, .term-line, .term-text{
     filter: grayscale(0.15) contrast(1.05);
 }
 
+/* Neutralize the bright Xbox embed green, reveal on hover */
+.xbox-card .profile-card-image{
+    filter: grayscale(100%) contrast(1.1);
+    transition: filter 0.3s ease;
+}
+
+.xbox-card:hover .profile-card-image,
+.xbox-card:focus-visible .profile-card-image{
+    filter: grayscale(0%) contrast(1);
+}
+
 /* ── MINECRAFT CARDS ── */
 
 .mc-grid{
@@ -606,6 +761,11 @@ p, .term-line, .term-text{
 
 .mc-card:hover .mc-bg{
     opacity: 0.15;
+}
+
+/* Season 3 card keeps its background image visible by default */
+.mc-card.show-bg .mc-bg{
+    opacity: 0.22;
 }
 
 .mc-card h3,

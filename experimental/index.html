@@ -15,6 +15,7 @@
     <link rel="me" href="https://mastodon.callen.page/@cal">
 
     <link rel="stylesheet" href="styles.css">
+<noscript><style>.reveal-item { opacity: 1 !important; transform: none !important; }</style></noscript>
 </head>
 <body>
 
@@ -49,10 +50,19 @@
                 <span class="keycap-text">DISCORD</span>
             </a>
 
-            <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" rel="noopener" class="keycap reveal-item">
-                <span class="keycap-icon"><img src="assets/spotify.ico" alt=""></span>
-                <span class="keycap-text">SPOTIFY</span>
-            </a>
+            <div class="keycap-wrapper reveal-item">
+                <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" rel="noopener" class="keycap keycap-spotify">
+                    <span class="keycap-icon"><img src="assets/spotify.ico" alt=""></span>
+                    <span class="keycap-text">SPOTIFY</span>
+                </a>
+                <div class="spotify-popup" aria-hidden="true">
+                    <div class="spotify-popup-header">
+                        <img src="assets/spotify.ico" alt="">
+                        <span>//_RECENTLY_PLAYED</span>
+                    </div>
+                    <img class="spotify-recent-svg" src="https://spotify-recently-played-readme.vercel.app/api?user=8mhqni5h0nxmjouk24zlf2x6u" alt="Recently played tracks" loading="eager">
+                </div>
+            </div>
 
             <a href="https://cstaks.github.io/" target="_blank" rel="noopener" class="keycap reveal-item">
                 <span class="keycap-icon">↗</span>
@@ -68,6 +78,7 @@
                 <span class="keycap-icon"><img src="https://raw.githubusercontent.com/callenflynn/website/main/assets/blog-assets/quack.png" alt=""></span>
                 <span class="keycap-text">QUACK NOTES</span>
             </a>
+
         </div>
 
         <footer class="hero-footer">
@@ -91,7 +102,7 @@
                 <div class="readout-header">
                     <span>STATUS: ACTIVE</span>
                     <span>LOG: 471</span>
-                    <span class="readout-accent">>REF_OAK_REFINE</span>
+                    <span class="readout-accent terminal-cursor" data-terminal="true">>REF_OAK_REFINE</span>
                 </div>
                 <p class="term-text">//_TRACKING ACTIVE PROFILES ACROSS DISTRIBUTED NETWORKS. LAST SYNC: T+00:00:00</p>
                 <div class="profile-grid">
@@ -99,7 +110,7 @@
                         <span class="profile-card-label"><img src="assets/exophase.ico" alt="">Exophase <b class="card-arrow">↗</b></span>
                         <img class="profile-card-image" src="https://card.exophase.com/2/0/290206.png?1782584284" alt="Callen's Exophase profile card" loading="lazy">
                     </a>
-                    <a href="https://www.xbox.com/en-US/play/user/TinnyImp7960770" target="_blank" rel="noopener" class="profile-card">
+                    <a href="https://www.xbox.com/en-US/play/user/TinnyImp7960770" target="_blank" rel="noopener" class="profile-card xbox-card">
                         <span class="profile-card-label"><img src="assets/xbox.ico" alt="">Xbox <b class="card-arrow">↗</b></span>
                         <img class="profile-card-image" src="https://www.trueachievements.com/gamercards/TinnyImp7960770.png" alt="Callen's Xbox gamer card" loading="lazy">
                     </a>
@@ -124,7 +135,7 @@
                 </div>
                 <p class="term-text">//_Voxel construction archives. Active seasons and historical build data.</p>
                 <div class="mc-grid">
-                    <a href="https://concord-smp.vercel.app" target="_blank" rel="noopener" class="mc-card">
+                    <a href="https://concord-smp.vercel.app" target="_blank" rel="noopener" class="mc-card show-bg">
                         <img class="mc-bg" src="https://concord-smp.vercel.app/images/screenshot-43.png" alt="" aria-hidden="true" loading="lazy">
                         <h3>Concord SMP</h3>
                         <span class="mc-season">Season 3</span>

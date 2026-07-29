@@ -7,22 +7,22 @@ async function buildGameMosaic() {
     if (!mosaic || !track) return;
 
     const fallbackSources = [
-        "assets/sections/battlefield6/bg.jpg",
-        "assets/sections/battlefield6/IMG_0676.webp",
-        "assets/sections/battlefield6/IMG_0677.webp",
-        "assets/sections/battlefield6/IMG_0678.webp",
-        "assets/sections/cod/Ghost wallpaper.jpg",
-        "assets/sections/forza/IMG_0679.webp",
-        "assets/sections/forza/IMG_0682.webp",
-        "assets/sections/forza/IMG_0684.webp",
-        "assets/sections/nomansky/IMG_0916.webp",
-        "assets/sections/nomansky/IMG_0925.webp",
-        "assets/sections/nomansky/IMG_0926.webp",
-        "assets/sections/readyornot/IMG_0924.webp",
-        "assets/sections/readyornot/IMG_0927.webp",
-        "assets/sections/readyornot/IMG_0930.webp",
-        "assets/sections/readyornot/IMG_0931.webp",
-        "assets/sections/readyornot/Ready or Not.jpg"
+        "assets/sections/optimized/battlefield6/bg.webp",
+        "assets/sections/optimized/battlefield6/IMG_0676.webp",
+        "assets/sections/optimized/battlefield6/IMG_0677.webp",
+        "assets/sections/optimized/battlefield6/IMG_0678.webp",
+        "assets/sections/optimized/cod/Ghost wallpaper.webp",
+        "assets/sections/optimized/forza/IMG_0679.webp",
+        "assets/sections/optimized/forza/IMG_0682.webp",
+        "assets/sections/optimized/forza/IMG_0684.webp",
+        "assets/sections/optimized/nomansky/IMG_0916.webp",
+        "assets/sections/optimized/nomansky/IMG_0925.webp",
+        "assets/sections/optimized/nomansky/IMG_0926.webp",
+        "assets/sections/optimized/readyornot/IMG_0924.webp",
+        "assets/sections/optimized/readyornot/IMG_0927.webp",
+        "assets/sections/optimized/readyornot/IMG_0930.webp",
+        "assets/sections/optimized/readyornot/IMG_0931.webp",
+        "assets/sections/optimized/readyornot/Ready or Not.webp"
     ];
 
     let sources = fallbackSources;
@@ -123,7 +123,14 @@ async function buildGameMosaic() {
 document.addEventListener("DOMContentLoaded", () => {
     buildGameMosaic();
 
-    // Reveal items on load
+    // Reveal items on load (fallback if anime.js CDN is blocked or slow)
+    const revealItems = () => {
+        document.querySelectorAll(".reveal-item").forEach((el) => {
+            el.style.opacity = "1";
+            el.style.transform = "none";
+        });
+    };
+
     if (window.anime) {
         anime({
             targets: ".reveal-item",
@@ -133,7 +140,14 @@ document.addEventListener("DOMContentLoaded", () => {
             delay: anime.stagger(80),
             easing: "easeOutCubic"
         });
+    } else {
+        revealItems();
     }
+
+    // Safety net: ensure content is visible even if the CDN never loads
+    setTimeout(() => {
+        if (!window.anime) revealItems();
+    }, 2000);
 
     // Section scroll reveal
     const revealSections = document.querySelectorAll(".reveal-section");
