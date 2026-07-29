@@ -163,4 +163,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         revealSections.forEach((item) => observer.observe(item));
     }
+
+    // The Spotify hint fades on hover/focus via CSS and reappears on every page load.
 });
