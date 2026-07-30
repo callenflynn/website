@@ -25,12 +25,12 @@ async function buildGameMosaic() {
         "assets/sections/optimized/readyornot/Ready or Not.webp"
     ];
 
-    let sources = fallbackSources;
+    let sources = [...fallbackSources];
     try {
         const response = await fetch("assets/sections/manifest.json");
         if (response.ok) {
             const manifestSources = await response.json();
-            if (Array.isArray(manifestSources) && manifestSources.length) sources = manifestSources;
+            if (Array.isArray(manifestSources) && manifestSources.length) sources = [...manifestSources];
         }
     } catch {
         // File previews cannot fetch JSON. The checked-in fallback still builds the wall.
@@ -56,15 +56,18 @@ async function buildGameMosaic() {
         image.src = src;
     })));
 
-    const tileData = loadedImages.filter(Boolean);
+    const tileData = loadedImages.filter(Boolean).map((data) => ({
+        ...data,
+        isColored: Math.random() < 0.08
+    }));
 
-    const makeTile = ({ src }) => {
+    const makeTile = ({ src, isColored }) => {
         const tile = document.createElement("div");
         const image = document.createElement("img");
         image.src = src;
         image.alt = "";
         tile.className = "game-mosaic-item";
-        if (Math.random() < 0.08) image.classList.add("colored");
+        if (isColored) image.classList.add("colored");
         tile.append(image);
         return tile;
     };
