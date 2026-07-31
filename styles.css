@@ -40,6 +40,12 @@ body{
     padding: var(--viewport-padding);
     overflow-x: hidden;
     position: relative;
+    cursor: crosshair;
+}
+
+/* Restore pointer on interactive elements */
+a, button, .keycap, .profile-card, .mc-card, .map-link {
+    cursor: pointer;
 }
 
 /* ── HALFTONE MOSAIC BACKGROUND ── */
@@ -166,16 +172,27 @@ body{
     100% { filter: grayscale(0) contrast(1.1) brightness(0.85); }
 }
 
-/* Coarse halftone overlay */
-.bg-mosaic::after{
-    content: "";
+/* Halftone dots — cursor-reactive via mask */
+.halftone-dots{
     position: absolute;
     inset: 0;
+    pointer-events: none;
     background-image: radial-gradient(circle, #050505 1.4px, transparent 1.4px);
     background-size: 5px 5px;
     mix-blend-mode: overlay;
     opacity: 0.55;
-    pointer-events: none;
+    mask-image: radial-gradient(
+        circle 260px at var(--mx, 50%) var(--my, 50%),
+        rgba(0,0,0,0.5) 0%,
+        rgba(0,0,0,0.15) 40%,
+        rgba(0,0,0,0) 100%
+    );
+    -webkit-mask-image: radial-gradient(
+        circle 260px at var(--mx, 50%) var(--my, 50%),
+        rgba(0,0,0,0.5) 0%,
+        rgba(0,0,0,0.15) 40%,
+        rgba(0,0,0,0) 100%
+    );
 }
 
 /* Noise grain overlay */
@@ -861,6 +878,7 @@ p, .term-line, .term-text{
 
 .mc-card:hover .mc-bg{
     opacity: 0.15;
+    filter: grayscale(0) contrast(1);
 }
 
 /* Season 3 card keeps its background image visible by default */
