@@ -309,6 +309,36 @@ async function buildGameMosaic() {
 document.addEventListener("DOMContentLoaded", () => {
     buildGameMosaic();
 
+    // ── Cursor-reactive halftone dots ──
+    if (window.matchMedia("(hover: hover)").matches) {
+        const mosaic = document.querySelector(".bg-mosaic");
+        if (mosaic) {
+            const dots = document.createElement("div");
+            dots.className = "halftone-dots";
+            mosaic.appendChild(dots);
+
+            let mx = -500;
+            let my = -500;
+            let targetX = -500;
+            let targetY = -500;
+
+            document.addEventListener("mousemove", (e) => {
+                // Convert to local coords — parent has a 3D perspective transform
+                const rect = dots.getBoundingClientRect();
+                targetX = e.clientX - rect.left;
+                targetY = e.clientY - rect.top;
+            }, { passive: true });
+
+            (function updateDots() {
+                mx += (targetX - mx) * 0.06;
+                my += (targetY - my) * 0.06;
+                dots.style.setProperty("--mx", mx + "px");
+                dots.style.setProperty("--my", my + "px");
+                requestAnimationFrame(updateDots);
+            })();
+        }
+    }
+
     // Reveal items on load (fallback if anime.js CDN is blocked or slow)
     const revealItems = () => {
         document.querySelectorAll(".reveal-item").forEach((el) => {
