@@ -36,77 +36,115 @@ async function buildGameMosaic() {
         // File previews cannot fetch JSON. The checked-in fallback still builds the wall.
     }
 
-    // Shuffle so every page load feels fresh
-    for (let i = sources.length - 1; i > 0; i--) {
-        const j = Math.floor(Math.random() * (i + 1));
-        [sources[i], sources[j]] = [sources[j], sources[i]];
+    // ── Pre-load all images to cache dimensions ──
+    const imageMeta = [];
+    {
+        const loaded = await Promise.all(sources.map((src) => new Promise((resolve) => {
+            const image = new Image();
+            image.onload = () => resolve({ src, width: image.naturalWidth, height: image.naturalHeight });
+            image.onerror = () => resolve(null);
+            image.src = src;
+        })));
+        for (const data of loaded) {
+            if (data) imageMeta.push(data);
+        }
     }
 
-    // Use a rotating subset so the mosaic doesn't feel repetitive or overcrowded.
-    // The manifest still contains every image; a different slice is shown each load.
-    const MOSAIC_LIMIT = 40;
-    if (sources.length > MOSAIC_LIMIT) {
-        sources = sources.slice(0, MOSAIC_LIMIT);
+    if (!imageMeta.length) return;
+
+    // ── Helpers ──
+    // Deck: draw images without replacement so duplicates are minimised.
+    // Reshuffles automatically when the deck runs out.
+    let deck = [];
+
+    function shuffledDeck() {
+        const d = [...imageMeta];
+        for (let i = d.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [d[i], d[j]] = [d[j], d[i]];
+        }
+        return d;
     }
 
-    const loadedImages = await Promise.all(sources.map((src) => new Promise((resolve) => {
-        const image = new Image();
-        image.onload = () => resolve({ src, width: image.naturalWidth, height: image.naturalHeight });
-        image.onerror = () => resolve(null);
-        image.src = src;
-    })));
+    function drawMeta() {
+        if (deck.length === 0) deck = shuffledDeck();
+        return deck.pop();
+    }
 
-    const tileData = loadedImages.filter(Boolean).map((data) => ({
-        ...data,
-        isColored: Math.random() < 0.08
-    }));
-
-    const makeTile = ({ src, isColored }) => {
+    function makeTile(src, isColored) {
         const tile = document.createElement("div");
-        const image = document.createElement("img");
-        image.src = src;
-        image.alt = "";
         tile.className = "game-mosaic-item";
-        if (isColored) image.classList.add("colored");
-        tile.append(image);
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = "";
+        if (isColored) img.classList.add("colored");
+        tile.append(img);
         return tile;
-    };
+    }
 
-    const grid1 = document.createElement("div");
-    grid1.className = "bg-mosaic-grid";
-    grid1.id = "gameMosaic";
+    // ── Smooth color transition with variety ──
+    function setImageColor(img, wantsColored) {
+        const hasColor = img.classList.contains("colored");
+        if (wantsColored === hasColor) return; // no change
 
-    const grid2 = document.createElement("div");
-    grid2.className = "bg-mosaic-grid";
-    grid2.setAttribute("aria-hidden", "true");
+        // Increment generation counter so stale handlers are ignored
+        const gen = (img._colorGen || 0) + 1;
+        img._colorGen = gen;
 
-    // Render tile nodes into an array and map them back to data for layout
-    const tiles1 = tileData.map((data) => {
-        const tile = makeTile(data);
-        grid1.append(tile);
-        return { tile, width: data.width, height: data.height };
-    });
+        // Cancel any in-progress transition
+        img.classList.remove("losing-color", "gaining-color", "fading-color");
+        void img.offsetWidth;
 
-    const tiles2 = tileData.map((data) => {
-        const tile = makeTile(data);
-        grid2.append(tile);
-        return { tile, width: data.width, height: data.height };
-    });
+        if (wantsColored) {
+            // Gaining color: 50% flicker on, 50% instant
+            if (Math.random() < 0.5) {
+                img.classList.add("gaining-color");
+            }
+            img.classList.add("colored");
+        } else {
+            // Losing color: 50% flicker off, 40% slow fade, 10% instant
+            const roll = Math.random();
+            if (roll < 0.5) {
+                img.classList.add("losing-color");
+            } else if (roll < 0.9) {
+                img.classList.add("fading-color");
+            }
+            // else: instant (no animation class)
+            img.classList.remove("colored");
+        }
 
-    mosaic.replaceWith(grid1);
-    track.appendChild(grid2);
+        // Only attach cleanup if an animation class was added
+        if (img.classList.contains("losing-color") ||
+            img.classList.contains("gaining-color") ||
+            img.classList.contains("fading-color")) {
+            img.addEventListener("animationend", function handler() {
+                if (img._colorGen !== gen) return; // stale, ignore
+                img.classList.remove("losing-color", "gaining-color", "fading-color");
+                img._colorGen = 0;
+            }, { once: true });
+        }
+    }
 
-    const layoutGrid = (grid, tiles) => {
+    function generateTileData(count) {
+        return Array.from({ length: count }, () => {
+            const meta = drawMeta();
+            return { src: meta.src, width: meta.width, height: meta.height, isColored: Math.random() < 0.08 };
+        });
+    }
+
+    function layoutGrid(grid, tileData) {
         const columns = window.innerWidth <= 700 ? 5 : 16;
         const gap = window.innerWidth <= 700 ? 5 : 8;
         const rowHeight = 10;
         const columnWidth = (grid.clientWidth - ((columns - 1) * gap) - (gap * 2)) / columns;
         const puzzleSpans = [2, 3, 4, 2, 3, 2, 5, 2, 3, 4, 2, 3, 2, 4, 3, 2];
 
-        tiles.forEach(({ tile, width, height }, i) => {
-            const ratio = width / height;
+        const tiles = [...grid.children];
+        tiles.forEach((tile, i) => {
+            const data = tileData[i];
+            if (!data) return;
+            const ratio = data.width / data.height;
             let columnSpan;
-
             if (ratio > 1.6) {
                 columnSpan = Math.min(columns, Math.max(3, Math.round(ratio * (columns <= 5 ? 1.6 : 2.8))));
             } else if (ratio < 0.7) {
@@ -114,21 +152,155 @@ async function buildGameMosaic() {
             } else {
                 columnSpan = Math.min(columns, puzzleSpans[i % puzzleSpans.length]);
             }
-
             const tileHeight = (columnWidth * columnSpan) / ratio;
             const rowSpan = Math.max(5, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
             tile.style.gridColumn = `span ${columnSpan}`;
             tile.style.gridRow = `span ${rowSpan}`;
         });
-    };
+    }
 
-    const layoutTiles = () => {
-        layoutGrid(grid1, tiles1);
-        layoutGrid(grid2, tiles2);
-    };
+    // ── Create two different grids ──
+    const TILES_PER_GRID = 65;
+    const GRID_GAP = 14;
 
-    layoutTiles();
-    window.addEventListener("resize", layoutTiles, { passive: true });
+    const grid1 = document.createElement("div");
+    grid1.className = "bg-mosaic-grid";
+    grid1.id = "gameMosaic";
+    let tileData1 = generateTileData(TILES_PER_GRID);
+    tileData1.forEach((d) => grid1.append(makeTile(d.src, d.isColored)));
+
+    const grid2 = document.createElement("div");
+    grid2.className = "bg-mosaic-grid";
+    grid2.setAttribute("aria-hidden", "true");
+    let tileData2 = generateTileData(TILES_PER_GRID);
+    tileData2.forEach((d) => grid2.append(makeTile(d.src, d.isColored)));
+
+    mosaic.replaceWith(grid1);
+
+    // Remove any stale extra grids from the track, then append grid2
+    const staleGrids = track.querySelectorAll(".bg-mosaic-grid");
+    staleGrids.forEach((g) => { if (g !== grid1) g.remove(); });
+    track.appendChild(grid2);
+
+    // Wait for layout so offsetWidth is available
+    await new Promise((r) => requestAnimationFrame(r));
+    await new Promise((r) => requestAnimationFrame(r));
+
+    layoutGrid(grid1, tileData1);
+    layoutGrid(grid2, tileData2);
+
+    let pos1 = 0;
+    let pos2 = grid1.offsetWidth + GRID_GAP;
+    grid1.style.transform = `translateX(${pos1}px)`;
+    grid2.style.transform = `translateX(${pos2}px)`;
+
+    // ── Tile recycling: regenerate a grid when it scrolls off-screen ──
+    function regenerateGrid(grid, tileData) {
+        const newData = generateTileData(TILES_PER_GRID);
+        tileData.length = 0;
+        tileData.push(...newData);
+
+        const tiles = [...grid.children];
+        tiles.forEach((tile, i) => {
+            const d = newData[i];
+            if (!d) return;
+            const img = tile.querySelector("img");
+            // Cancel any in-progress transitions since this is off-screen
+            img.classList.remove("losing-color", "gaining-color", "fading-color");
+            img.src = d.src;
+            if (d.isColored) {
+                img.classList.add("colored");
+            } else {
+                img.classList.remove("colored");
+            }
+        });
+
+        layoutGrid(grid, tileData);
+    }
+
+    // ── JS-driven infinite scroll ──
+    let lastTime = performance.now();
+    const SPEED = 0.018; // pixels per ms (~ 1.08 px per frame at 60 fps)
+    let rafId = null;
+
+    function animate(now) {
+        const dt = Math.min(now - lastTime, 50);
+        lastTime = now;
+        const dx = dt * SPEED;
+
+        pos1 -= dx;
+        pos2 -= dx;
+
+        const w1 = grid1.offsetWidth;
+        const w2 = grid2.offsetWidth;
+
+        // Grid1 scrolled completely off-screen left → recycle it
+        if (pos1 + w1 < -100) {
+            pos1 = pos2 + w2 + GRID_GAP;
+            regenerateGrid(grid1, tileData1);
+            pos1 = pos2 + grid2.offsetWidth + GRID_GAP;
+        }
+
+        // Grid2 scrolled completely off-screen left → recycle it
+        if (pos2 + w2 < -100) {
+            pos2 = pos1 + w1 + GRID_GAP;
+            regenerateGrid(grid2, tileData2);
+            pos2 = pos1 + grid1.offsetWidth + GRID_GAP;
+        }
+
+        grid1.style.transform = `translateX(${pos1}px)`;
+        grid2.style.transform = `translateX(${pos2}px)`;
+
+        rafId = requestAnimationFrame(animate);
+    }
+
+    // ── Reduced motion: skip animation ──
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!prefersReducedMotion) {
+        rafId = requestAnimationFrame(animate);
+    }
+
+    // ── Resize: re-layout and reposition ──
+    let resizeTimeout;
+    const onResize = () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            layoutGrid(grid1, tileData1);
+            layoutGrid(grid2, tileData2);
+            pos2 = pos1 + grid1.offsetWidth + GRID_GAP;
+            grid2.style.transform = `translateX(${pos2}px)`;
+        }, 120);
+    };
+    window.addEventListener("resize", onResize, { passive: true });
+
+    // ── Periodically re-randomize colored state for dynamic feel ──
+    // Updates a random subset each cycle; uses flicker animation for transitions
+    const colorInterval = setInterval(() => {
+        const updateSubset = (grid, tileData, count) => {
+            const tiles = [...grid.children];
+            const indices = new Set();
+            while (indices.size < Math.min(count, tiles.length)) {
+                indices.add(Math.floor(Math.random() * tiles.length));
+            }
+            indices.forEach((i) => {
+                const d = tileData[i];
+                if (!d) return;
+                d.isColored = Math.random() < 0.08;
+                setImageColor(tiles[i].querySelector("img"), d.isColored);
+            });
+        };
+        const subsetSize = Math.floor(TILES_PER_GRID * 0.3);
+        updateSubset(grid1, tileData1, subsetSize);
+        updateSubset(grid2, tileData2, subsetSize);
+    }, 4000);
+
+    // ── Cleanup: guard against double-init and allow teardown ──
+    if (buildGameMosaic._cleanup) buildGameMosaic._cleanup();
+    buildGameMosaic._cleanup = () => {
+        if (rafId) cancelAnimationFrame(rafId);
+        clearInterval(colorInterval);
+        window.removeEventListener("resize", onResize);
+    };
 }
 
 document.addEventListener("DOMContentLoaded", () => {
