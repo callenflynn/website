@@ -113,6 +113,11 @@ body{
     animation: color-fading 2.2s ease-in forwards;
 }
 
+/* Glow on: smooth fluorescent warm-up */
+.game-mosaic-item img.glowing-color {
+    animation: color-glowing 0.5s ease-out forwards;
+}
+
 @keyframes color-dying {
     0%   { filter: grayscale(0) contrast(1.1) brightness(0.85); }
     6%   { filter: grayscale(0.15) contrast(1.1) brightness(0.85); }
@@ -153,6 +158,12 @@ body{
 @keyframes color-fading {
     0%   { filter: grayscale(0) contrast(1.1) brightness(0.85); }
     100% { filter: grayscale(1) contrast(1.35) brightness(0.75); }
+}
+
+@keyframes color-glowing {
+    0%   { filter: grayscale(1) contrast(1.35) brightness(0.75); }
+    60%  { filter: grayscale(0.25) contrast(1.15) brightness(0.8); }
+    100% { filter: grayscale(0) contrast(1.1) brightness(0.85); }
 }
 
 /* Coarse halftone overlay */

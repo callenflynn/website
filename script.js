@@ -92,13 +92,15 @@ async function buildGameMosaic() {
         img._colorGen = gen;
 
         // Cancel any in-progress transition
-        img.classList.remove("losing-color", "gaining-color", "fading-color");
+        img.classList.remove("losing-color", "gaining-color", "fading-color", "glowing-color");
         void img.offsetWidth;
 
         if (wantsColored) {
-            // Gaining color: 50% flicker on, 50% instant
+            // Gaining color: 50% flicker on, 50% smooth glow
             if (Math.random() < 0.5) {
                 img.classList.add("gaining-color");
+            } else {
+                img.classList.add("glowing-color");
             }
             img.classList.add("colored");
         } else {
@@ -116,10 +118,11 @@ async function buildGameMosaic() {
         // Only attach cleanup if an animation class was added
         if (img.classList.contains("losing-color") ||
             img.classList.contains("gaining-color") ||
-            img.classList.contains("fading-color")) {
+            img.classList.contains("fading-color") ||
+            img.classList.contains("glowing-color")) {
             img.addEventListener("animationend", function handler() {
                 if (img._colorGen !== gen) return; // stale, ignore
-                img.classList.remove("losing-color", "gaining-color", "fading-color");
+                img.classList.remove("losing-color", "gaining-color", "fading-color", "glowing-color");
                 img._colorGen = 0;
             }, { once: true });
         }
@@ -206,7 +209,7 @@ async function buildGameMosaic() {
             if (!d) return;
             const img = tile.querySelector("img");
             // Cancel any in-progress transitions since this is off-screen
-            img.classList.remove("losing-color", "gaining-color", "fading-color");
+            img.classList.remove("losing-color", "gaining-color", "fading-color", "glowing-color");
             img.src = d.src;
             if (d.isColored) {
                 img.classList.add("colored");
