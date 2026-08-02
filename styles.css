@@ -930,22 +930,104 @@ p, .term-line, .term-text{
     letter-spacing: 0.05em;
 }
 
-/* ── CODING ── */
+/* ── CODING / DEV ── */
+
+.dev-grid{
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 20px;
+    width: min(100%, 1120px);
+    margin-bottom: 20px;
+}
+
+/* Contribution calendar card */
+.contrib-card{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+    text-decoration: none;
+    color: var(--fg);
+    padding: 16px 18px;
+    border: var(--border);
+    border-radius: var(--radius);
+    background: rgba(5, 5, 5, 0.5);
+    box-shadow: 4px 4px 0 rgba(255, 59, 0, 0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+    cursor: pointer;
+}
+
+.contrib-card:hover,
+.contrib-card:focus-visible{
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0 var(--accent);
+    border-color: rgba(224, 224, 224, 0.35);
+}
+
+.contrib-card:active{
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0 var(--accent);
+}
+
+.contrib-label{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 12px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.contrib-label .card-arrow{
+    margin-left: auto;
+    color: var(--accent);
+    font-size: 1rem;
+}
+
+.contrib-chart{
+    width: 100%;
+    height: auto;
+    display: block;
+}
 
 .coding-grid{
     display: grid;
-    grid-template-columns: minmax(0, 640px);
-    justify-content: start;
+    grid-template-columns: minmax(0, 460px) minmax(0, 1fr);
+    align-items: stretch;
     gap: 20px;
     width: min(100%, 1120px);
 }
 
 .coding-card{
+    display: block;
     border: var(--border);
     border-radius: var(--radius);
     overflow: hidden;
     background: rgba(5, 5, 5, 0.5);
     box-shadow: 4px 4px 0 rgba(255, 59, 0, 0.35);
+    transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
+}
+
+a.coding-card{
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    min-width: 0;
+}
+
+a.coding-card:hover,
+a.coding-card:focus-visible{
+    transform: translate(-3px, -3px);
+    box-shadow: 7px 7px 0 var(--accent);
+    border-color: rgba(224, 224, 224, 0.35);
+}
+
+a.coding-card:active{
+    transform: translate(3px, 3px);
+    box-shadow: 2px 2px 0 var(--accent);
 }
 
 .coding-card img{
@@ -1023,6 +1105,7 @@ p, .term-line, .term-text{
     }
 
     .mc-grid,
+    .dev-grid,
     .coding-grid{
         grid-template-columns: 1fr;
     }
