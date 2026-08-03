@@ -14,8 +14,14 @@
 
 html {
     scroll-behavior: smooth;
-    scrollbar-color: var(--accent) var(--bg);
-    scrollbar-width: auto;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+html::-webkit-scrollbar {
+    display: none;
+    width: 0;
+    height: 0;
 }
 
 ::selection {
