@@ -347,6 +347,21 @@ function resolveActivityAsset(activity, imageKey) {
     return "";
 }
 
+function resolveGameAsset(activity) {
+    if (activity?.type !== 0) return "";
+
+    const gameArtwork = {
+        "356942674672091136": "https://cdn.cloudflare.steamstatic.com/steam/apps/322170/header.jpg",
+        "479334869462417409": "https://cdn.cloudflare.steamstatic.com/steam/apps/38410/header.jpg"
+    };
+
+    return gameArtwork[activity.application_id] || "assets/gamepad.svg";
+}
+
+function resolveActivityArtwork(activity) {
+    return resolveActivityAsset(activity, "large_image") || resolveGameAsset(activity);
+}
+
 function formatElapsed(start) {
     if (!start) return "";
     const elapsed = Math.max(0, Date.now() - start);
@@ -368,7 +383,7 @@ function setupLiveActivity() {
     const handle = document.getElementById("liveHandle");
     const art = document.getElementById("liveActivityArt");
     const activityIcon = document.getElementById("liveActivityIcon");
-    const artTenor = document.getElementById("liveArtTenor");
+    const artIdle = document.getElementById("liveArtIdle");
     const artPlaceholder = document.getElementById("liveArtPlaceholder");
     const kicker = document.getElementById("liveActivityKicker");
     const title = document.getElementById("liveActivityTitle");
@@ -388,35 +403,63 @@ function setupLiveActivity() {
     };
 
     let artGeneration = 0;
-    let tenorObserver = null;
+    let activityIconGeneration = 0;
 
-    const stopTenorObserver = () => {
-        if (tenorObserver) {
-            tenorObserver.disconnect();
-            tenorObserver = null;
-        }
+    const hideActivityIcon = () => {
+        activityIconGeneration += 1;
+        if (!activityIcon) return;
+        activityIcon.hidden = true;
+        activityIcon.textContent = "";
+        activityIcon.style.backgroundImage = "";
     };
 
-    const setArt = (src, alt) => {
-        stopTenorObserver();
+    const setActivityIcon = (source, fallback, label = "") => {
+        if (!activityIcon) return;
+        const generation = ++activityIconGeneration;
+        activityIcon.hidden = false;
+        activityIcon.textContent = source ? "" : label;
+        activityIcon.style.backgroundImage = fallback ? `url("${fallback}")` : "";
+        if (!source) return;
+
+        const image = new Image();
+        image.onload = () => {
+            if (generation !== activityIconGeneration) return;
+            activityIcon.textContent = "";
+            activityIcon.style.backgroundImage = `url("${source}")`;
+        };
+        image.onerror = () => {
+            if (generation !== activityIconGeneration) return;
+            activityIcon.textContent = fallback ? "" : label;
+            activityIcon.style.backgroundImage = fallback ? `url("${fallback}")` : "";
+        };
+        image.src = source;
+    };
+
+    const setArt = (src, alt, fallbackSrc = "") => {
         const generation = ++artGeneration;
         art.classList.remove("has-art");
         art.removeAttribute("src");
         art.alt = "";
-        if (artTenor) artTenor.hidden = true;
+        if (artIdle) artIdle.hidden = true;
         artPlaceholder.hidden = !src;
         if (!src) return;
+        let attemptedFallback = false;
         art.onload = () => {
             if (generation !== artGeneration) return;
             art.classList.add("has-art");
-            if (artTenor) artTenor.hidden = true;
+            if (artIdle) artIdle.hidden = true;
             artPlaceholder.hidden = true;
         };
         art.onerror = () => {
             if (generation !== artGeneration) return;
+            if (fallbackSrc && !attemptedFallback) {
+                attemptedFallback = true;
+                art.src = fallbackSrc;
+                return;
+            }
             art.classList.remove("has-art");
             artPlaceholder.hidden = false;
-            if (artTenor) artTenor.hidden = true;
+            if (artIdle) artIdle.hidden = true;
         };
         art.alt = alt || "Current activity artwork";
         art.src = src;
@@ -424,36 +467,33 @@ function setupLiveActivity() {
 
     const showIdleArt = () => {
         const generation = ++artGeneration;
-        stopTenorObserver();
         art.classList.remove("has-art");
         art.removeAttribute("src");
         art.alt = "";
-        if (activityIcon) activityIcon.hidden = true;
-        if (!artTenor) {
+        hideActivityIcon();
+        if (!artIdle) {
             artPlaceholder.hidden = false;
             return;
         }
 
-        const syncTenorVisibility = () => {
+        artIdle.onload = () => {
             if (generation !== artGeneration) return;
-            const embedLoaded = artTenor.querySelector("iframe, video, img");
-            if (embedLoaded) {
-                artPlaceholder.hidden = true;
-                stopTenorObserver();
-            }
+            artIdle.hidden = false;
+            artPlaceholder.hidden = true;
+        };
+        artIdle.onerror = () => {
+            if (generation !== artGeneration) return;
+            artIdle.hidden = true;
+            artPlaceholder.hidden = false;
         };
 
+        artIdle.hidden = false;
         artPlaceholder.hidden = true;
-        artTenor.hidden = false;
-        syncTenorVisibility();
-        tenorObserver = new MutationObserver(syncTenorVisibility);
-        tenorObserver.observe(artTenor, { childList: true, subtree: true });
-
-        // Tenor loads asynchronously; retain the normal placeholder if its embed is blocked.
-        window.setTimeout(() => {
-            if (generation !== artGeneration) return;
-            if (!artTenor.querySelector("iframe, video, img")) artPlaceholder.hidden = false;
-        }, 4000);
+        if (artIdle.complete) {
+            if (artIdle.naturalWidth > 0) return;
+            artIdle.hidden = true;
+            artPlaceholder.hidden = false;
+        }
     };
 
     const render = (payload) => {
@@ -501,10 +541,8 @@ function setupLiveActivity() {
             elapsed.textContent = "";
         } else if (spotify) {
             card.dataset.state = "active";
-            if (activityIcon) {
-                activityIcon.hidden = true;
-                activityIcon.style.backgroundImage = "";
-            }
+            hideActivityIcon();
+
             const song = spotify.song || spotify.details || "Unknown track";
             const artist = spotify.artist || spotify.state || "Unknown artist";
             setArt(data.spotify?.album_art_url || resolveActivityAsset(spotify, "large_image"), `${song} album art`);
@@ -521,12 +559,20 @@ function setupLiveActivity() {
             const detailsText = activity.type === 3 && watchingState && activityDetails
                 ? `${watchingState} • ${activityDetails}`
                 : activityDetails || watchingState || activity.state || "Active right now.";
-            setArt(resolveActivityAsset(activity, "large_image"), `${activityName} artwork`);
-            if (activityIcon) {
-                const iconSource = resolveActivityAsset(activity, "small_image");
-                activityIcon.hidden = activity.type !== 3;
-                activityIcon.textContent = iconSource ? "" : "TV";
-                activityIcon.style.backgroundImage = iconSource ? `url("${iconSource}")` : "";
+            const artworkSource = resolveActivityArtwork(activity);
+            const gameFallback = activity.type === 0 && artworkSource !== "assets/gamepad.svg"
+                ? "assets/gamepad.svg"
+                : "";
+            setArt(artworkSource, `${activityName} artwork`, gameFallback);
+            const iconSource = resolveActivityAsset(activity, "small_image") ||
+                (activity.type === 0 ? artworkSource : "");
+            const iconFallback = activity.type === 0 && iconSource !== "assets/gamepad.svg"
+                ? "assets/gamepad.svg"
+                : "";
+            if (activity.type === 3 || activity.type === 0) {
+                setActivityIcon(iconSource, iconFallback, activity.type === 3 ? "TV" : "");
+            } else {
+                hideActivityIcon();
             }
             kicker.textContent = formatActivityType(activity.type);
             title.textContent = activityName;

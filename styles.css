@@ -753,22 +753,15 @@ p, .term-line, .term-text{
     letter-spacing: 0.02em;
 }
 .live-activity-icon[hidden]{ display: none; }
-.live-art-tenor{
+.live-art-idle{
     position: absolute;
     inset: 0;
     width: 100%;
     height: 100%;
-    overflow: hidden;
-    background: #0b0b0b;
+    display: block;
+    object-fit: cover;
 }
-.live-art-tenor[hidden]{ display: none; }
-.live-art-tenor > div,
-.live-art-tenor iframe{
-    width: 100% !important;
-    height: 100% !important;
-    max-width: none !important;
-    max-height: none !important;
-}
+.live-art-idle[hidden]{ display: none; }
 .live-art-placeholder{
     position: absolute;
     inset: 0;

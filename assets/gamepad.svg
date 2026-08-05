@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-labelledby="title desc">
+  <title id="title">Game activity</title>
+  <desc id="desc">A geometric orange and white game controller icon</desc>
+  <rect width="256" height="256" fill="#111"/>
+  <path fill="#ff3b00" d="M65 78h126c25 0 44 20 44 45v36c0 18-15 33-33 33-11 0-21-5-27-14l-14-20H95l-14 20c-6 9-16 14-27 14-18 0-33-15-33-33v-36c0-25 19-45 44-45Z"/>
+  <path fill="#e0e0e0" d="M79 105h18v18h18v18H97v18H79v-18H61v-18h18v-18Zm87 9a9 9 0 1 0 0 18 9 9 0 0 0 0-18Zm25 20a9 9 0 1 0 0 18 9 9 0 0 0 0-18Z"/>
+  <path fill="#050505" d="M68 92h120c14 0 25 11 25 25v4H43v-4c0-14 11-25 25-25Z" opacity=".45"/>
+</svg>
