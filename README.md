@@ -3,7 +3,7 @@ This is my website which has links to all my things such as projects, minecraft 
 projects site coming soon?
 
 
-but why are u looking at my websites README? The site is right [ere](https://callen.page)
+but why are u looking at my websites README? The site is right [here](https://callen.page)
 
 # fonts
 milker.regular.otf - bold, heavy font 
