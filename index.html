@@ -13,12 +13,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 
     <link rel="me" href="https://mastodon.callen.page/@cal">
-
     <link rel="stylesheet" href="styles.css">
-<noscript><style>.reveal-item { opacity: 1 !important; transform: none !important; }</style></noscript>
+    <noscript><style>.reveal-item { opacity: 1 !important; transform: none !important; }</style></noscript>
 </head>
 <body>
-
     <!-- Full-screen halftone image mosaic background -->
     <div class="bg-mosaic" aria-hidden="true">
         <div class="bg-mosaic-track" id="bgMosaicTrack">
@@ -26,7 +24,6 @@
         </div>
     </div>
 
-    <!-- Film/noise grain overlay -->
     <div class="noise-overlay" aria-hidden="true"></div>
 
     <a class="map-link reveal-item" href="map.html" aria-label="Open map" title="Open map">
@@ -39,37 +36,73 @@
             <h1 class="reveal-item">CALLEN<span class="accent-dot">.</span></h1>
         </header>
 
-        <div class="tactical-grid socials">
-            <a href="https://github.com/callenflynn" target="_blank" rel="noopener" class="keycap reveal-item">
-                <span class="keycap-icon"><img src="assets/github.ico" alt=""></span>
-                <span class="keycap-text">GITHUB</span>
-            </a>
-
-            <a href="https://discord.com/users/1409705687159668736" target="_blank" rel="noopener" class="keycap reveal-item">
-                <span class="keycap-icon"><img src="assets/discord.ico" alt=""></span>
-                <span class="keycap-text">DISCORD</span>
-            </a>
-
-            <div class="keycap-wrapper reveal-item">
-                <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" rel="noopener" class="keycap keycap-spotify">
-                    <span class="keycap-icon"><img src="assets/spotify.ico" alt=""></span>
-                    <span class="keycap-text">SPOTIFY</span>
+        <div class="hero-main-grid">
+            <div class="hero-links tactical-grid socials">
+                <a href="https://github.com/callenflynn" target="_blank" rel="noopener" class="keycap reveal-item">
+                    <span class="keycap-icon"><img src="assets/github.ico" alt=""></span>
+                    <span class="keycap-text">GITHUB</span>
                 </a>
-                <span class="spotify-hint" aria-hidden="true">hover me</span>
-                <div class="spotify-popup" aria-hidden="true">
-                    <div class="spotify-popup-header">
-                        <img src="assets/spotify.ico" alt="">
-                        <span>//_RECENTLY_PLAYED</span>
+
+                <a href="https://discord.com/users/1409705687159668736" target="_blank" rel="noopener" class="keycap reveal-item">
+                    <span class="keycap-icon"><img src="assets/discord.ico" alt=""></span>
+                    <span class="keycap-text">DISCORD</span>
+                </a>
+
+                <div class="keycap-wrapper reveal-item">
+                    <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" rel="noopener" class="keycap keycap-spotify">
+                        <span class="keycap-icon"><img src="assets/spotify.ico" alt=""></span>
+                        <span class="keycap-text">SPOTIFY</span>
+                    </a>
+                    <span class="spotify-hint" aria-hidden="true">hover me</span>
+                    <div class="spotify-popup" aria-hidden="true">
+                        <div class="spotify-popup-header">
+                            <img src="assets/spotify.ico" alt="">
+                            <span>//_RECENTLY_PLAYED</span>
+                        </div>
+                        <img class="spotify-recent-svg" src="https://spotify-recently-played-readme.vercel.app/api?user=8mhqni5h0nxmjouk24zlf2x6u" alt="Recently played tracks" loading="eager">
                     </div>
-                    <img class="spotify-recent-svg" src="https://spotify-recently-played-readme.vercel.app/api?user=8mhqni5h0nxmjouk24zlf2x6u" alt="Recently played tracks" loading="eager">
                 </div>
+
+                <a href="https://blog.callen.page/" target="_blank" rel="noopener" class="keycap reveal-item">
+                    <span class="keycap-icon"><img src="assets/writefreely.svg" alt=""></span>
+                    <span class="keycap-text">BLOG</span>
+                </a>
             </div>
 
-            <a href="https://blog.callen.page/" target="_blank" rel="noopener" class="keycap reveal-item">
-                <span class="keycap-icon"><img src="assets/writefreely.svg" alt=""></span>
-                <span class="keycap-text">BLOG</span>
-            </a>
-
+            <section class="hero-live-feed reveal-item" aria-label="Live Discord activity">
+                <header class="hero-live-header">
+                    <span>//_LIVE_FEED</span>
+                    <span class="live-signal" id="liveSignal" aria-label="Live feed status"><i></i>SYNCING</span>
+                </header>
+                <div class="hero-live-body live-activity-card" id="liveActivityCard" data-state="loading">
+                    <div class="live-art-wrap" id="liveArtWrap">
+                        <img id="liveActivityArt" class="live-activity-art" src="" alt="" loading="eager">
+                        <span class="live-art-placeholder" id="liveArtPlaceholder" aria-hidden="true">+</span>
+                    </div>
+                    <div class="hero-live-copy">
+                        <div class="hero-live-status">
+                            <span id="liveStatus">CONNECTING</span>
+                            <span id="livePresence">DISCORD: --</span>
+                        </div>
+                        <div class="live-identity">
+                            <img id="liveAvatar" class="live-avatar" src="assets/discord.ico" alt="" width="32" height="32">
+                            <div class="live-identity-copy">
+                                <strong id="liveName">CALLEN</strong>
+                                <span id="liveHandle">DISCORD PRESENCE FEED</span>
+                            </div>
+                        </div>
+                        <span class="live-activity-kicker" id="liveActivityKicker">ESTABLISHING LINK</span>
+                        <h2 id="liveActivityTitle">Reading the signal...</h2>
+                        <p id="liveActivityDetails">Checking Discord for current activity.</p>
+                        <div class="live-meta">
+                            <span id="liveActivityPlatform">LANYARD / LIVE</span>
+                            <span id="liveActivityElapsed"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="live-custom-status" id="liveCustomStatus" hidden></div>
+                <p class="hero-live-updated" id="liveUpdated" aria-live="polite">//_WAITING FOR FIRST SYNC</p>
+            </section>
         </div>
 
         <footer class="hero-footer">
@@ -82,7 +115,6 @@
 
     <!-- SECTIONS -->
     <div class="sections">
-
         <!-- GAMING -->
         <section class="section tech-panel reveal-section" aria-label="Gaming profiles">
             <header class="panel-header">
@@ -187,7 +219,6 @@
                 </div>
             </div>
         </section>
-
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>

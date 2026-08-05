@@ -306,8 +306,201 @@ async function buildGameMosaic() {
     };
 }
 
+const LANYARD_URL = "https://lanyard.callen.page/v1/users/1409705687159668736";
+const LIVE_REFRESH_MS = 30000;
+
+function formatPresenceStatus(status) {
+    const labels = { online: "ONLINE", idle: "IDLE", dnd: "DO NOT DISTURB", offline: "OFFLINE" };
+    return labels[status] || "UNKNOWN";
+}
+
+function formatActivityType(type) {
+    return {
+        0: "PLAYING",
+        1: "STREAMING",
+        2: "LISTENING TO",
+        3: "WATCHING",
+        5: "COMPETING IN"
+    }[type] || "ACTIVE IN";
+}
+
+function resolveActivityAsset(activity, imageKey) {
+    const image = activity?.assets?.[imageKey];
+    if (!image) return "";
+
+    if (image.startsWith("mp:external/")) {
+        const externalUrl = image.slice("mp:external/".length);
+        try {
+            const decoded = decodeURIComponent(externalUrl);
+            return decoded.startsWith("http://") || decoded.startsWith("https://")
+                ? decoded
+                : `https://${decoded}`;
+        } catch {
+            return externalUrl.startsWith("http://") || externalUrl.startsWith("https://")
+                ? externalUrl
+                : `https://${externalUrl}`;
+        }
+    }
+
+    if (image.startsWith("http://") || image.startsWith("https://")) return image;
+    if (activity.application_id) {
+        return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${image}.png?size=256`;
+    }
+    return "";
+}
+
+function formatElapsed(start) {
+    if (!start) return "";
+    const elapsed = Math.max(0, Date.now() - start);
+    const minutes = Math.floor(elapsed / 60000);
+    const hours = Math.floor(minutes / 60);
+    if (hours) return `${hours}H ${String(minutes % 60).padStart(2, "0")}M`;
+    return `${minutes}M`;
+}
+
+function setupLiveActivity() {
+    const card = document.getElementById("liveActivityCard");
+    if (!card) return;
+
+    const signal = document.getElementById("liveSignal");
+    const status = document.getElementById("liveStatus");
+    const presence = document.getElementById("livePresence");
+    const avatar = document.getElementById("liveAvatar");
+    const name = document.getElementById("liveName");
+    const handle = document.getElementById("liveHandle");
+    const art = document.getElementById("liveActivityArt");
+    const artPlaceholder = document.getElementById("liveArtPlaceholder");
+    const kicker = document.getElementById("liveActivityKicker");
+    const title = document.getElementById("liveActivityTitle");
+    const details = document.getElementById("liveActivityDetails");
+    const platform = document.getElementById("liveActivityPlatform");
+    const elapsed = document.getElementById("liveActivityElapsed");
+    const customStatus = document.getElementById("liveCustomStatus");
+    const updated = document.getElementById("liveUpdated");
+    let currentStart = null;
+
+    const setSignal = (text, state = "") => {
+        signal.textContent = text;
+        signal.dataset.state = state;
+        const dot = document.createElement("i");
+        signal.prepend(dot);
+    };
+
+    const setArt = (src, alt) => {
+        art.classList.remove("has-art");
+        art.removeAttribute("src");
+        art.alt = "";
+        artPlaceholder.hidden = false;
+        if (!src) return;
+        art.onload = () => {
+            art.classList.add("has-art");
+            artPlaceholder.hidden = true;
+        };
+        art.onerror = () => {
+            art.classList.remove("has-art");
+            artPlaceholder.hidden = false;
+        };
+        art.alt = alt || "Current activity artwork";
+        art.src = src;
+    };
+
+    const render = (payload) => {
+        const data = payload?.data;
+        if (!payload?.success || !data) throw new Error("Invalid Lanyard response");
+
+        const user = data.discord_user || {};
+        const activities = Array.isArray(data.activities) ? data.activities : [];
+        const custom = activities.find((activity) => activity.type === 4);
+        const spotify = data.spotify || activities.find((activity) => activity.type === 2);
+        const activity = spotify || activities.find((item) => item.type !== 4) || null;
+        const discordStatus = data.discord_status || "offline";
+        const displayName = user.display_name || user.global_name || user.username || "CALLEN";
+
+        name.textContent = displayName;
+        handle.textContent = user.username ? `@${user.username}` : "DISCORD PRESENCE FEED";
+        presence.textContent = `DISCORD: ${formatPresenceStatus(discordStatus)}`;
+        status.textContent = `STATUS: ${discordStatus === "offline" ? "AWAY" : "ACTIVE"}`;
+        setSignal(discordStatus === "offline" ? "OFFLINE" : "LIVE", discordStatus === "offline" ? "offline" : "active");
+
+        if (user.avatar && user.id) {
+            avatar.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=96`;
+            avatar.alt = `${displayName}'s Discord avatar`;
+        } else {
+            avatar.src = "assets/discord.ico";
+            avatar.alt = "Discord";
+        }
+
+        if (custom?.state) {
+            customStatus.hidden = false;
+            customStatus.textContent = `${custom.emoji?.name ? `${custom.emoji.name} ` : ""}${custom.state}`;
+        } else {
+            customStatus.hidden = true;
+            customStatus.textContent = "";
+        }
+
+        currentStart = activity?.timestamps?.start || spotify?.timestamps?.start || null;
+        if (!activity) {
+            card.dataset.state = "idle";
+            setArt("", "");
+            kicker.textContent = discordStatus === "offline" ? "NO ACTIVE SIGNAL" : "NO RICH PRESENCE";
+            title.textContent = discordStatus === "offline" ? "Currently offline" : "Just hanging out";
+            details.textContent = custom?.state || "Nothing is being broadcast right now.";
+            platform.textContent = "DISCORD / LIVE";
+            elapsed.textContent = "";
+        } else if (spotify) {
+            card.dataset.state = "active";
+            const song = spotify.song || spotify.details || "Unknown track";
+            const artist = spotify.artist || spotify.state || "Unknown artist";
+            setArt(data.spotify?.album_art_url || resolveActivityAsset(spotify, "large_image"), `${song} album art`);
+            kicker.textContent = "LISTENING TO";
+            title.textContent = song;
+            details.textContent = artist;
+            platform.textContent = spotify.album ? `SPOTIFY / ${spotify.album}` : "SPOTIFY / LIVE";
+            elapsed.textContent = formatElapsed(currentStart);
+        } else {
+            card.dataset.state = "active";
+            const activityName = activity.name || "Activity";
+            setArt(resolveActivityAsset(activity, "large_image"), `${activityName} artwork`);
+            kicker.textContent = formatActivityType(activity.type);
+            title.textContent = activityName;
+            details.textContent = activity.details || activity.state || "Active right now.";
+            platform.textContent = activity.application_id ? "DISCORD RPC / LIVE" : "DISCORD / LIVE";
+            elapsed.textContent = formatElapsed(currentStart);
+        }
+
+        updated.textContent = `//_LAST SYNC ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+    };
+
+    const sync = async () => {
+        try {
+            const response = await fetch(LANYARD_URL, { cache: "no-store" });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            render(await response.json());
+        } catch (error) {
+            console.warn("Live activity unavailable:", error);
+            card.dataset.state = "error";
+            setSignal("UNAVAILABLE", "error");
+            status.textContent = "STATUS: NO LINK";
+            presence.textContent = "DISCORD: --";
+            kicker.textContent = "SIGNAL LOST";
+            title.textContent = "Feed unavailable";
+            details.textContent = "The live presence endpoint could not be reached.";
+            platform.textContent = "LANYARD / RETRYING";
+            elapsed.textContent = "";
+            updated.textContent = "//_RETRYING NEXT SYNC";
+        }
+    };
+
+    sync();
+    window.setInterval(sync, LIVE_REFRESH_MS);
+    window.setInterval(() => {
+        if (currentStart) elapsed.textContent = formatElapsed(currentStart);
+    }, 30000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     buildGameMosaic();
+    setupLiveActivity();
 
     // ── Cursor-reactive halftone dots ──
     if (window.matchMedia("(hover: hover)").matches) {
