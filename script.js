@@ -329,20 +329,22 @@ function resolveActivityAsset(activity, imageKey) {
     if (!image) return "";
 
     if (image.startsWith("mp:external/")) {
-        const externalUrl = image.slice("mp:external/".length);
+        // Discord stores external artwork as `mp:external/<hash>/https/<host>/<path>`.
+        // The hash is only a proxy key; it must not be included in the image URL.
+        const externalAsset = image.slice("mp:external/".length);
         try {
-            const decoded = decodeURIComponent(externalUrl);
-            return decoded.startsWith("http://") || decoded.startsWith("https://")
-                ? decoded
-                : `https://${decoded}`;
+            const decoded = decodeURIComponent(externalAsset);
+            const protocolMatch = decoded.match(/(?:^|\/)(https?)(?:\/{1,2})(.+)$/i);
+            if (protocolMatch) return `${protocolMatch[1].toLowerCase()}://${protocolMatch[2]}`;
+            const urlMatch = decoded.match(/https?:\/\/.+/i);
+            if (urlMatch) return urlMatch[0];
         } catch {
-            return externalUrl.startsWith("http://") || externalUrl.startsWith("https://")
-                ? externalUrl
-                : `https://${externalUrl}`;
+            // Fall through to the normal Discord asset handling below.
         }
+        return "";
     }
 
-    if (image.startsWith("http://") || image.startsWith("https://")) return image;
+    if (/^https?:\/\//i.test(image)) return image;
     if (activity.application_id) {
         return `https://cdn.discordapp.com/app-assets/${activity.application_id}/${image}.png?size=256`;
     }
@@ -369,6 +371,7 @@ function setupLiveActivity() {
     const name = document.getElementById("liveName");
     const handle = document.getElementById("liveHandle");
     const art = document.getElementById("liveActivityArt");
+    const artTenor = document.getElementById("liveArtTenor");
     const artPlaceholder = document.getElementById("liveArtPlaceholder");
     const kicker = document.getElementById("liveActivityKicker");
     const title = document.getElementById("liveActivityTitle");
@@ -386,22 +389,72 @@ function setupLiveActivity() {
         signal.prepend(dot);
     };
 
+    let artGeneration = 0;
+    let tenorObserver = null;
+
+    const stopTenorObserver = () => {
+        if (tenorObserver) {
+            tenorObserver.disconnect();
+            tenorObserver = null;
+        }
+    };
+
     const setArt = (src, alt) => {
+        stopTenorObserver();
+        const generation = ++artGeneration;
         art.classList.remove("has-art");
         art.removeAttribute("src");
         art.alt = "";
-        artPlaceholder.hidden = false;
+        if (artTenor) artTenor.hidden = true;
+        artPlaceholder.hidden = !src;
         if (!src) return;
         art.onload = () => {
+            if (generation !== artGeneration) return;
             art.classList.add("has-art");
+            if (artTenor) artTenor.hidden = true;
             artPlaceholder.hidden = true;
         };
         art.onerror = () => {
+            if (generation !== artGeneration) return;
             art.classList.remove("has-art");
             artPlaceholder.hidden = false;
+            if (artTenor) artTenor.hidden = true;
         };
         art.alt = alt || "Current activity artwork";
         art.src = src;
+    };
+
+    const showIdleArt = () => {
+        const generation = ++artGeneration;
+        stopTenorObserver();
+        art.classList.remove("has-art");
+        art.removeAttribute("src");
+        art.alt = "";
+        if (!artTenor) {
+            artPlaceholder.hidden = false;
+            return;
+        }
+
+        const syncTenorVisibility = () => {
+            if (generation !== artGeneration) return;
+            const embedLoaded = artTenor.querySelector("iframe, video, img");
+            if (embedLoaded) {
+                artPlaceholder.hidden = true;
+                stopTenorObserver();
+            }
+        };
+
+        artPlaceholder.hidden = true;
+        artTenor.hidden = false;
+        syncTenorVisibility();
+        tenorObserver = new MutationObserver(syncTenorVisibility);
+        tenorObserver.observe(artTenor, { childList: true, subtree: true });
+
+        // Tenor loads asynchronously; retain the normal placeholder if its embed is blocked.
+        window.setTimeout(() => {
+            if (generation !== artGeneration) return;
+            if (!artTenor.querySelector("iframe, video, img")) artPlaceholder.hidden = false;
+        }, 4000);
     };
 
     const render = (payload) => {
@@ -441,7 +494,7 @@ function setupLiveActivity() {
         currentStart = activity?.timestamps?.start || spotify?.timestamps?.start || null;
         if (!activity) {
             card.dataset.state = "idle";
-            setArt("", "");
+            showIdleArt();
             kicker.textContent = discordStatus === "offline" ? "NO ACTIVE SIGNAL" : "NO RICH PRESENCE";
             title.textContent = discordStatus === "offline" ? "Currently offline" : "Just hanging out";
             details.textContent = custom?.state || "Nothing is being broadcast right now.";

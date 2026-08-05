@@ -730,6 +730,22 @@ p, .term-line, .term-text{
     filter: saturate(0.82) contrast(1.08);
 }
 .live-activity-art.has-art{ display: block; }
+.live-art-tenor{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: #0b0b0b;
+}
+.live-art-tenor[hidden]{ display: none; }
+.live-art-tenor > div,
+.live-art-tenor iframe{
+    width: 100% !important;
+    height: 100% !important;
+    max-width: none !important;
+    max-height: none !important;
+}
 .live-art-placeholder{
     position: absolute;
     inset: 0;
