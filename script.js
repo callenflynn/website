@@ -335,19 +335,9 @@ function resolveActivityAsset(activity, imageKey) {
     if (!image) return "";
 
     if (image.startsWith("mp:external/")) {
-        // Discord stores external artwork as `mp:external/<hash>/https/<host>/<path>`.
-        // The hash is only a proxy key; it must not be included in the image URL.
-        const externalAsset = image.slice("mp:external/".length);
-        try {
-            const decoded = decodeURIComponent(externalAsset);
-            const protocolMatch = decoded.match(/(?:^|\/)(https?)(?:\/{1,2})(.+)$/i);
-            if (protocolMatch) return `${protocolMatch[1].toLowerCase()}://${protocolMatch[2]}`;
-            const urlMatch = decoded.match(/https?:\/\/.+/i);
-            if (urlMatch) return urlMatch[0];
-        } catch {
-            // Fall through to the normal Discord asset handling below.
-        }
-        return "";
+        // Keep Discord's complete external proxy token. The encoded segment before
+        // `https/<host>` can contain required source URL/query data (notably Hulu).
+        return `https://media.discordapp.net/${image.slice("mp:".length)}`;
     }
 
     if (/^https?:\/\//i.test(image)) return image;
