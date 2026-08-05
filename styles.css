@@ -730,6 +730,29 @@ p, .term-line, .term-text{
     filter: saturate(0.82) contrast(1.08);
 }
 .live-activity-art.has-art{ display: block; }
+.live-activity-icon{
+    position: absolute;
+    right: 5px;
+    bottom: 5px;
+    z-index: 3;
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    overflow: hidden;
+    border: 1px solid rgba(224, 224, 224, 0.7);
+    border-radius: 3px;
+    color: #fff;
+    background-color: rgba(5, 5, 5, 0.82);
+    background-position: center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    box-shadow: 2px 2px 0 rgba(255, 59, 0, 0.8);
+    font-size: 0.48rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+}
+.live-activity-icon[hidden]{ display: none; }
 .live-art-tenor{
     position: absolute;
     inset: 0;

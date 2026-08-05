@@ -307,7 +307,7 @@ async function buildGameMosaic() {
 }
 
 const LANYARD_URL = "https://lanyard.callen.page/v1/users/1409705687159668736";
-const LIVE_REFRESH_MS = 30000;
+const LIVE_REFRESH_MS = 5000;
 
 function formatPresenceStatus(status) {
     const labels = { online: "ONLINE", idle: "IDLE", dnd: "DO NOT DISTURB", offline: "OFFLINE" };
@@ -322,6 +322,12 @@ function formatActivityType(type) {
         3: "WATCHING",
         5: "COMPETING IN"
     }[type] || "ACTIVE IN";
+}
+
+function formatWatchingState(state) {
+    if (!state) return "";
+    const match = state.match(/(?:season|s)\s*(\d+)\s*(?:,|[-–—|])?\s*(?:episode|ep|e)\.?\s*(\d+)/i);
+    return match ? `S${match[1]} E${match[2]}` : state;
 }
 
 function resolveActivityAsset(activity, imageKey) {
@@ -371,6 +377,7 @@ function setupLiveActivity() {
     const name = document.getElementById("liveName");
     const handle = document.getElementById("liveHandle");
     const art = document.getElementById("liveActivityArt");
+    const activityIcon = document.getElementById("liveActivityIcon");
     const artTenor = document.getElementById("liveArtTenor");
     const artPlaceholder = document.getElementById("liveArtPlaceholder");
     const kicker = document.getElementById("liveActivityKicker");
@@ -381,6 +388,7 @@ function setupLiveActivity() {
     const customStatus = document.getElementById("liveCustomStatus");
     const updated = document.getElementById("liveUpdated");
     let currentStart = null;
+    let syncInFlight = false;
 
     const setSignal = (text, state = "") => {
         signal.textContent = text;
@@ -430,6 +438,7 @@ function setupLiveActivity() {
         art.classList.remove("has-art");
         art.removeAttribute("src");
         art.alt = "";
+        if (activityIcon) activityIcon.hidden = true;
         if (!artTenor) {
             artPlaceholder.hidden = false;
             return;
@@ -502,6 +511,10 @@ function setupLiveActivity() {
             elapsed.textContent = "";
         } else if (spotify) {
             card.dataset.state = "active";
+            if (activityIcon) {
+                activityIcon.hidden = true;
+                activityIcon.style.backgroundImage = "";
+            }
             const song = spotify.song || spotify.details || "Unknown track";
             const artist = spotify.artist || spotify.state || "Unknown artist";
             setArt(data.spotify?.album_art_url || resolveActivityAsset(spotify, "large_image"), `${song} album art`);
@@ -513,11 +526,24 @@ function setupLiveActivity() {
         } else {
             card.dataset.state = "active";
             const activityName = activity.name || "Activity";
+            const watchingState = activity.type === 3 ? formatWatchingState(activity.state) : "";
+            const activityDetails = activity.details || "";
+            const detailsText = activity.type === 3 && watchingState && activityDetails
+                ? `${watchingState} • ${activityDetails}`
+                : activityDetails || watchingState || activity.state || "Active right now.";
             setArt(resolveActivityAsset(activity, "large_image"), `${activityName} artwork`);
+            if (activityIcon) {
+                const iconSource = resolveActivityAsset(activity, "small_image");
+                activityIcon.hidden = activity.type !== 3;
+                activityIcon.textContent = iconSource ? "" : "TV";
+                activityIcon.style.backgroundImage = iconSource ? `url("${iconSource}")` : "";
+            }
             kicker.textContent = formatActivityType(activity.type);
             title.textContent = activityName;
-            details.textContent = activity.details || activity.state || "Active right now.";
-            platform.textContent = activity.application_id ? "DISCORD RPC / LIVE" : "DISCORD / LIVE";
+            details.textContent = detailsText;
+            platform.textContent = activity.type === 3
+                ? "WATCHING / DISCORD RPC"
+                : activity.application_id ? "DISCORD RPC / LIVE" : "DISCORD / LIVE";
             elapsed.textContent = formatElapsed(currentStart);
         }
 
@@ -525,6 +551,8 @@ function setupLiveActivity() {
     };
 
     const sync = async () => {
+        if (syncInFlight) return;
+        syncInFlight = true;
         try {
             const response = await fetch(LANYARD_URL, { cache: "no-store" });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -541,6 +569,8 @@ function setupLiveActivity() {
             platform.textContent = "LANYARD / RETRYING";
             elapsed.textContent = "";
             updated.textContent = "//_RETRYING NEXT SYNC";
+        } finally {
+            syncInFlight = false;
         }
     };
 
