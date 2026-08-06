@@ -76,12 +76,26 @@ module.exports = async function handler(req, res) {
             return sendJson(res, 404, { success: false, error: "Steam result had no valid app ID" });
         }
 
+        const candidates = [
+            `${STEAM_ART_BASE}/${appId}/library_600x900.jpg`,
+            `${STEAM_ART_BASE}/${appId}/header.jpg`,
+            match.icon,
+            match.logo
+        ].filter((url, index, urls) =>
+            typeof url === "string" && /^https:\/\//i.test(url) && urls.indexOf(url) === index
+        );
+
+        if (!candidates.length) {
+            return sendJson(res, 404, { success: false, error: "Steam result had no artwork" });
+        }
+
         return sendJson(res, 200, {
             success: true,
             data: {
                 appid: appId,
                 name: match.name || name,
-                art: `${STEAM_ART_BASE}/${appId}/library_600x900.jpg`,
+                art: candidates[0],
+                artCandidates: candidates,
                 source: "steam-cdn-search"
             }
         });

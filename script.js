@@ -394,7 +394,13 @@ async function resolveGameArtwork(activity) {
         if (response.ok) {
             const payload = await response.json();
             if (payload?.success && payload.data?.art) {
-                const result = { art: payload.data.art, source: payload.data.source || "steam-cdn-search" };
+                const result = {
+                    art: payload.data.art,
+                    artCandidates: Array.isArray(payload.data.artCandidates) && payload.data.artCandidates.length
+                        ? payload.data.artCandidates
+                        : [payload.data.art],
+                    source: payload.data.source || "steam-cdn-search"
+                };
                 gameArtworkCache.set(cacheKey, result);
                 return result;
             }
@@ -448,7 +454,7 @@ function setupLiveActivity() {
 
     let artGeneration = 0;
 
-    const setArt = (src, alt, fallbackSrc = "") => {
+    const setArt = (src, alt, fallbackSrc = "", candidates = []) => {
         const generation = ++artGeneration;
         art.classList.remove("has-art");
         art.removeAttribute("src");
@@ -456,7 +462,9 @@ function setupLiveActivity() {
         if (artIdle) artIdle.hidden = true;
         artPlaceholder.hidden = !src;
         if (!src) return;
-        let attemptedFallback = false;
+
+        const sources = [...new Set([src, ...candidates, fallbackSrc].filter(Boolean))];
+        let sourceIndex = 0;
         art.onload = () => {
             if (generation !== artGeneration) return;
             art.classList.add("has-art");
@@ -465,9 +473,9 @@ function setupLiveActivity() {
         };
         art.onerror = () => {
             if (generation !== artGeneration) return;
-            if (fallbackSrc && !attemptedFallback) {
-                attemptedFallback = true;
-                art.src = fallbackSrc;
+            sourceIndex += 1;
+            if (sourceIndex < sources.length) {
+                art.src = sources[sourceIndex];
                 return;
             }
             art.classList.remove("has-art");
@@ -475,7 +483,7 @@ function setupLiveActivity() {
             if (artIdle) artIdle.hidden = true;
         };
         art.alt = alt || "Current activity artwork";
-        art.src = src;
+        art.src = sources[0];
     };
 
     const showIdleArt = () => {
@@ -580,7 +588,7 @@ function setupLiveActivity() {
             const gameFallback = activity.type === 0 && artworkSource !== "assets/gamepad.svg"
                 ? "assets/gamepad.svg"
                 : "";
-            setArt(artworkSource, `${activityName} artwork`, gameFallback);
+            setArt(artworkSource, `${activityName} artwork`, gameFallback, gameArtwork.artCandidates || []);
             kicker.textContent = formatActivityType(activity.type);
             title.textContent = activityName;
             details.textContent = detailsText;
