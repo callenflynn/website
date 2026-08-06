@@ -348,6 +348,7 @@ function resolveActivityAsset(activity, imageKey) {
 }
 
 const GAME_ARTWORK_MANIFEST_URL = "assets/game-artwork.json";
+const STEAM_ARTWORK_API_URL = "/api/steam-artwork";
 const gameArtworkCache = new Map();
 let gameArtworkManifestPromise;
 
@@ -371,7 +372,7 @@ function loadGameArtworkManifest() {
 }
 
 async function resolveGameArtwork(activity) {
-    if (activity?.type !== 0) return { art: "", icon: "", source: "none" };
+    if (activity?.type !== 0) return { art: "", source: "none" };
 
     const applicationId = String(activity.application_id || "");
     const gameName = normalizeGameName(activity.name);
@@ -380,12 +381,29 @@ async function resolveGameArtwork(activity) {
 
     const manifest = await loadGameArtworkManifest();
     const entry = manifest?.applications?.[applicationId] || manifest?.games?.[gameName] || {};
-    const result = {
-        art: entry.art || "assets/gamepad.svg",
-        source: entry.source || (entry.art ? "local-manifest" : "platform-fallback")
-    };
-    gameArtworkCache.set(cacheKey, result);
-    return result;
+    if (entry.art) {
+        const result = { art: entry.art, source: entry.source || "local-manifest" };
+        gameArtworkCache.set(cacheKey, result);
+        return result;
+    }
+
+    try {
+        const response = await fetch(`${STEAM_ARTWORK_API_URL}?name=${encodeURIComponent(activity.name || "")}`, {
+            cache: "force-cache"
+        });
+        if (response.ok) {
+            const payload = await response.json();
+            if (payload?.success && payload.data?.art) {
+                const result = { art: payload.data.art, source: payload.data.source || "steam-cdn-search" };
+                gameArtworkCache.set(cacheKey, result);
+                return result;
+            }
+        }
+    } catch {
+        // Steam lookup is a secondary source; the local generic fallback still works.
+    }
+
+    return { art: "assets/gamepad.svg", source: "platform-fallback" };
 }
 
 function formatElapsed(start) {
