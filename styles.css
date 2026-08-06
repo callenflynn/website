@@ -727,6 +727,7 @@ p, .term-line, .term-text{
     height: 100%;
     display: none;
     object-fit: cover;
+    object-position: center;
     filter: saturate(0.82) contrast(1.08);
 }
 .live-activity-art.has-art{ display: block; }

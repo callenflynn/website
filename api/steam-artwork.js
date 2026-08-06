@@ -1,5 +1,6 @@
 const MAX_QUERY_LENGTH = 120;
 const STEAM_SEARCH_BASE = "https://steamcommunity.com/actions/SearchApps/";
+const STEAM_DETAILS_BASE = "https://store.steampowered.com/api/appdetails?appids=";
 const STEAM_ART_BASE = "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps";
 
 function normalizeName(name) {
@@ -76,8 +77,26 @@ module.exports = async function handler(req, res) {
             return sendJson(res, 404, { success: false, error: "Steam result had no valid app ID" });
         }
 
+        let details = {};
+        try {
+            const detailsResponse = await fetch(`${STEAM_DETAILS_BASE}${appId}&cc=us&l=english`, {
+                headers: { Accept: "application/json" },
+                signal: controller.signal
+            });
+            if (detailsResponse.ok) {
+                const detailsPayload = await detailsResponse.json();
+                if (detailsPayload?.[appId]?.success) details = detailsPayload[appId].data || {};
+            }
+        } catch (error) {
+            console.warn("Steam app details lookup failed:", error);
+        }
+
         const candidates = [
             `${STEAM_ART_BASE}/${appId}/library_600x900.jpg`,
+            details.header_image,
+            details.capsule_image,
+            details.background_raw,
+            ...(Array.isArray(details.screenshots) ? details.screenshots.map((shot) => shot.path_full) : []),
             `${STEAM_ART_BASE}/${appId}/header.jpg`,
             match.icon,
             match.logo

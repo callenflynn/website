@@ -349,7 +349,7 @@ function resolveActivityAsset(activity, imageKey) {
 
 const GAME_ARTWORK_MANIFEST_URL = "assets/game-artwork.json";
 const STEAM_ARTWORK_API_URL = "/api/steam-artwork";
-const STEAM_ARTWORK_API_VERSION = "2";
+const STEAM_ARTWORK_API_VERSION = "3";
 const gameArtworkCache = new Map();
 let gameArtworkManifestPromise;
 
