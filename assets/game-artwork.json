@@ -1,0 +1,38 @@
+{
+  "applications": {
+    "356876590342340608": {
+      "name": "Tom Clancy's Rainbow Six Siege",
+      "platform": "xbox",
+      "art": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/359550/library_600x900.jpg",
+      "source": "cross-platform-title-art"
+    },
+    "356942674672091136": {
+      "name": "Geometry Dash",
+      "art": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/322170/library_600x900.jpg",
+      "source": "steam-cdn"
+    },
+    "479334869462417409": {
+      "name": "Fallout",
+      "art": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/38410/library_600x900.jpg",
+      "source": "steam-cdn"
+    }
+  },
+  "games": {
+    "tom clancy's rainbow six siege": {
+      "art": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/359550/library_600x900.jpg",
+      "source": "steam-cdn"
+    },
+    "rainbow six siege": {
+      "art": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/359550/library_600x900.jpg",
+      "source": "steam-cdn"
+    },
+    "geometry dash": {
+      "art": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/322170/library_600x900.jpg",
+      "source": "steam-cdn"
+    },
+    "fallout": {
+      "art": "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/38410/library_600x900.jpg",
+      "source": "steam-cdn"
+    }
+  }
+}

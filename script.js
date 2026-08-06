@@ -347,19 +347,45 @@ function resolveActivityAsset(activity, imageKey) {
     return "";
 }
 
-function resolveGameAsset(activity) {
-    if (activity?.type !== 0) return "";
+const GAME_ARTWORK_MANIFEST_URL = "assets/game-artwork.json";
+const gameArtworkCache = new Map();
+let gameArtworkManifestPromise;
 
-    const gameArtwork = {
-        "356942674672091136": "https://cdn.cloudflare.steamstatic.com/steam/apps/322170/header.jpg",
-        "479334869462417409": "https://cdn.cloudflare.steamstatic.com/steam/apps/38410/header.jpg"
-    };
-
-    return gameArtwork[activity.application_id] || "assets/gamepad.svg";
+function normalizeGameName(name) {
+    return String(name || "")
+        .normalize("NFKC")
+        .toLowerCase()
+        .replace(/[’‘]/g, "'")
+        .replace(/[^a-z0-9']+/g, " ")
+        .trim()
+        .replace(/\s+/g, " ");
 }
 
-function resolveActivityArtwork(activity) {
-    return resolveActivityAsset(activity, "large_image") || resolveGameAsset(activity);
+function loadGameArtworkManifest() {
+    if (!gameArtworkManifestPromise) {
+        gameArtworkManifestPromise = fetch(GAME_ARTWORK_MANIFEST_URL, { cache: "force-cache" })
+            .then((response) => response.ok ? response.json() : {})
+            .catch(() => ({}));
+    }
+    return gameArtworkManifestPromise;
+}
+
+async function resolveGameArtwork(activity) {
+    if (activity?.type !== 0) return { art: "", icon: "", source: "none" };
+
+    const applicationId = String(activity.application_id || "");
+    const gameName = normalizeGameName(activity.name);
+    const cacheKey = `${applicationId}:${gameName}:${String(activity.platform || "").toLowerCase()}`;
+    if (gameArtworkCache.has(cacheKey)) return gameArtworkCache.get(cacheKey);
+
+    const manifest = await loadGameArtworkManifest();
+    const entry = manifest?.applications?.[applicationId] || manifest?.games?.[gameName] || {};
+    const result = {
+        art: entry.art || "assets/gamepad.svg",
+        source: entry.source || (entry.art ? "local-manifest" : "platform-fallback")
+    };
+    gameArtworkCache.set(cacheKey, result);
+    return result;
 }
 
 function formatElapsed(start) {
@@ -382,7 +408,6 @@ function setupLiveActivity() {
     const name = document.getElementById("liveName");
     const handle = document.getElementById("liveHandle");
     const art = document.getElementById("liveActivityArt");
-    const activityIcon = document.getElementById("liveActivityIcon");
     const artIdle = document.getElementById("liveArtIdle");
     const artPlaceholder = document.getElementById("liveArtPlaceholder");
     const kicker = document.getElementById("liveActivityKicker");
@@ -394,6 +419,7 @@ function setupLiveActivity() {
     const updated = document.getElementById("liveUpdated");
     let currentStart = null;
     let syncInFlight = false;
+    let renderGeneration = 0;
 
     const setSignal = (text, state = "") => {
         signal.textContent = text;
@@ -403,37 +429,6 @@ function setupLiveActivity() {
     };
 
     let artGeneration = 0;
-    let activityIconGeneration = 0;
-
-    const hideActivityIcon = () => {
-        activityIconGeneration += 1;
-        if (!activityIcon) return;
-        activityIcon.hidden = true;
-        activityIcon.textContent = "";
-        activityIcon.style.backgroundImage = "";
-    };
-
-    const setActivityIcon = (source, fallback, label = "") => {
-        if (!activityIcon) return;
-        const generation = ++activityIconGeneration;
-        activityIcon.hidden = false;
-        activityIcon.textContent = source ? "" : label;
-        activityIcon.style.backgroundImage = fallback ? `url("${fallback}")` : "";
-        if (!source) return;
-
-        const image = new Image();
-        image.onload = () => {
-            if (generation !== activityIconGeneration) return;
-            activityIcon.textContent = "";
-            activityIcon.style.backgroundImage = `url("${source}")`;
-        };
-        image.onerror = () => {
-            if (generation !== activityIconGeneration) return;
-            activityIcon.textContent = fallback ? "" : label;
-            activityIcon.style.backgroundImage = fallback ? `url("${fallback}")` : "";
-        };
-        image.src = source;
-    };
 
     const setArt = (src, alt, fallbackSrc = "") => {
         const generation = ++artGeneration;
@@ -470,7 +465,6 @@ function setupLiveActivity() {
         art.classList.remove("has-art");
         art.removeAttribute("src");
         art.alt = "";
-        hideActivityIcon();
         if (!artIdle) {
             artPlaceholder.hidden = false;
             return;
@@ -496,7 +490,8 @@ function setupLiveActivity() {
         }
     };
 
-    const render = (payload) => {
+    const render = async (payload) => {
+        const generation = ++renderGeneration;
         const data = payload?.data;
         if (!payload?.success || !data) throw new Error("Invalid Lanyard response");
 
@@ -541,7 +536,6 @@ function setupLiveActivity() {
             elapsed.textContent = "";
         } else if (spotify) {
             card.dataset.state = "active";
-            hideActivityIcon();
 
             const song = spotify.song || spotify.details || "Unknown track";
             const artist = spotify.artist || spotify.state || "Unknown artist";
@@ -559,27 +553,23 @@ function setupLiveActivity() {
             const detailsText = activity.type === 3 && watchingState && activityDetails
                 ? `${watchingState} • ${activityDetails}`
                 : activityDetails || watchingState || activity.state || "Active right now.";
-            const artworkSource = resolveActivityArtwork(activity);
+            const discordArtwork = resolveActivityAsset(activity, "large_image");
+            const gameArtwork = await resolveGameArtwork(activity);
+            // A manifest lookup can finish after the next five-second sync. Never
+            // let an older lookup overwrite newer presence data.
+            if (generation !== renderGeneration) return;
+            const artworkSource = discordArtwork || gameArtwork.art;
             const gameFallback = activity.type === 0 && artworkSource !== "assets/gamepad.svg"
                 ? "assets/gamepad.svg"
                 : "";
             setArt(artworkSource, `${activityName} artwork`, gameFallback);
-            const iconSource = resolveActivityAsset(activity, "small_image") ||
-                (activity.type === 0 ? artworkSource : "");
-            const iconFallback = activity.type === 0 && iconSource !== "assets/gamepad.svg"
-                ? "assets/gamepad.svg"
-                : "";
-            if (activity.type === 3 || activity.type === 0) {
-                setActivityIcon(iconSource, iconFallback, activity.type === 3 ? "TV" : "");
-            } else {
-                hideActivityIcon();
-            }
             kicker.textContent = formatActivityType(activity.type);
             title.textContent = activityName;
             details.textContent = detailsText;
+            const activityPlatform = activity.platform ? `${String(activity.platform).toUpperCase()} / ` : "";
             platform.textContent = activity.type === 3
                 ? "WATCHING / DISCORD RPC"
-                : activity.application_id ? "DISCORD RPC / LIVE" : "DISCORD / LIVE";
+                : `${activityPlatform}${activity.application_id ? "DISCORD RPC / LIVE" : "DISCORD / LIVE"}`;
             elapsed.textContent = formatElapsed(currentStart);
         }
 
@@ -592,7 +582,7 @@ function setupLiveActivity() {
         try {
             const response = await fetch(LANYARD_URL, { cache: "no-store" });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            render(await response.json());
+            await render(await response.json());
         } catch (error) {
             console.warn("Live activity unavailable:", error);
             card.dataset.state = "error";
