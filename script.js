@@ -349,6 +349,7 @@ function resolveActivityAsset(activity, imageKey) {
 
 const GAME_ARTWORK_MANIFEST_URL = "assets/game-artwork.json";
 const STEAM_ARTWORK_API_URL = "/api/steam-artwork";
+const STEAM_ARTWORK_API_VERSION = "2";
 const gameArtworkCache = new Map();
 let gameArtworkManifestPromise;
 
@@ -388,7 +389,7 @@ async function resolveGameArtwork(activity) {
     }
 
     try {
-        const response = await fetch(`${STEAM_ARTWORK_API_URL}?name=${encodeURIComponent(activity.name || "")}`, {
+        const response = await fetch(`${STEAM_ARTWORK_API_URL}?v=${STEAM_ARTWORK_API_VERSION}&name=${encodeURIComponent(activity.name || "")}`, {
             cache: "force-cache"
         });
         if (response.ok) {
