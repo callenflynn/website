@@ -348,9 +348,37 @@ function resolveActivityAsset(activity, imageKey) {
 }
 
 const GAME_ARTWORK_MANIFEST_URL = "assets/game-artwork.json";
+const ROBLOX_ARTWORK_API_URL = "/api/roblox-artwork";
+const ROBLOX_USER_ID = "2530785068";
 const STEAM_ARTWORK_API_URL = "/api/steam-artwork";
 const STEAM_ARTWORK_API_VERSION = "3";
 const gameArtworkCache = new Map();
+
+function isRobloxActivity(activity) {
+    const name = normalizeGameName(activity?.name);
+    const platform = String(activity?.platform || "").toLowerCase();
+    return platform === "roblox" || name === "roblox" || name.startsWith("roblox ");
+}
+
+async function fetchArtworkResolver(url, name, fallbackSource, query = {}) {
+    const params = new URLSearchParams(query);
+    if (name) params.set("name", name);
+    const response = await fetch(`${url}?${params.toString()}`, {
+        cache: "no-store"
+    });
+    if (!response.ok) return null;
+    const payload = await response.json();
+    if (!payload?.success || !payload.data?.art) return null;
+    return {
+        art: payload.data.art,
+        artCandidates: Array.isArray(payload.data.artCandidates) && payload.data.artCandidates.length
+            ? payload.data.artCandidates
+            : [payload.data.art],                    source: payload.data.source || fallbackSource,
+                    resolvedName: payload.data.name || "",
+                    universeId: payload.data.universeId || "",
+                    placeId: payload.data.placeId || ""
+                };
+}
 let gameArtworkManifestPromise;
 
 function normalizeGameName(name) {
@@ -378,36 +406,42 @@ async function resolveGameArtwork(activity) {
     const applicationId = String(activity.application_id || "");
     const gameName = normalizeGameName(activity.name);
     const cacheKey = `${applicationId}:${gameName}:${String(activity.platform || "").toLowerCase()}`;
-    if (gameArtworkCache.has(cacheKey)) return gameArtworkCache.get(cacheKey);
+    const cached = gameArtworkCache.get(cacheKey);
+    if (cached && (!isRobloxActivity(activity) || Date.now() - cached.cachedAt < 15000)) {
+        return cached.result;
+    }
 
     const manifest = await loadGameArtworkManifest();
     const entry = manifest?.applications?.[applicationId] || manifest?.games?.[gameName] || {};
     if (entry.art) {
         const result = { art: entry.art, source: entry.source || "local-manifest" };
-        gameArtworkCache.set(cacheKey, result);
+        gameArtworkCache.set(cacheKey, { result, cachedAt: Date.now() });
         return result;
     }
 
-    try {
-        const response = await fetch(`${STEAM_ARTWORK_API_URL}?v=${STEAM_ARTWORK_API_VERSION}&name=${encodeURIComponent(activity.name || "")}`, {
-            cache: "force-cache"
-        });
-        if (response.ok) {
-            const payload = await response.json();
-            if (payload?.success && payload.data?.art) {
-                const result = {
-                    art: payload.data.art,
-                    artCandidates: Array.isArray(payload.data.artCandidates) && payload.data.artCandidates.length
-                        ? payload.data.artCandidates
-                        : [payload.data.art],
-                    source: payload.data.source || "steam-cdn-search"
-                };
-                gameArtworkCache.set(cacheKey, result);
+    const activityName = activity.name || "";
+    const resolvers = isRobloxActivity(activity)
+        ? [
+            [ROBLOX_ARTWORK_API_URL, "roblox-thumbnail"],
+            [STEAM_ARTWORK_API_URL, "steam-cdn-search"]
+        ]
+        : [[STEAM_ARTWORK_API_URL, "steam-cdn-search"]];
+
+    for (const [resolverUrl, fallbackSource] of resolvers) {
+        try {
+            const result = await fetchArtworkResolver(
+                resolverUrl,
+                activityName,
+                fallbackSource,
+                resolverUrl === ROBLOX_ARTWORK_API_URL ? { userId: ROBLOX_USER_ID } : {}
+            );
+            if (result) {
+                gameArtworkCache.set(cacheKey, { result, cachedAt: Date.now() });
                 return result;
             }
+        } catch {
+            // A resolver is secondary artwork; continue to the next source.
         }
-    } catch {
-        // Steam lookup is a secondary source; the local generic fallback still works.
     }
 
     return { art: "assets/gamepad.svg", source: "platform-fallback" };
@@ -581,7 +615,9 @@ function setupLiveActivity() {
                 ? `${watchingState} • ${activityDetails}`
                 : activityDetails || watchingState || activity.state || "Active right now.";
             const discordArtwork = resolveActivityAsset(activity, "large_image");
-            const gameArtwork = await resolveGameArtwork(activity);
+            const gameArtwork = discordArtwork
+                ? { art: "", artCandidates: [], source: "discord-rpc", resolvedName: "" }
+                : await resolveGameArtwork(activity);
             // A manifest lookup can finish after the next five-second sync. Never
             // let an older lookup overwrite newer presence data.
             if (generation !== renderGeneration) return;
@@ -589,10 +625,13 @@ function setupLiveActivity() {
             const gameFallback = activity.type === 0 && artworkSource !== "assets/gamepad.svg"
                 ? "assets/gamepad.svg"
                 : "";
-            setArt(artworkSource, `${activityName} artwork`, gameFallback, gameArtwork.artCandidates || []);
+            const resolvedActivityName = gameArtwork.resolvedName || activityName;
+            setArt(artworkSource, `${resolvedActivityName} artwork`, gameFallback, gameArtwork.artCandidates || []);
             kicker.textContent = formatActivityType(activity.type);
-            title.textContent = activityName;
-            details.textContent = detailsText;
+            title.textContent = resolvedActivityName;
+            details.textContent = resolvedActivityName !== activityName
+                ? `${activityName} • ${detailsText}`
+                : detailsText;
             const activityPlatform = activity.platform ? `${String(activity.platform).toUpperCase()} / ` : "";
             platform.textContent = activity.type === 3
                 ? "WATCHING / DISCORD RPC"
