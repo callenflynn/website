@@ -5,17 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>FISHFISHFISHFISHFISHFISHFISHFISHFISHFISHFISHFISHFISH</title>
   <script>
-    (function () {
-      var params = new URLSearchParams(window.location.search);
-      var ref = params.get("ref");
-      if (ref) {
-        params.delete("ref");
-        params.set("utm_source", ref);
-        history.replaceState(null, "", window.location.pathname + "?" + params.toString() + window.location.hash);
-      }
-    })();
-  </script>
-  <script>
     window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
   </script>
   <script defer src="/_vercel/insights/script.js"></script>
