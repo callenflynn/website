@@ -828,6 +828,63 @@ p, .term-line, .term-text{
 }
 .live-meta span:last-child{ color: var(--accent); }
 
+.live-spotify-pill{
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    padding: 7px 10px;
+    background: rgba(30, 215, 96, 0.06);
+    border: 1px solid rgba(30, 215, 96, 0.22);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+}
+.live-spotify-pill[hidden]{ display: none; }
+.live-spotify-art{
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+    border-radius: 2px;
+    object-fit: cover;
+    border: 1px solid rgba(224, 224, 224, 0.15);
+}
+.live-spotify-art[src=""]{ display: none; }
+.live-spotify-icon{
+    width: 12px;
+    height: 12px;
+    flex-shrink: 0;
+    filter: invert(1) brightness(0.9);
+    opacity: 0.85;
+}
+.live-spotify-text{
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    overflow: hidden;
+    font-size: 0.58rem;
+    letter-spacing: 0.04em;
+    line-height: 1.3;
+}
+.live-spotify-song{
+    font-weight: 700;
+    color: #1ed760;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.live-spotify-sep{
+    color: rgba(224, 224, 224, 0.3);
+    flex-shrink: 0;
+}
+.live-spotify-artist{
+    color: rgba(224, 224, 224, 0.55);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 .live-custom-status{
     margin-top: 10px;
     padding-top: 9px;

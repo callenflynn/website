@@ -559,6 +559,10 @@ function setupLiveActivity() {
     const platform = document.getElementById("liveActivityPlatform");
     const elapsed = document.getElementById("liveActivityElapsed");
     const customStatus = document.getElementById("liveCustomStatus");
+    const spotifyPill = document.getElementById("liveSpotifyPill");
+    const spotifyPillArt = spotifyPill?.querySelector(".live-spotify-art");
+    const spotifyPillSong = spotifyPill?.querySelector(".live-spotify-song");
+    const spotifyPillArtist = spotifyPill?.querySelector(".live-spotify-artist");
     const updated = document.getElementById("liveUpdated");
     let currentStart = null;
     let syncInFlight = false;
@@ -643,8 +647,10 @@ function setupLiveActivity() {
         const user = data.discord_user || {};
         const activities = Array.isArray(data.activities) ? data.activities : [];
         const custom = activities.find((activity) => activity.type === 4);
-        const spotify = data.spotify || activities.find((activity) => activity.type === 2);
-        const activity = spotify || activities.find((item) => item.type !== 4) || null;
+        const spotifyActivity = data.spotify || activities.find((activity) => activity.type === 2);
+        const gameActivity = activities.find((item) => item.type !== 4 && item.type !== 2) || null;
+        const activity = gameActivity || spotifyActivity || null;
+        const hasDualPresence = !!(gameActivity && spotifyActivity);
         const discordStatus = data.discord_status || "offline";
         const displayName = user.display_name || user.global_name || user.username || "CALLEN";
 
@@ -670,26 +676,28 @@ function setupLiveActivity() {
             customStatus.textContent = "";
         }
 
-        currentStart = activity?.timestamps?.start || spotify?.timestamps?.start || null;
+        currentStart = activity?.timestamps?.start || spotifyActivity?.timestamps?.start || null;
         if (!activity) {
             card.dataset.state = "idle";
             showIdleArt();
+            if (spotifyPill) spotifyPill.hidden = true;
             kicker.textContent = discordStatus === "offline" ? "NO ACTIVE SIGNAL" : "NO RICH PRESENCE";
             title.textContent = discordStatus === "offline" ? "Currently offline" : "Just hanging out";
             details.textContent = custom?.state || "Nothing is being broadcast right now.";
             platform.textContent = "DISCORD / LIVE";
             elapsed.textContent = "";
-        } else if (spotify) {
+        } else if (spotifyActivity && !gameActivity) {
             card.dataset.state = "active";
 
-            const song = spotify.song || spotify.details || "Unknown track";
-            const artist = spotify.artist || spotify.state || "Unknown artist";
-            setArt(data.spotify?.album_art_url || resolveActivityAsset(spotify, "large_image"), `${song} album art`);
+            const song = spotifyActivity.song || spotifyActivity.details || "Unknown track";
+            const artist = spotifyActivity.artist || spotifyActivity.state || "Unknown artist";
+            setArt(data.spotify?.album_art_url || resolveActivityAsset(spotifyActivity, "large_image"), `${song} album art`);
             kicker.textContent = "LISTENING TO";
             title.textContent = song;
             details.textContent = artist;
-            platform.textContent = spotify.album ? `SPOTIFY / ${spotify.album}` : "SPOTIFY / LIVE";
+            platform.textContent = spotifyActivity.album ? `SPOTIFY / ${spotifyActivity.album}` : "SPOTIFY / LIVE";
             elapsed.textContent = formatElapsed(currentStart);
+            if (spotifyPill) spotifyPill.hidden = true;
         } else {
             card.dataset.state = "active";
             const activityName = activity.name || "Activity";
@@ -721,6 +729,22 @@ function setupLiveActivity() {
                 ? "WATCHING / DISCORD RPC"
                 : `${activityPlatform}${activity.application_id ? "DISCORD RPC / LIVE" : "DISCORD / LIVE"}`;
             elapsed.textContent = formatElapsed(currentStart);
+
+            // ── Dual presence: show Spotify as a compact pill below the game ──
+            if (hasDualPresence && spotifyPill && spotifyPillSong && spotifyPillArtist) {
+                const sp = spotifyActivity;
+                spotifyPill.hidden = false;
+                const artUrl = data.spotify?.album_art_url || resolveActivityAsset(sp, "large_image");
+                if (spotifyPillArt && artUrl) {
+                    spotifyPillArt.src = artUrl;
+                } else if (spotifyPillArt) {
+                    spotifyPillArt.removeAttribute("src");
+                }
+                spotifyPillSong.textContent = sp.song || sp.details || "Unknown track";
+                spotifyPillArtist.textContent = sp.artist || sp.state || "Unknown artist";
+            } else if (spotifyPill) {
+                spotifyPill.hidden = true;
+            }
         }
 
         updated.textContent = `//_LAST SYNC ${new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
@@ -737,6 +761,7 @@ function setupLiveActivity() {
             console.warn("Live activity unavailable:", error);
             card.dataset.state = "error";
             setSignal("UNAVAILABLE", "error");
+            if (spotifyPill) spotifyPill.hidden = true;
             status.textContent = "STATUS: NO LINK";
             presence.textContent = "DISCORD: --";
             kicker.textContent = "SIGNAL LOST";
