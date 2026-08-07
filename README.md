@@ -9,6 +9,9 @@ but why are u looking at my websites README? The site is right [here](https://ca
 milker.regular.otf - bold, heavy font 
 Allura-Regular.ttf - fancy, elegant font
 
+
+# Below are notes for my other services --- you can just ignore them, these are for me
+
 # COmni AI notes
 
 run it
