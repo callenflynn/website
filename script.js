@@ -36,21 +36,45 @@ async function buildGameMosaic() {
         // File previews cannot fetch JSON. The checked-in fallback still builds the wall.
     }
 
-    // ── Pre-load all images to cache dimensions ──
+    // ── Progressive image pool ──
+    // The wall renders instantly with placeholder tiles; images stream into
+    // tiles as they download (concurrency-limited) instead of the build
+    // blocking on every image. This kills the "background pops in late" delay.
+    const CONCURRENCY = 8;
     const imageMeta = [];
-    {
-        const loaded = await Promise.all(sources.map((src) => new Promise((resolve) => {
-            const image = new Image();
-            image.onload = () => resolve({ src, width: image.naturalWidth, height: image.naturalHeight });
-            image.onerror = () => resolve(null);
-            image.src = src;
-        })));
-        for (const data of loaded) {
-            if (data) imageMeta.push(data);
+    const onMetaCallbacks = new Set();
+    const loaderQueue = shuffleArray([...sources]);
+    let activeLoads = 0;
+
+    function shuffleArray(list) {
+        const copy = [...list];
+        for (let i = copy.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [copy[i], copy[j]] = [copy[j], copy[i]];
         }
+        return copy;
     }
 
-    if (!imageMeta.length) return;
+    function pumpLoader() {
+        while (activeLoads < CONCURRENCY && loaderQueue.length) {
+            const src = loaderQueue.pop();
+            activeLoads += 1;
+            const image = new Image();
+            image.decoding = "async";
+            image.onload = () => {
+                activeLoads -= 1;
+                const meta = { src, width: image.naturalWidth, height: image.naturalHeight };
+                imageMeta.push(meta);
+                onMetaCallbacks.forEach((callback) => callback(meta));
+                pumpLoader();
+            };
+            image.onerror = () => {
+                activeLoads -= 1;
+                pumpLoader();
+            };
+            image.src = src;
+        }
+    }
 
     // ── Helpers ──
     // Deck: draw images without replacement so duplicates are minimised.
@@ -58,12 +82,7 @@ async function buildGameMosaic() {
     let deck = [];
 
     function shuffledDeck() {
-        const d = [...imageMeta];
-        for (let i = d.length - 1; i > 0; i--) {
-            const j = Math.floor(Math.random() * (i + 1));
-            [d[i], d[j]] = [d[j], d[i]];
-        }
-        return d;
+        return shuffleArray(imageMeta);
     }
 
     function drawMeta() {
@@ -71,13 +90,18 @@ async function buildGameMosaic() {
         return deck.pop();
     }
 
-    function makeTile(src, isColored) {
+    function makeTile(data) {
         const tile = document.createElement("div");
         tile.className = "game-mosaic-item";
         const img = document.createElement("img");
-        img.src = src;
+        img.decoding = "async";
         img.alt = "";
-        if (isColored) img.classList.add("colored");
+        if (data.src) {
+            img.src = data.src;
+            if (img.complete) img.classList.add("loaded");
+            else img.addEventListener("load", () => img.classList.add("loaded"), { once: true });
+        }
+        if (data.isColored) img.classList.add("colored");
         tile.append(img);
         return tile;
     }
@@ -128,37 +152,58 @@ async function buildGameMosaic() {
         }
     }
 
+    function createTileData(count) {
+        return Array.from({ length: count }, () => ({
+            src: "",
+            width: 0,
+            height: 0,
+            isColored: Math.random() < 0.08
+        }));
+    }
+
     function generateTileData(count) {
         return Array.from({ length: count }, () => {
             const meta = drawMeta();
+            if (!meta) return { src: "", width: 0, height: 0, isColored: false };
             return { src: meta.src, width: meta.width, height: meta.height, isColored: Math.random() < 0.08 };
         });
     }
 
-    function layoutGrid(grid, tileData) {
+    // Computes grid spans for a single tile. Placeholder tiles (no dimensions
+    // yet) assume a 16:9 ratio so the wall lays out immediately.
+    function tileLayout(data, index, columns, gap, rowHeight, columnWidth) {
+        const puzzleSpans = [2, 3, 4, 2, 3, 2, 5, 2, 3, 4, 2, 3, 2, 4, 3, 2];
+        const ratio = data.width > 0 && data.height > 0 ? data.width / data.height : 1.78;
+        let columnSpan;
+        if (ratio > 1.6) {
+            columnSpan = Math.min(columns, Math.max(3, Math.round(ratio * (columns <= 5 ? 1.6 : 2.8))));
+        } else if (ratio < 0.7) {
+            columnSpan = Math.min(columns, Math.max(2, Math.round(ratio * (columns <= 5 ? 1.0 : 2.0))));
+        } else {
+            columnSpan = Math.min(columns, puzzleSpans[index % puzzleSpans.length]);
+        }
+        const tileHeight = (columnWidth * columnSpan) / ratio;
+        const rowSpan = Math.max(5, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
+        return { columnSpan, rowSpan };
+    }
+
+    function applyTileLayout(grid, tileData, index) {
         const columns = window.innerWidth <= 700 ? 5 : 16;
         const gap = window.innerWidth <= 700 ? 5 : 8;
         const rowHeight = 10;
         const columnWidth = (grid.clientWidth - ((columns - 1) * gap) - (gap * 2)) / columns;
-        const puzzleSpans = [2, 3, 4, 2, 3, 2, 5, 2, 3, 4, 2, 3, 2, 4, 3, 2];
+        const data = tileData[index];
+        if (!data) return;
+        const { columnSpan, rowSpan } = tileLayout(data, index, columns, gap, rowHeight, columnWidth);
+        const tile = grid.children[index];
+        tile.style.gridColumn = `span ${columnSpan}`;
+        tile.style.gridRow = `span ${rowSpan}`;
+    }
 
-        const tiles = [...grid.children];
-        tiles.forEach((tile, i) => {
-            const data = tileData[i];
+    function layoutGrid(grid, tileData) {
+        tileData.forEach((data, i) => {
             if (!data) return;
-            const ratio = data.width / data.height;
-            let columnSpan;
-            if (ratio > 1.6) {
-                columnSpan = Math.min(columns, Math.max(3, Math.round(ratio * (columns <= 5 ? 1.6 : 2.8))));
-            } else if (ratio < 0.7) {
-                columnSpan = Math.min(columns, Math.max(2, Math.round(ratio * (columns <= 5 ? 1.0 : 2.0))));
-            } else {
-                columnSpan = Math.min(columns, puzzleSpans[i % puzzleSpans.length]);
-            }
-            const tileHeight = (columnWidth * columnSpan) / ratio;
-            const rowSpan = Math.max(5, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
-            tile.style.gridColumn = `span ${columnSpan}`;
-            tile.style.gridRow = `span ${rowSpan}`;
+            applyTileLayout(grid, tileData, i);
         });
     }
 
@@ -169,14 +214,14 @@ async function buildGameMosaic() {
     const grid1 = document.createElement("div");
     grid1.className = "bg-mosaic-grid";
     grid1.id = "gameMosaic";
-    let tileData1 = generateTileData(TILES_PER_GRID);
-    tileData1.forEach((d) => grid1.append(makeTile(d.src, d.isColored)));
+    let tileData1 = createTileData(TILES_PER_GRID);
+    tileData1.forEach((d) => grid1.append(makeTile(d)));
 
     const grid2 = document.createElement("div");
     grid2.className = "bg-mosaic-grid";
     grid2.setAttribute("aria-hidden", "true");
-    let tileData2 = generateTileData(TILES_PER_GRID);
-    tileData2.forEach((d) => grid2.append(makeTile(d.src, d.isColored)));
+    let tileData2 = createTileData(TILES_PER_GRID);
+    tileData2.forEach((d) => grid2.append(makeTile(d)));
 
     mosaic.replaceWith(grid1);
 
@@ -197,6 +242,40 @@ async function buildGameMosaic() {
     grid1.style.transform = `translateX(${pos1}px)`;
     grid2.style.transform = `translateX(${pos2}px)`;
 
+    // ── Stream loaded images into tiles as they arrive ──
+    const unassignedTiles = new Set();
+    [grid1, grid2].forEach((grid, gridIndex) => {
+        const tileData = gridIndex === 0 ? tileData1 : tileData2;
+        [...grid.children].forEach((tile, index) => {
+            const entry = { grid, tile, index, data: tileData[index] };
+            unassignedTiles.add(entry);
+        });
+    });
+
+    const assignMeta = (meta) => {
+        if (!unassignedTiles.size) return;
+        const entries = [...unassignedTiles];
+        const entry = entries[Math.floor(Math.random() * entries.length)];
+        unassignedTiles.delete(entry);
+        const liveTileData = entry.grid === grid1 ? tileData1 : tileData2;
+        // If this grid was regenerated while images were still streaming, the
+        // entry's data object is no longer live — leave the recycled tile alone.
+        if (entry.data !== liveTileData[entry.index]) return;
+        entry.data.src = meta.src;
+        entry.data.width = meta.width;
+        entry.data.height = meta.height;
+        const img = entry.tile.querySelector("img");
+        img.src = meta.src;
+        if (img.complete) img.classList.add("loaded");
+        else img.addEventListener("load", () => img.classList.add("loaded"), { once: true });
+        applyTileLayout(entry.grid, liveTileData, entry.index);
+    };
+    onMetaCallbacks.add(assignMeta);
+
+    // Start downloading. Tiles already on screen fill in as each image
+    // completes instead of waiting for the whole set.
+    pumpLoader();
+
     // ── Tile recycling: regenerate a grid when it scrolls off-screen ──
     function regenerateGrid(grid, tileData) {
         const newData = generateTileData(TILES_PER_GRID);
@@ -210,7 +289,12 @@ async function buildGameMosaic() {
             const img = tile.querySelector("img");
             // Cancel any in-progress transitions since this is off-screen
             img.classList.remove("losing-color", "gaining-color", "fading-color", "glowing-color");
-            img.src = d.src;
+            if (d.src) {
+                img.classList.remove("loaded");
+                img.src = d.src;
+                if (img.complete) img.classList.add("loaded");
+                else img.addEventListener("load", () => img.classList.add("loaded"), { once: true });
+            }
             if (d.isColored) {
                 img.classList.add("colored");
             } else {

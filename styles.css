@@ -102,6 +102,13 @@ a, button, .keycap, .profile-card, .mc-card, .map-link {
     object-fit: cover;
     filter: grayscale(1) contrast(1.35) brightness(0.75);
     transform: scale(1.05);
+    opacity: 0;
+    transition: opacity 0.45s ease;
+}
+
+/* Image fades in once it finishes streaming into its tile */
+.game-mosaic-item img.loaded{
+    opacity: 1;
 }
 
 .game-mosaic-item img.colored{
@@ -231,23 +238,6 @@ a, button, .keycap, .profile-card, .mc-card, .map-link {
     transform: translateY(0);
 }
 
-@supports (animation-timeline: view()){
-    .reveal-section{
-        animation: section-arrive linear both;
-        animation-timeline: view();
-        animation-range: entry 12% cover 36%;
-    }
-
-    .reveal-section.revealed{
-        opacity: unset;
-        transform: none;
-    }
-}
-
-@keyframes section-arrive{
-    from{ opacity: 0; transform: translateY(60px) scale(0.985); }
-    to{ opacity: 1; transform: translateY(0) scale(1); }
-}
 
 @media (prefers-reduced-motion: reduce){
     html{ scroll-behavior: auto; }
