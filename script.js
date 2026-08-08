@@ -782,9 +782,103 @@ function setupLiveActivity() {
     }, 30000);
 }
 
+function setupSecretTerminal() {
+    const btn = document.getElementById("secretTerminalBtn");
+    const overlay = document.getElementById("asciiOverlay");
+    const closeBtn = document.getElementById("asciiOverlayClose");
+    const artEl = document.getElementById("asciiArt");
+    const body = document.getElementById("asciiOverlayBody");
+    if (!btn || !overlay || !artEl || !body) return;
+
+    const ASCII_URL = "C-ascii.txt";
+    let artText = null;
+    let hasTyped = false;
+
+    const fetchArt = async () => {
+        if (artText !== null) return artText;
+        try {
+            const response = await fetch(ASCII_URL);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            artText = await response.text();
+        } catch {
+            artText = "//_FILE NOT FOUND";
+        }
+        return artText;
+    };
+
+    // Ultra-fast typewriter: 4 lines per frame (~0.5s for the whole piece).
+    // The art is ~25KB / 130 lines, so anything slower feels like a crawl.
+    // Trailing whitespace-only lines are trimmed so the blinking cursor ends
+    // up on the art itself instead of a blank line below it.
+    const typeArt = async () => {
+        if (hasTyped) return;
+        const text = await fetchArt();
+        const lines = text.split("\n");
+        while (lines.length && /^\s*$/.test(lines[lines.length - 1])) lines.pop();
+        artEl.textContent = "";
+
+        if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+            artEl.textContent = lines.join("\n");
+            body.scrollTop = body.scrollHeight;
+            hasTyped = true;
+            return;
+        }
+
+        let index = 0;
+        const step = () => {
+            index = Math.min(lines.length, index + 4);
+            artEl.textContent = lines.slice(0, index).join("\n");
+            body.scrollTop = body.scrollHeight;
+            if (index < lines.length) requestAnimationFrame(step);
+            else hasTyped = true;
+        };
+        requestAnimationFrame(step);
+    };
+
+    const open = () => {
+        overlay.hidden = false;
+        document.body.classList.add("no-scroll");
+        requestAnimationFrame(() => {
+            overlay.classList.add("open");
+            if (closeBtn) closeBtn.focus();
+        });
+        typeArt();
+    };
+
+    const close = () => {
+        overlay.classList.remove("open");
+        document.body.classList.remove("no-scroll");
+        setTimeout(() => { overlay.hidden = true; }, 180);
+        if (btn) btn.focus();
+    };
+
+    btn.addEventListener("click", open);
+    if (closeBtn) closeBtn.addEventListener("click", close);
+    document.addEventListener("keydown", (e) => {
+        if (overlay.hidden) return;
+        if (e.key === "Escape") close();
+
+        // Minimal focus trap: keep Tab cycling inside the dialog
+        if (e.key === "Tab") {
+            const focusables = overlay.querySelectorAll("button, [href], [tabindex]:not([tabindex='-1'])");
+            if (!focusables.length) return;
+            const first = focusables[0];
+            const last = focusables[focusables.length - 1];
+            if (e.shiftKey && document.activeElement === first) {
+                e.preventDefault();
+                last.focus();
+            } else if (!e.shiftKey && document.activeElement === last) {
+                e.preventDefault();
+                first.focus();
+            }
+        }
+    });
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     buildGameMosaic();
     setupLiveActivity();
+    setupSecretTerminal();
 
     // ── Cursor-reactive halftone dots ──
     if (window.matchMedia("(hover: hover)").matches) {

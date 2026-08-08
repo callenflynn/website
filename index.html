@@ -234,6 +234,26 @@
         </section>
     </div>
 
+    <!-- ── SECRET TERMINAL ── -->
+    <button class="secret-terminal-btn" id="secretTerminalBtn" aria-label="Open hidden terminal" title="???">
+        <span aria-hidden="true">+</span>
+    </button>
+
+    <div class="ascii-overlay" id="asciiOverlay" role="dialog" aria-modal="true" aria-label="C ASCII art" hidden>
+        <div class="ascii-overlay-panel">
+            <header class="ascii-overlay-header">
+                <span class="ascii-overlay-file">//_FILE: <b>C-ASCII.TXT</b></span>
+                <span class="ascii-overlay-actions">
+                    <span class="ascii-overlay-hint">[ESC] TO EXIT</span>
+                    <button class="ascii-overlay-close" id="asciiOverlayClose" aria-label="Close hidden terminal">✕</button>
+                </span>
+            </header>
+            <div class="ascii-overlay-body" id="asciiOverlayBody">
+                <pre class="ascii-art" id="asciiArt"></pre>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js"></script>
     <script src="script.js"></script>
 </body>

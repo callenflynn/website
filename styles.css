@@ -1449,3 +1449,162 @@ a.coding-card:active{
         padding: 5px;
     }
 }
+
+/* ══════════════════════════════════
+   SECRET TERMINAL
+   ══════════════════════════════════ */
+
+/* Faint "+" hiding in the top-right corner, mirroring the map link on the
+   left. Fixed so it never scrolls with the page. Hover/focus reveals it. */
+.secret-terminal-btn{
+    position: fixed;
+    top: clamp(16px, 2.2vw, 28px);
+    right: clamp(16px, 2.2vw, 28px);
+    z-index: 40;
+    width: 26px;
+    height: 26px;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    background: transparent;
+    border: 1px solid rgba(224, 224, 224, 0.12);
+    border-radius: var(--radius);
+    color: rgba(224, 224, 224, 0.4);
+    font-family: var(--ui-font);
+    font-size: 0.95rem;
+    line-height: 1;
+    opacity: 0.3;
+    transition: opacity 0.15s ease, color 0.15s ease, border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.secret-terminal-btn:hover,
+.secret-terminal-btn:focus-visible{
+    opacity: 1;
+    color: var(--accent);
+    border-color: var(--accent);
+    box-shadow: 2px 2px 0 rgba(255, 59, 0, 0.5);
+}
+
+/* Fullscreen overlay: black background, 5% transparent (95% opaque) */
+.ascii-overlay{
+    position: fixed;
+    inset: 0;
+    z-index: 90;
+    display: grid;
+    place-items: center;
+    padding: clamp(12px, 3vw, 36px);
+    background: rgba(0, 0, 0, 0.95);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.16s ease, visibility 0.16s ease;
+}
+
+.ascii-overlay[hidden]{
+    display: none;
+}
+
+.ascii-overlay.open{
+    opacity: 1;
+    visibility: visible;
+}
+
+.ascii-overlay-panel{
+    width: 100%;
+    max-width: 1720px;
+    max-height: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: var(--border);
+    border-left: 2px solid var(--accent);
+    border-radius: var(--radius);
+    background: rgba(5, 5, 5, 0.85);
+    box-shadow: 8px 8px 0 rgba(255, 59, 0, 0.35), 0 0 80px rgba(0, 0, 0, 0.8);
+}
+
+.ascii-overlay-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px 16px;
+    border-bottom: var(--border);
+    background: rgba(0, 0, 0, 0.4);
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--fg);
+}
+
+.ascii-overlay-file{
+    color: var(--accent);
+}
+
+.ascii-overlay-file b{
+    color: var(--fg);
+    font-weight: 700;
+}
+
+.ascii-overlay-actions{
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.ascii-overlay-hint{
+    color: rgba(224, 224, 224, 0.4);
+    font-size: 0.6rem;
+    letter-spacing: 0.08em;
+}
+
+.ascii-overlay-close{
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    padding: 0;
+    background: transparent;
+    border: 1px solid rgba(224, 224, 224, 0.25);
+    border-radius: var(--radius);
+    color: var(--fg);
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: color 0.12s ease, border-color 0.12s ease, transform 0.12s ease;
+}
+
+.ascii-overlay-close:hover,
+.ascii-overlay-close:focus-visible{
+    color: var(--accent);
+    border-color: var(--accent);
+    transform: rotate(90deg);
+}
+
+.ascii-overlay-body{
+    flex: 1;
+    min-height: 0;
+    overflow: auto;
+    padding: clamp(14px, 2.5vw, 28px);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(255, 59, 0, 0.6) transparent;
+}
+
+/* Font sized so the 196-column art fits desktop widths without wrapping.
+   margin: 0 auto centers it; when it's wider than the panel (mobile) the
+   auto margins collapse to 0 and it scrolls normally from the left. */
+.ascii-art{
+    font-family: var(--ui-font);
+    font-size: clamp(6.5px, 0.6vw, 11.5px);
+    line-height: 1.18;
+    letter-spacing: 0;
+    white-space: pre;
+    width: max-content;
+    margin: 0 auto;
+    color: var(--fg);
+    text-shadow: 0 0 8px rgba(255, 59, 0, 0.3);
+}
+
+body.no-scroll{
+    overflow: hidden;
+}
