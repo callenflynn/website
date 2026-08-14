@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-tmp="$(mktemp)"
-trap 'rm -f "$tmp"' EXIT
+TMP="$(mktemp)"
+trap 'rm -f "$TMP"' EXIT
 
-curl -fsSL "https://raw.githubusercontent.com/callenflynn/fedora-script/refs/heads/main/setup.sh" -o "$tmp"
+curl -fsSL "https://raw.githubusercontent.com/callenflynn/fedora-script/refs/heads/main/setup.sh" -o "$TMP"
 
-bash "$tmp"
+exec bash "$TMP" </dev/tty
