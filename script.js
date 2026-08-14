@@ -1,6 +1,16 @@
 const yearSpan = document.getElementById("year");
 if (yearSpan) yearSpan.textContent = new Date().getFullYear();
 
+// Persist same-origin images (the mosaic wall) in Cache Storage so repeat
+// visits load them instantly from disk instead of re-downloading.
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/sw.js").catch(() => {
+            // Service worker unavailable (e.g. private browsing) — not fatal.
+        });
+    });
+}
+
 async function buildGameMosaic() {
     const mosaic = document.getElementById("gameMosaic");
     const track = document.getElementById("bgMosaicTrack");
