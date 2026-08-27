@@ -1,26 +1,25 @@
 ---
-name: code-reviewer
-description: Analyze an entire codebase, score files, prioritize problems, suggest improvements, and optionally apply fixes.
-version: 1.0.0
+name: reviewing-code
+description: Use when the user asks to review code, check code quality, debug, or optimize software. Analyze an entire codebase, score files, prioritize problems, suggest improvements, and optionally apply fixes.
 author: Callen Flynn
-
-tags:
-  - code-review
-  - debugging
-  - optimization
-  - software-quality
-
-trigger:
-  - "user asks to review code"
-  - "user asks to check code quality"
-  - "task involves debugging, optimization, or code improvement"
-
-permissions:
-  tools:
-    - code
-    - files
-
-priority: high
+allowed-tools:
+  - Read
+  - Write
+  - Edit
+  - Glob
+  - Grep
+metadata:
+  version: 1.0.0
+  tags:
+    - code-review
+    - debugging
+    - optimization
+    - software-quality
+  trigger:
+    - "user asks to review code"
+    - "user asks to check code quality"
+    - "task involves debugging, optimization, or code improvement"
+  priority: high
 ---
 
 # Code Reviewer
@@ -95,7 +94,7 @@ Rate every reviewed file:
 Excellent code. No meaningful issues.
 
 8-9/10:
-Good code with minor improvements possible.
+Well-structured, mostly optimized code with minor stylistic or formatting improvements possible.
 
 5-7/10:
 Functional but has noticeable issues.
@@ -244,4 +243,3 @@ If the user approves:
 - Consider the whole project, not isolated files
 - Preserve existing functionality unless a change is required
 - Point out uncertainty when project context is missing
-
