@@ -626,6 +626,7 @@ function setupLiveActivity() {
         art.alt = "";
         if (!artIdle) {
             artPlaceholder.hidden = false;
+            startIdleBackdrop();
             return;
         }
 
@@ -642,10 +643,37 @@ function setupLiveActivity() {
 
         artIdle.hidden = false;
         artPlaceholder.hidden = true;
+        startIdleBackdrop();
         if (artIdle.complete) {
             if (artIdle.naturalWidth > 0) return;
             artIdle.hidden = true;
             artPlaceholder.hidden = false;
+        }
+    };
+
+    // ── Wuhu Island backdrop ──
+    // Two stacked <div> layers sit behind the transparent mii gif. A random
+    // one is shown on load, then the two crossfade back and forth every 30s.
+    const IDLE_BG_SWAP_MS = 30000;
+    let idleBgTimer = null;
+    let idleBgFlip = false;
+
+    const startIdleBackdrop = () => {
+        const layerA = document.getElementById("liveArtBgA");
+        const layerB = document.getElementById("liveArtBgB");
+        if (!layerA || !layerB) return;
+
+        // Random first pick covers the "random on reload" case.
+        idleBgFlip = Math.random() < 0.5;
+        layerA.classList.toggle("is-active", !idleBgFlip);
+        layerB.classList.toggle("is-active", idleBgFlip);
+
+        if (!idleBgTimer) {
+            idleBgTimer = window.setInterval(() => {
+                idleBgFlip = !idleBgFlip;
+                layerA.classList.toggle("is-active", !idleBgFlip);
+                layerB.classList.toggle("is-active", idleBgFlip);
+            }, IDLE_BG_SWAP_MS);
         }
     };
 

@@ -730,6 +730,37 @@ p, .term-line, .term-text{
     object-fit: cover;
 }
 .live-art-idle[hidden]{ display: none; }
+
+/* Wuhu Island backdrop behind the idle mii gif. Two stacked layers so the
+   active image can crossfade into the other one every 30s. The backdrop is
+   always in the DOM but visually tied to the idle state via the card's
+   data-state attribute (idle / active / error / loading). */
+.live-art-bg{
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    z-index: 0;
+}
+
+.live-art-bg-layer{
+    position: absolute;
+    inset: 0;
+    background-size: cover;
+    background-position: center;
+    opacity: 0;
+    transition: opacity 1.8s ease;
+    will-change: opacity;
+}
+
+#liveArtBgA{ background-image: url("assets/wuhu1.png"); }
+#liveArtBgB{ background-image: url("assets/wuhu2.jpg"); }
+
+/* Only visible while the mii gif is showing (idle state) */
+#liveActivityCard[data-state="idle"] .live-art-bg-layer.is-active{ opacity: 1; }
+
+@media (prefers-reduced-motion: reduce){
+    .live-art-bg-layer{ transition: none; }
+}
 .live-art-placeholder{
     position: absolute;
     inset: 0;
