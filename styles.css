@@ -358,6 +358,38 @@ p, .term-line, .term-text{
     width: 100%;
 }
 
+.map-groups{
+    display: grid;
+    gap: 34px;
+    margin-top: 28px;
+}
+
+.map-group{
+    min-width: 0;
+}
+
+.map-group-header{
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: var(--border);
+}
+
+.map-group-header h2{
+    color: var(--fg);
+    font-family: var(--ui-font);
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+}
+
+.map-group-header .crosshair{
+    color: var(--accent);
+}
+
 .keycap{
     position: relative;
     display: flex;
@@ -1466,6 +1498,11 @@ a.coding-card:active{
 
     .profile-grid{
         grid-template-columns: 1fr;
+    }
+
+    .map-groups{
+        gap: 28px;
+        margin-top: 22px;
     }
 
     .bg-mosaic{
