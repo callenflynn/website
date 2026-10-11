@@ -17,30 +17,37 @@ async function buildGameMosaic() {
     if (!mosaic || !track) return;
 
     const fallbackSources = [
-        "assets/sections/optimized/battlefield6/bg.webp",
-        "assets/sections/optimized/battlefield6/IMG_0676.webp",
-        "assets/sections/optimized/battlefield6/IMG_0677.webp",
-        "assets/sections/optimized/battlefield6/IMG_0678.webp",
-        "assets/sections/optimized/cod/Ghost wallpaper.webp",
-        "assets/sections/optimized/forza/IMG_0679.webp",
-        "assets/sections/optimized/forza/IMG_0682.webp",
-        "assets/sections/optimized/forza/IMG_0684.webp",
-        "assets/sections/optimized/nomansky/IMG_0916.webp",
-        "assets/sections/optimized/nomansky/IMG_0925.webp",
-        "assets/sections/optimized/nomansky/IMG_0926.webp",
-        "assets/sections/optimized/readyornot/IMG_0924.webp",
-        "assets/sections/optimized/readyornot/IMG_0927.webp",
-        "assets/sections/optimized/readyornot/IMG_0930.webp",
-        "assets/sections/optimized/readyornot/IMG_0931.webp",
-        "assets/sections/optimized/readyornot/Ready or Not.webp"
+        "/assets/sections/optimized/battlefield6/bg.webp",
+        "/assets/sections/optimized/battlefield6/IMG_0676.webp",
+        "/assets/sections/optimized/battlefield6/IMG_0677.webp",
+        "/assets/sections/optimized/battlefield6/IMG_0678.webp",
+        "/assets/sections/optimized/cod/Ghost wallpaper.webp",
+        "/assets/sections/optimized/forza/IMG_0679.webp",
+        "/assets/sections/optimized/forza/IMG_0682.webp",
+        "/assets/sections/optimized/forza/IMG_0684.webp",
+        "/assets/sections/optimized/nomansky/IMG_0916.webp",
+        "/assets/sections/optimized/nomansky/IMG_0925.webp",
+        "/assets/sections/optimized/nomansky/IMG_0926.webp",
+        "/assets/sections/optimized/readyornot/IMG_0924.webp",
+        "/assets/sections/optimized/readyornot/IMG_0927.webp",
+        "/assets/sections/optimized/readyornot/IMG_0930.webp",
+        "/assets/sections/optimized/readyornot/IMG_0931.webp",
+        "/assets/sections/optimized/readyornot/Ready or Not.webp"
     ];
 
     let sources = [...fallbackSources];
     try {
-        const response = await fetch("assets/sections/manifest.json");
+        const response = await fetch("/assets/sections/manifest.json");
         if (response.ok) {
             const manifestSources = await response.json();
-            if (Array.isArray(manifestSources) && manifestSources.length) sources = [...manifestSources];
+            if (Array.isArray(manifestSources) && manifestSources.length) {
+                // Manifest paths are written relative to the repo root, so
+                // root them here — otherwise the wall 404s from subfolder
+                // pages (experimental-design/).
+                sources = manifestSources.map((p) =>
+                    typeof p === "string" && !p.startsWith("/") ? `/${p}` : p
+                );
+            }
         }
     } catch {
         // File previews cannot fetch JSON. The checked-in fallback still builds the wall.
@@ -441,7 +448,7 @@ function resolveActivityAsset(activity, imageKey) {
     return "";
 }
 
-const GAME_ARTWORK_MANIFEST_URL = "assets/game-artwork.json";
+const GAME_ARTWORK_MANIFEST_URL = "/assets/game-artwork.json";
 const ROBLOX_ARTWORK_API_URL = "/api/roblox-artwork";
 const ROBLOX_USER_ID = "2530785068";
 const STEAM_ARTWORK_API_URL = "/api/steam-artwork";
@@ -538,7 +545,7 @@ async function resolveGameArtwork(activity) {
         }
     }
 
-    return { art: "assets/gamepad.svg", source: "platform-fallback" };
+    return { art: "/assets/gamepad.svg", source: "platform-fallback" };
 }
 
 function formatElapsed(start) {
@@ -581,8 +588,11 @@ function setupLiveActivity() {
     const setSignal = (text, state = "") => {
         signal.textContent = text;
         signal.dataset.state = state;
-        const dot = document.createElement("i");
-        signal.prepend(dot);
+        // Prepend the pulsing dot once; re-running this every 5s sync must not
+        // stack an unbounded number of <i> nodes into the live signal.
+        if (!signal.querySelector("i")) {
+            signal.prepend(document.createElement("i"));
+        }
     };
 
     let artGeneration = 0;
@@ -702,7 +712,7 @@ function setupLiveActivity() {
             avatar.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=96`;
             avatar.alt = `${displayName}'s Discord avatar`;
         } else {
-            avatar.src = "assets/discord.ico";
+            avatar.src = "/assets/discord.ico";
             avatar.alt = "Discord";
         }
 
@@ -752,8 +762,8 @@ function setupLiveActivity() {
             // let an older lookup overwrite newer presence data.
             if (generation !== renderGeneration) return;
             const artworkSource = discordArtwork || gameArtwork.art;
-            const gameFallback = activity.type === 0 && artworkSource !== "assets/gamepad.svg"
-                ? "assets/gamepad.svg"
+            const gameFallback = activity.type === 0 && artworkSource !== "/assets/gamepad.svg"
+                ? "/assets/gamepad.svg"
                 : "";
             const resolvedActivityName = gameArtwork.resolvedName || activityName;
             setArt(artworkSource, `${resolvedActivityName} artwork`, gameFallback, gameArtwork.artCandidates || []);
@@ -828,7 +838,7 @@ function setupSecretTerminal() {
     const body = document.getElementById("asciiOverlayBody");
     if (!btn || !overlay || !artEl || !body) return;
 
-    const ASCII_URL = "C-ascii.txt";
+    const ASCII_URL = "/C-ascii.txt";
     let artText = null;
     let hasTyped = false;
 
@@ -917,6 +927,15 @@ document.addEventListener("DOMContentLoaded", () => {
     buildGameMosaic();
     setupLiveActivity();
     setupSecretTerminal();
+
+    // Smooth scrolling via Lenis — keeps wheel/trackpad/touch consistent and
+    // frame-synced with the mosaic's rAF loop. Skipped for reduced motion so
+    // those users keep native scroll.
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches && window.Lenis) {
+        const lenis = new Lenis({ smoothWheel: true, lerp: 0.09 });
+        const lenisRaf = (time) => { lenis.raf(time); requestAnimationFrame(lenisRaf); };
+        requestAnimationFrame(lenisRaf);
+    }
 
     // ── Cursor-reactive halftone dots ──
     if (window.matchMedia("(hover: hover)").matches) {

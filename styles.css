@@ -1,9 +1,9 @@
 :root{
-    --bg: #050505;
-    --fg: #E0E0E0;
+    --bg: #0a0807;
+    --fg: #e6e2de;
     --accent: #FF3B00;
-    --border: 1px solid rgba(224, 224, 224, 0.18);
-    --panel-bg: rgba(12, 12, 12, 0.62);
+    --border: 1px solid rgba(230, 226, 222, 0.18);
+    --panel-bg: rgba(13, 10, 8, 0.85);
     --radius: 2px;
     --content-width: 980px;
     --viewport-padding: clamp(16px, 4vw, 48px);
@@ -13,7 +13,7 @@
 }
 
 html {
-    scroll-behavior: smooth;
+    scroll-behavior: auto;
     scrollbar-width: none;
     -ms-overflow-style: none;
 }
@@ -92,8 +92,8 @@ a, button, .keycap, .profile-card, .mc-card, .map-link {
 .game-mosaic-item{
     overflow: hidden;
     border-radius: 0;
-    background: #111;
-    border: 1px solid rgba(224, 224, 224, 0.08);
+    background: #161311;
+    border: 1px solid rgba(230, 226, 222, 0.08);
 }
 
 .game-mosaic-item img{
@@ -190,7 +190,7 @@ a, button, .keycap, .profile-card, .mc-card, .map-link {
     position: absolute;
     inset: 0;
     pointer-events: none;
-    background-image: radial-gradient(circle, #050505 1.4px, transparent 1.4px);
+    background-image: radial-gradient(circle, #0a0807 1.4px, transparent 1.4px);
     background-size: 5px 5px;
     mix-blend-mode: overlay;
     opacity: 0.55;
@@ -284,7 +284,7 @@ a, button, .keycap, .profile-card, .mc-card, .map-link {
     border: var(--border);
     border-radius: var(--radius);
     padding: 8px 12px;
-    background: rgba(5, 5, 5, 0.8);
+    background: rgba(10, 8, 7, 0.8);
     backdrop-filter: blur(8px);
     transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
     z-index: 20;
@@ -476,7 +476,7 @@ p, .term-line, .term-text{
     transform: translateX(-50%) translateY(8px);
     width: min(280px, calc(100vw - 40px));
     padding: 16px;
-    background: rgba(5, 5, 5, 0.9);
+    background: rgba(10, 8, 7, 0.9);
     border: var(--border);
     border-radius: var(--radius);
     box-shadow: 6px 6px 0 var(--accent);
@@ -498,7 +498,7 @@ p, .term-line, .term-text{
     height: 0;
     border-left: 7px solid transparent;
     border-right: 7px solid transparent;
-    border-bottom: 7px solid rgba(224, 224, 224, 0.18);
+    border-bottom: 7px solid rgba(230, 226, 222, 0.18);
     pointer-events: none;
 }
 
@@ -586,7 +586,7 @@ p, .term-line, .term-text{
     justify-content: space-between;
     gap: 12px;
     padding: 8px 0;
-    border-bottom: 1px solid rgba(224, 224, 224, 0.08);
+    border-bottom: 1px solid rgba(230, 226, 222, 0.08);
     font-size: 0.75rem;
 }
 
@@ -595,7 +595,7 @@ p, .term-line, .term-text{
 }
 
 .spotify-stat .stat-label{
-    color: rgba(224, 224, 224, 0.55);
+    color: rgba(230, 226, 222, 0.55);
     letter-spacing: 0.05em;
     text-transform: uppercase;
 }
@@ -609,7 +609,7 @@ p, .term-line, .term-text{
 .spotify-disclaimer{
     margin-top: 12px;
     font-size: 0.65rem;
-    color: rgba(224, 224, 224, 0.45);
+    color: rgba(230, 226, 222, 0.45);
     line-height: 1.5;
     letter-spacing: 0.02em;
 }
@@ -619,8 +619,8 @@ p, .term-line, .term-text{
     height: auto;
     display: block;
     border-radius: var(--radius);
-    background: #0a0a0a;
-    border: 1px solid rgba(224, 224, 224, 0.08);
+    background: #0d0b09;
+    border: 1px solid rgba(230, 226, 222, 0.08);
 }
 
 @media (min-width: 701px){
@@ -677,7 +677,7 @@ p, .term-line, .term-text{
     border: var(--border);
     border-left: 2px solid var(--accent);
     border-radius: var(--radius);
-    background: rgba(5, 5, 5, 0.72);
+    background: rgba(10, 8, 7, 0.72);
     box-shadow: 5px 5px 0 rgba(255, 59, 0, 0.42);
     backdrop-filter: blur(12px);
 }
@@ -720,7 +720,7 @@ p, .term-line, .term-text{
     animation: live-pulse 1.6s ease-in-out infinite;
 }
 
-.live-signal[data-state="offline"]{ color: rgba(224, 224, 224, 0.42); }
+.live-signal[data-state="offline"]{ color: rgba(230, 226, 222, 0.42); }
 .live-signal[data-state="error"]{ color: #ffb000; }
 
 @keyframes live-pulse{
@@ -740,8 +740,8 @@ p, .term-line, .term-text{
     width: 92px;
     height: 92px;
     overflow: hidden;
-    border: 1px solid rgba(224, 224, 224, 0.18);
-    background: #0b0b0b;
+    border: 1px solid rgba(230, 226, 222, 0.18);
+    background: #0e0c0a;
 }
 
 .live-activity-art{
@@ -784,8 +784,8 @@ p, .term-line, .term-text{
     will-change: opacity;
 }
 
-#liveArtBgA{ background-image: url("assets/wuhu1.png"); }
-#liveArtBgB{ background-image: url("assets/wuhu2.jpg"); }
+#liveArtBgA{ background-image: url("/assets/wuhu1.png"); }
+#liveArtBgB{ background-image: url("/assets/wuhu2.jpg"); }
 
 /* Only visible while the mii gif is showing (idle state) */
 #liveActivityCard[data-state="idle"] .live-art-bg-layer.is-active{ opacity: 1; }
@@ -808,7 +808,7 @@ p, .term-line, .term-text{
     justify-content: flex-start;
     flex-wrap: wrap;
     margin-bottom: 8px;
-    color: rgba(224, 224, 224, 0.58);
+    color: rgba(230, 226, 222, 0.58);
     font-size: 0.58rem;
     letter-spacing: 0.07em;
 }
@@ -828,7 +828,7 @@ p, .term-line, .term-text{
     border: 1px solid var(--accent);
     border-radius: 50%;
     object-fit: cover;
-    background: #111;
+    background: #161311;
 }
 
 .live-identity-copy{
@@ -846,7 +846,7 @@ p, .term-line, .term-text{
 }
 .live-identity-copy span{
     overflow: hidden;
-    color: rgba(224, 224, 224, 0.45);
+    color: rgba(230, 226, 222, 0.45);
     font-size: 0.52rem;
     letter-spacing: 0.06em;
     text-overflow: ellipsis;
@@ -875,7 +875,7 @@ p, .term-line, .term-text{
 .hero-live-copy p{
     overflow: hidden;
     margin-bottom: 8px;
-    color: rgba(224, 224, 224, 0.62);
+    color: rgba(230, 226, 222, 0.62);
     font-size: 0.65rem;
     line-height: 1.35;
     text-overflow: ellipsis;
@@ -885,7 +885,7 @@ p, .term-line, .term-text{
 .live-meta{
     justify-content: flex-start;
     flex-wrap: wrap;
-    color: rgba(224, 224, 224, 0.42);
+    color: rgba(230, 226, 222, 0.42);
     font-size: 0.52rem;
     letter-spacing: 0.05em;
 }
@@ -910,7 +910,7 @@ p, .term-line, .term-text{
     flex-shrink: 0;
     border-radius: 2px;
     object-fit: cover;
-    border: 1px solid rgba(224, 224, 224, 0.15);
+    border: 1px solid rgba(230, 226, 222, 0.15);
 }
 .live-spotify-art[src=""]{ display: none; }
 .live-spotify-icon{
@@ -938,11 +938,11 @@ p, .term-line, .term-text{
     text-overflow: ellipsis;
 }
 .live-spotify-sep{
-    color: rgba(224, 224, 224, 0.3);
+    color: rgba(230, 226, 222, 0.3);
     flex-shrink: 0;
 }
 .live-spotify-artist{
-    color: rgba(224, 224, 224, 0.55);
+    color: rgba(230, 226, 222, 0.55);
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -951,15 +951,15 @@ p, .term-line, .term-text{
 .live-custom-status{
     margin-top: 10px;
     padding-top: 9px;
-    border-top: 1px solid rgba(224, 224, 224, 0.1);
-    color: rgba(224, 224, 224, 0.65);
+    border-top: 1px solid rgba(230, 226, 222, 0.1);
+    color: rgba(230, 226, 222, 0.65);
     font-size: 0.62rem;
     line-height: 1.35;
 }
 .live-custom-status::before{ content: "//_STATUS "; color: var(--accent); }
 .hero-live-updated{
     margin-top: 11px;
-    color: rgba(224, 224, 224, 0.35);
+    color: rgba(230, 226, 222, 0.35);
     font-size: 0.55rem;
     letter-spacing: 0.04em;
 }
@@ -973,7 +973,7 @@ p, .term-line, .term-text{
     justify-content: space-between;
     align-items: center;
     font-size: 0.7rem;
-    color: rgba(224, 224, 224, 0.55);
+    color: rgba(230, 226, 222, 0.55);
     letter-spacing: 0.08em;
     border-top: var(--border);
 }
@@ -989,35 +989,35 @@ p, .term-line, .term-text{
    ══════════════════════════════════ */
 
 .sections{
-    width: 100vw;
-    margin: 0 calc(50% - 50vw);
-    padding: 0;
+    width: 100%;
+    margin: 0;
+    padding: 28px 0 96px;
     display: flex;
     flex-direction: column;
-    gap: 0;
+    gap: 48px;
     z-index: 1;
 }
 
 .section{
     position: relative;
-    min-height: min(900px, 95svh);
-    margin: 0;
-    padding: clamp(56px, 8vw, 120px) max(24px, calc((100vw - 1120px) / 2));
+    width: min(1120px, 92vw);
+    margin: 0 auto;
+    min-height: auto;
+    padding: clamp(40px, 5vw, 64px);
     display: flex;
     flex-direction: column;
     justify-content: center;
     overflow: hidden;
-    border-top: var(--border);
 }
 
-/* ── FROSTED GLASS PANELS ── */
+/* ── TERMINAL WINDOWS ── */
 
 .tech-panel{
     background: var(--panel-bg);
-    backdrop-filter: blur(18px) saturate(130%);
-    border-left: 1px solid rgba(224, 224, 224, 0.12);
-    border-right: 1px solid rgba(224, 224, 224, 0.12);
-    box-shadow: 0 0 60px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(14px) saturate(120%);
+    border: 1px solid rgba(230, 226, 222, 0.16);
+    border-radius: var(--radius);
+    box-shadow: 10px 10px 0 rgba(255, 59, 0, 0.38), 0 30px 80px rgba(0, 0, 0, 0.75);
     position: relative;
 }
 
@@ -1026,7 +1026,7 @@ p, .term-line, .term-text{
     position: absolute;
     inset: 0;
     pointer-events: none;
-    border: 1px solid rgba(224, 224, 224, 0.08);
+    border: 1px solid rgba(230, 226, 222, 0.08);
     mask-image: linear-gradient(180deg, rgba(0,0,0,0.6) 0%, rgba(0,0,0,0.2) 100%);
 }
 
@@ -1037,7 +1037,7 @@ p, .term-line, .term-text{
     gap: 16px;
     padding-bottom: 14px;
     margin-bottom: 18px;
-    border-bottom: 1px solid rgba(224, 224, 224, 0.18);
+    border-bottom: 1px solid rgba(230, 226, 222, 0.18);
 }
 
 .panel-header h2{
@@ -1055,12 +1055,6 @@ p, .term-line, .term-text{
     font-weight: 700;
     color: var(--accent);
     line-height: 1;
-    animation: pulse-crosshair 2.4s ease-in-out infinite;
-}
-
-@keyframes pulse-crosshair{
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.45; }
 }
 
 /* ── CLINICAL READOUTS ── */
@@ -1078,7 +1072,7 @@ p, .term-line, .term-text{
     font-size: 0.7rem;
     letter-spacing: 0.1em;
     text-transform: uppercase;
-    color: rgba(224, 224, 224, 0.7);
+    color: rgba(230, 226, 222, 0.7);
     margin-bottom: 10px;
 }
 
@@ -1091,18 +1085,13 @@ p, .term-line, .term-text{
     content: "_";
     display: inline-block;
     margin-left: 2px;
-    animation: terminal-blink 1s step-end infinite;
-}
 
-@keyframes terminal-blink{
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
 }
 
 .term-text{
     font-size: 0.75rem;
     line-height: 1.6;
-    color: rgba(224, 224, 224, 0.55);
+    color: rgba(230, 226, 222, 0.55);
     letter-spacing: 0.02em;
     margin-bottom: 28px;
     max-width: 640px;
@@ -1125,7 +1114,7 @@ p, .term-line, .term-text{
     overflow: hidden;
     text-decoration: none;
     color: var(--fg);
-    background: rgba(5, 5, 5, 0.55);
+    background: rgba(10, 8, 7, 0.55);
     border: var(--border);
     border-radius: var(--radius);
     box-shadow: 4px 4px 0 rgba(255, 59, 0, 0.35);
@@ -1136,7 +1125,7 @@ p, .term-line, .term-text{
 .profile-card:focus-visible{
     transform: translate(-3px, -3px);
     box-shadow: 7px 7px 0 var(--accent);
-    border-color: rgba(224, 224, 224, 0.35);
+    border-color: rgba(230, 226, 222, 0.35);
 }
 
 .profile-card:active{
@@ -1174,7 +1163,7 @@ p, .term-line, .term-text{
 .profile-card-image{
     width: 100%;
     display: block;
-    background: #0a0a0a;
+    background: #0d0b09;
     filter: grayscale(0.15) contrast(1.05);
 }
 
@@ -1199,7 +1188,7 @@ p, .term-line, .term-text{
     padding: 20px;
     border: var(--border);
     border-radius: var(--radius);
-    background: rgba(5, 5, 5, 0.5);
+    background: rgba(10, 8, 7, 0.5);
     box-shadow: 4px 4px 0 rgba(255, 59, 0, 0.35);
     transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
     overflow: hidden;
@@ -1209,7 +1198,7 @@ p, .term-line, .term-text{
 .mc-card:focus-visible{
     transform: translate(-3px, -3px);
     box-shadow: 7px 7px 0 var(--accent);
-    border-color: rgba(224, 224, 224, 0.35);
+    border-color: rgba(230, 226, 222, 0.35);
 }
 
 .mc-card:active{
@@ -1273,7 +1262,7 @@ p, .term-line, .term-text{
 .mc-card p{
     margin: 0 0 12px;
     font-size: 0.82rem;
-    color: rgba(224, 224, 224, 0.65);
+    color: rgba(230, 226, 222, 0.65);
     line-height: 1.5;
 }
 
@@ -1305,7 +1294,7 @@ p, .term-line, .term-text{
     padding: 16px 18px;
     border: var(--border);
     border-radius: var(--radius);
-    background: rgba(5, 5, 5, 0.5);
+    background: rgba(10, 8, 7, 0.5);
     box-shadow: 4px 4px 0 rgba(255, 59, 0, 0.35);
     transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
     cursor: pointer;
@@ -1315,7 +1304,7 @@ p, .term-line, .term-text{
 .contrib-card:focus-visible{
     transform: translate(-3px, -3px);
     box-shadow: 7px 7px 0 var(--accent);
-    border-color: rgba(224, 224, 224, 0.35);
+    border-color: rgba(230, 226, 222, 0.35);
 }
 
 .contrib-card:active{
@@ -1359,7 +1348,7 @@ p, .term-line, .term-text{
     border: var(--border);
     border-radius: var(--radius);
     overflow: hidden;
-    background: rgba(5, 5, 5, 0.5);
+    background: rgba(10, 8, 7, 0.5);
     box-shadow: 4px 4px 0 rgba(255, 59, 0, 0.35);
     transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
 }
@@ -1376,7 +1365,7 @@ a.coding-card:hover,
 a.coding-card:focus-visible{
     transform: translate(-3px, -3px);
     box-shadow: 7px 7px 0 var(--accent);
-    border-color: rgba(224, 224, 224, 0.35);
+    border-color: rgba(230, 226, 222, 0.35);
 }
 
 a.coding-card:active{
@@ -1474,7 +1463,8 @@ a.coding-card:active{
 
     .section{
         min-height:  auto;
-        padding: 56px 18px;
+        width: 100%;
+        padding: 40px 18px;
     }
 
     .section h2{
@@ -1535,9 +1525,9 @@ a.coding-card:active{
     place-items: center;
     padding: 0;
     background: transparent;
-    border: 1px solid rgba(224, 224, 224, 0.12);
+    border: 1px solid rgba(230, 226, 222, 0.12);
     border-radius: var(--radius);
-    color: rgba(224, 224, 224, 0.4);
+    color: rgba(230, 226, 222, 0.4);
     font-family: var(--ui-font);
     font-size: 0.95rem;
     line-height: 1;
@@ -1586,7 +1576,7 @@ a.coding-card:active{
     border: var(--border);
     border-left: 2px solid var(--accent);
     border-radius: var(--radius);
-    background: rgba(5, 5, 5, 0.85);
+    background: rgba(10, 8, 7, 0.85);
     box-shadow: 8px 8px 0 rgba(255, 59, 0, 0.35), 0 0 80px rgba(0, 0, 0, 0.8);
 }
 
@@ -1621,7 +1611,7 @@ a.coding-card:active{
 }
 
 .ascii-overlay-hint{
-    color: rgba(224, 224, 224, 0.4);
+    color: rgba(230, 226, 222, 0.4);
     font-size: 0.6rem;
     letter-spacing: 0.08em;
 }
@@ -1633,7 +1623,7 @@ a.coding-card:active{
     height: 24px;
     padding: 0;
     background: transparent;
-    border: 1px solid rgba(224, 224, 224, 0.25);
+    border: 1px solid rgba(230, 226, 222, 0.25);
     border-radius: var(--radius);
     color: var(--fg);
     font-size: 0.8rem;
