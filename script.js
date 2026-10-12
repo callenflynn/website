@@ -200,13 +200,13 @@ async function buildGameMosaic() {
             columnSpan = Math.min(columns, puzzleSpans[index % puzzleSpans.length]);
         }
         const tileHeight = (columnWidth * columnSpan) / ratio;
-        const rowSpan = Math.max(5, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
+        const rowSpan = Math.max(3, Math.ceil((tileHeight + gap) / (rowHeight + gap)));
         return { columnSpan, rowSpan };
     }
 
     function applyTileLayout(grid, tileData, index) {
         const columns = window.innerWidth <= 700 ? 5 : 16;
-        const gap = window.innerWidth <= 700 ? 5 : 8;
+        const gap = window.innerWidth <= 700 ? 3 : 4;
         const rowHeight = 10;
         const columnWidth = (grid.clientWidth - ((columns - 1) * gap) - (gap * 2)) / columns;
         const data = tileData[index];
@@ -225,8 +225,33 @@ async function buildGameMosaic() {
     }
 
     // ── Create two different grids ──
-    const TILES_PER_GRID = 65;
-    const GRID_GAP = 14;
+    // Tile count is computed from the track's real height so the wall fully
+    // covers the viewport (the track is 116% of the fixed .bg-mosaic, which
+    // itself is inset -8%). A fixed 65-tile grid only covered ~4 rows, leaving
+    // a black void in the lower half. avgRowSpan ~6-9 is the expected mean of
+    // tileLayout's row spans (min 3, up to ~12 for wide tiles).
+    const TILES_PER_COLUMN = Math.ceil(
+        track.offsetHeight / (10 + (window.innerWidth <= 700 ? 3 : 4)) / 7.5
+    );
+    const TILES_PER_GRID = Math.ceil(
+        TILES_PER_COLUMN * (window.innerWidth <= 700 ? 5 : 16) * 1.3
+    );
+    // GRID_GAP is the seam between grid1 and grid2 in the infinite scroll; it
+    // must match the tile gap exactly or a visible empty column shows mid-wall.
+    const GRID_GAP = window.innerWidth <= 700 ? 3 : 4;
+
+    // The full-coverage tile count (146/grid × 2 grids = 292 slots) exceeds the
+    // image pool (198 manifest entries). Pad the loader queue by cycling the
+    // pool so every tile gets an image — otherwise ~94 tiles stay dark forever.
+    // Duplicates are invisible in a fast-scrolling background wall, and repeat
+    // fetches hit the HTTP cache, so the extra entries are nearly free.
+    const tilesNeeded = TILES_PER_GRID * 2;
+    if (loaderQueue.length < tilesNeeded && sources.length) {
+        const cycles = Math.ceil(tilesNeeded / sources.length);
+        for (let i = 1; i < cycles; i += 1) {
+            loaderQueue.push(...shuffleArray([...sources]));
+        }
+    }
 
     const grid1 = document.createElement("div");
     grid1.className = "bg-mosaic-grid";
@@ -923,9 +948,67 @@ function setupSecretTerminal() {
     });
 }
 
+// ── Map page uptime health checks ──
+// Pings every .keycap's external URL; unreachable links get the keycap-down
+// treatment (dark gray, no orange offset shadow) plus a title warning.
+// Runs only on map.html — script.js is shared, so this no-ops elsewhere.
+function setupMapHealthChecks() {
+    const groups = document.querySelector(".map-groups");
+    if (!groups) return;
+
+    const keycaps = [...groups.querySelectorAll("a.keycap[href^='http']")];
+    if (!keycaps.length) return;
+
+    const CONCURRENCY = 5;
+    const TIMEOUT_MS = 5000;
+
+    const check = (keycap) => {
+        const href = keycap.getAttribute("href");
+        if (!href) return Promise.resolve();
+
+        let signal;
+        if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) {
+            signal = AbortSignal.timeout(TIMEOUT_MS);
+        } else {
+            // Fallback for browsers without AbortSignal.timeout
+            const controller = new AbortController();
+            signal = controller.signal;
+            setTimeout(() => controller.abort(), TIMEOUT_MS);
+        }
+
+        // mode:no-cors is required — cross-origin fetches otherwise fail on
+        // CORS. An opaque (resolve) response means reachable; a TypeError or
+        // timeout (reject) means down.
+        return fetch(href, { mode: "no-cors", signal }).then(
+            () => Promise.resolve(),
+            () => Promise.reject()
+        );
+    };
+
+    const markDown = (keycap) => {
+        keycap.classList.add("keycap-down");
+        const title = keycap.getAttribute("title");
+        keycap.setAttribute("title", title ? `${title} — UNAVAILABLE` : "UNAVAILABLE");
+    };
+
+    // Small concurrency pool so the page never fires 15+ requests at once.
+    let cursor = 0;
+    const worker = () => {
+        while (cursor < keycaps.length) {
+            const keycap = keycaps[cursor];
+            cursor += 1;
+            check(keycap)
+                .catch(() => markDown(keycap))
+                .finally(() => worker());
+        }
+    };
+    for (let i = 0; i < CONCURRENCY; i += 1) worker();
+}
+
 document.addEventListener("DOMContentLoaded", () => {
     buildGameMosaic();
     setupLiveActivity();
+    setupMapHealthChecks();
     setupSecretTerminal();
 
     // Smooth scrolling via Lenis — keeps wheel/trackpad/touch consistent and

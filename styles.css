@@ -83,8 +83,8 @@ a, button, .keycap, .profile-card, .mc-card, .map-link {
     grid-template-columns: repeat(16, 1fr);
     grid-auto-rows: 10px;
     grid-auto-flow: dense;
-    gap: 8px;
-    padding: 8px;
+    gap: 4px;
+    padding: 4px;
     will-change: transform;
 }
 
@@ -436,6 +436,34 @@ p, .term-line, .term-text{
 .keycap:active{
     transform: translate(6px, 6px);
     box-shadow: 0 0 0 var(--accent);
+}
+
+/* Unreachable link (map.html uptime check): dark gray, no orange offset —
+   reads clearly as 'down' while leaving the white default untouched. */
+.keycap.keycap-down{
+    background: #6b6864;
+    border-color: #6b6864;
+    color: #2a2826;
+    box-shadow: none;
+}
+
+.keycap.keycap-down::before{
+    background: rgba(10, 8, 7, 0.15);
+}
+
+.keycap.keycap-down .keycap-icon{
+    opacity: 0.45;
+}
+
+.keycap.keycap-down .keycap-icon img{
+    filter: invert(0.45) brightness(0.9);
+}
+
+.keycap.keycap-down:hover,
+.keycap.keycap-down:focus-visible{
+    transform: none;
+    box-shadow: none;
+    border-color: #6b6864;
 }
 
 .keycap-icon{
@@ -1503,8 +1531,8 @@ a.coding-card:active{
     .bg-mosaic-grid{
         width: 120vw;
         grid-template-columns: repeat(5, 1fr);
-        gap: 5px;
-        padding: 5px;
+        gap: 3px;
+        padding: 3px;
     }
 }
 
