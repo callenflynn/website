@@ -992,7 +992,33 @@ p, .term-line, .term-text{
     letter-spacing: 0.04em;
 }
 
-/* ── HERO FOOTER ── */
+/* ── SCROLL INDICATOR ── */
+
+.scroll-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    color: var(--muted-foreground, rgba(230, 226, 222, 0.5));
+    animation: scrollBounce 2s cubic-bezier(0.23, 1, 0.32, 1) infinite;
+    opacity: 0.7;
+}
+
+.scroll-arrow {
+    display: inline-block;
+    font-family: monospace;
+    font-weight: 700;
+}
+
+@keyframes scrollBounce {
+    0%, 100% {
+        transform: translateY(0);
+    }
+    50% {
+        transform: translateY(4px);
+    }
+}
 
 .hero-footer{
     margin-top: auto;
