@@ -35,7 +35,7 @@ function showView(view) {
             mapToggleBtn.setAttribute("aria-label", "Open map");
         }
         if (mapToggleIcon) mapToggleIcon.src = MAP_ICON;
-        document.title = "🐴 Callen.";
+        document.title = "Callen.";
         window.scrollTo({ top: 0, behavior: "instant" });
     }
 }
