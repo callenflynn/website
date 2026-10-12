@@ -30,108 +30,110 @@
 
     <div class="noise-overlay" aria-hidden="true"></div>
 
-    <a class="map-link reveal-item" href="map.html" aria-label="Open map" title="Open map">
-        <img src="/assets/site-icon/map/web/icon-512.png" width="18" height="18" alt="" aria-hidden="true">
+    <a class="map-link reveal-item" id="mapToggleBtn" href="#map" aria-label="Toggle site map" title="Toggle map">
+        <img id="mapToggleIcon" src="/assets/site-icon/map/web/icon-512.png" width="18" height="18" alt="" aria-hidden="true">
     </a>
 
-    <main class="hero-panel reveal-section">
-        <header class="sys-header">
-            <span class="sys-label" aria-hidden="true">[SYS.01]</span>
-            <h1 class="reveal-item">CALLEN<span class="accent-dot">.</span></h1>
-        </header>
+    <!-- SITE CONTENT CONTAINER -->
+    <div id="siteContent" class="view-home">
+        <main class="hero-panel reveal-section">
+            <header class="sys-header">
+                <span class="sys-label" aria-hidden="true">[SYS.01]</span>
+                <h1 class="reveal-item">CALLEN<span class="accent-dot">.</span></h1>
+            </header>
 
-        <div class="hero-main-grid">
-            <div class="hero-links tactical-grid socials">
-                <a href="https://github.com/callenflynn" target="_blank" rel="noopener" class="keycap reveal-item">
-                    <span class="keycap-icon"><img src="/assets/github.ico" alt=""></span>
-                    <span class="keycap-text">GITHUB</span>
-                </a>
-
-                <a href="https://discord.com/users/1409705687159668736" target="_blank" rel="noopener" class="keycap reveal-item">
-                    <span class="keycap-icon"><img src="/assets/discord.ico" alt=""></span>
-                    <span class="keycap-text">DISCORD</span>
-                </a>
-
-                <div class="keycap-wrapper reveal-item">
-                    <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" rel="noopener" class="keycap keycap-spotify">
-                        <span class="keycap-icon"><img src="/assets/spotify.ico" alt=""></span>
-                        <span class="keycap-text">SPOTIFY</span>
+            <div class="hero-main-grid">
+                <div class="hero-links tactical-grid socials">
+                    <a href="https://github.com/callenflynn" target="_blank" rel="noopener" class="keycap reveal-item">
+                        <span class="keycap-icon"><img src="/assets/github.ico" alt=""></span>
+                        <span class="keycap-text">GITHUB</span>
                     </a>
-                    <span class="spotify-hint" aria-hidden="true">hover me</span>
-                    <div class="spotify-popup" aria-hidden="true">
-                        <div class="spotify-popup-header">
-                            <img src="/assets/spotify.ico" alt="">
-                            <span>//_RECENTLY_PLAYED</span>
+
+                    <a href="https://discord.com/users/1409705687159668736" target="_blank" rel="noopener" class="keycap reveal-item">
+                        <span class="keycap-icon"><img src="/assets/discord.ico" alt=""></span>
+                        <span class="keycap-text">DISCORD</span>
+                    </a>
+
+                    <div class="keycap-wrapper reveal-item">
+                        <a href="https://open.spotify.com/user/8mhqni5h0nxmjouk24zlf2x6u?trackId=3eZtvFincPvFVPzANPU5px" target="_blank" rel="noopener" class="keycap keycap-spotify">
+                            <span class="keycap-icon"><img src="/assets/spotify.ico" alt=""></span>
+                            <span class="keycap-text">SPOTIFY</span>
+                        </a>
+                        <span class="spotify-hint" aria-hidden="true">hover me</span>
+                        <div class="spotify-popup" aria-hidden="true">
+                            <div class="spotify-popup-header">
+                                <img src="/assets/spotify.ico" alt="">
+                                <span>//_RECENTLY_PLAYED</span>
+                            </div>
+                            <img class="spotify-recent-svg" src="https://spotify-recently-played-readme.vercel.app/api?user=8mhqni5h0nxmjouk24zlf2x6u" alt="Recently played tracks" loading="eager">
                         </div>
-                        <img class="spotify-recent-svg" src="https://spotify-recently-played-readme.vercel.app/api?user=8mhqni5h0nxmjouk24zlf2x6u" alt="Recently played tracks" loading="eager">
                     </div>
+
+                    <a href="https://blog.callen.page/" target="_blank" rel="noopener" class="keycap reveal-item">
+                        <span class="keycap-icon"><img src="/assets/writefreely.svg" alt=""></span>
+                        <span class="keycap-text">BLOG</span>
+                    </a>
                 </div>
 
-                <a href="https://blog.callen.page/" target="_blank" rel="noopener" class="keycap reveal-item">
-                    <span class="keycap-icon"><img src="/assets/writefreely.svg" alt=""></span>
-                    <span class="keycap-text">BLOG</span>
-                </a>
+                <section class="hero-live-feed reveal-item" aria-label="Live Discord activity">
+                    <header class="hero-live-header">
+                        <span>//_LIVE_FEED</span>
+                        <span class="live-signal" id="liveSignal" aria-label="Live feed status"><i></i>SYNCING</span>
+                    </header>
+                    <div class="hero-live-body live-activity-card" id="liveActivityCard" data-state="loading">
+                        <div class="live-art-wrap" id="liveArtWrap">
+                            <img id="liveActivityArt" class="live-activity-art" src="" alt="" loading="eager">
+                            <div class="live-art-bg" aria-hidden="true">
+                                <div class="live-art-bg-layer" id="liveArtBgA"></div>
+                                <div class="live-art-bg-layer" id="liveArtBgB"></div>
+                            </div>
+                            <img id="liveArtIdle" class="live-art-idle" src="/assets/mii_1.gif" alt="mii" hidden loading="eager">
+                            <span class="live-art-placeholder" id="liveArtPlaceholder" aria-hidden="true">+</span>
+                        </div>
+                        <div class="hero-live-copy">
+                            <div class="hero-live-status">
+                                <span id="liveStatus">CONNECTING</span>
+                                <span id="livePresence">DISCORD: --</span>
+                            </div>
+                            <div class="live-identity">
+                                <img id="liveAvatar" class="live-avatar" src="/assets/discord.ico" alt="" width="32" height="32">
+                                <div class="live-identity-copy">
+                                    <strong id="liveName">CALLEN</strong>
+                                    <span id="liveHandle">DISCORD PRESENCE FEED</span>
+                                </div>
+                            </div>
+                            <span class="live-activity-kicker" id="liveActivityKicker">ESTABLISHING LINK</span>
+                            <h2 id="liveActivityTitle">Reading the signal...</h2>
+                            <p id="liveActivityDetails">Checking Discord for current activity.</p>
+                            <div class="live-meta">
+                                <span id="liveActivityPlatform">LANYARD / LIVE</span>
+                                <span id="liveActivityElapsed"></span>
+                            </div>
+                            <div class="live-spotify-pill" id="liveSpotifyPill" hidden>
+                                <img class="live-spotify-art" src="" alt="">
+                                <img class="live-spotify-icon" src="/assets/spotify.ico" alt="">
+                                <div class="live-spotify-text">
+                                    <span class="live-spotify-song"></span>
+                                    <span class="live-spotify-artist"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="live-custom-status" id="liveCustomStatus" hidden></div>
+                    <p class="hero-live-updated" id="liveUpdated" aria-live="polite">//_WAITING FOR FIRST SYNC</p>
+                </section>
             </div>
 
-            <section class="hero-live-feed reveal-item" aria-label="Live Discord activity">
-                <header class="hero-live-header">
-                    <span>//_LIVE_FEED</span>
-                    <span class="live-signal" id="liveSignal" aria-label="Live feed status"><i></i>SYNCING</span>
-                </header>
-                <div class="hero-live-body live-activity-card" id="liveActivityCard" data-state="loading">
-                    <div class="live-art-wrap" id="liveArtWrap">
-                        <img id="liveActivityArt" class="live-activity-art" src="" alt="" loading="eager">
-                        <div class="live-art-bg" aria-hidden="true">
-                            <div class="live-art-bg-layer" id="liveArtBgA"></div>
-                            <div class="live-art-bg-layer" id="liveArtBgB"></div>
-                        </div>
-                        <img id="liveArtIdle" class="live-art-idle" src="/assets/mii_1.gif" alt="mii" hidden loading="eager">
-                        <span class="live-art-placeholder" id="liveArtPlaceholder" aria-hidden="true">+</span>
-                    </div>
-                    <div class="hero-live-copy">
-                        <div class="hero-live-status">
-                            <span id="liveStatus">CONNECTING</span>
-                            <span id="livePresence">DISCORD: --</span>
-                        </div>
-                        <div class="live-identity">
-                            <img id="liveAvatar" class="live-avatar" src="/assets/discord.ico" alt="" width="32" height="32">
-                            <div class="live-identity-copy">
-                                <strong id="liveName">CALLEN</strong>
-                                <span id="liveHandle">DISCORD PRESENCE FEED</span>
-                            </div>
-                        </div>
-                        <span class="live-activity-kicker" id="liveActivityKicker">ESTABLISHING LINK</span>
-                        <h2 id="liveActivityTitle">Reading the signal...</h2>
-                        <p id="liveActivityDetails">Checking Discord for current activity.</p>
-                        <div class="live-meta">
-                            <span id="liveActivityPlatform">LANYARD / LIVE</span>
-                            <span id="liveActivityElapsed"></span>
-                        </div>
-                        <div class="live-spotify-pill" id="liveSpotifyPill" hidden>
-                            <img class="live-spotify-art" src="" alt="">
-                            <img class="live-spotify-icon" src="/assets/spotify.ico" alt="">
-                            <div class="live-spotify-text">
-                                <span class="live-spotify-song"></span>
-                                <span class="live-spotify-artist"></span>
-                            </div>
-                        </div>
-                    </div>
+            <footer class="hero-footer">
+                <span class="term-line">&copy; <span id="year"></span> CALLEN_FLYNN // SYS.01</span>
+                <div class="counter">
+                    <script src="https://counter.websiteout.com/js/8/0/83/0"></script>
                 </div>
-                <div class="live-custom-status" id="liveCustomStatus" hidden></div>
-                <p class="hero-live-updated" id="liveUpdated" aria-live="polite">//_WAITING FOR FIRST SYNC</p>
-            </section>
-        </div>
+            </footer>
+        </main>
 
-        <footer class="hero-footer">
-            <span class="term-line">&copy; <span id="year"></span> CALLEN_FLYNN // SYS.01</span>
-            <div class="counter">
-                <script src="https://counter.websiteout.com/js/8/0/83/0"></script>
-            </div>
-        </footer>
-    </main>
-
-    <!-- SECTIONS -->
-    <div class="sections">
+        <!-- SECTIONS -->
+        <div class="sections">
         <!-- GAMING -->
         <section class="section tech-panel reveal-section" aria-label="Gaming profiles">
             <header class="panel-header">
@@ -233,6 +235,129 @@
             </div>
         </section>
     </div>
+    </div> <!-- END #siteContent -->
+
+    <!-- MAP VIEW CONTAINER -->
+    <div id="mapContent" class="view-map" hidden>
+        <main class="hero-panel reveal-section">
+            <header class="sys-header">
+                <span class="sys-label" aria-hidden="true">[SYS.MAP]</span>
+                <h1 class="reveal-item">SITE<span class="accent-dot">.</span>MAP</h1>
+            </header>
+
+            <p class="term-text reveal-item">//_Network topology for callen.page. nothing crazy, just doors.</p>
+
+            <div class="map-groups">
+                <section class="map-group" aria-labelledby="map-group-connect">
+                    <header class="map-group-header">
+                        <h2 id="map-group-connect">//_CONNECT</h2>
+                        <span class="crosshair" aria-hidden="true">+</span>
+                    </header>
+                    <div class="tactical-grid">
+                        <a href="https://callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="Main website with my socials.">
+                            <span class="keycap-icon">🏠</span>
+                            <span class="keycap-text">HOME</span>
+                        </a>
+                        <a href="https://blog.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My blog.">
+                            <span class="keycap-icon"><img src="/assets/writefreely.svg" alt=""></span>
+                            <span class="keycap-text">BLOG</span>
+                        </a>
+                        <a href="https://mastodon.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My Mastodon account.">
+                            <span class="keycap-icon"><img src="/assets/mastodon.svg" alt=""></span>
+                            <span class="keycap-text">MASTODON</span>
+                        </a>
+                        <a href="https://rss.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My FreshRSS feed.">
+                            <span class="keycap-icon"><img src="/assets/freshrss.svg" alt=""></span>
+                            <span class="keycap-text">RSS</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="map-group" aria-labelledby="map-group-media">
+                    <header class="map-group-header">
+                        <h2 id="map-group-media">//_MEDIA</h2>
+                        <span class="crosshair" aria-hidden="true">+</span>
+                    </header>
+                    <div class="tactical-grid">
+                        <a href="https://cflix.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="My Jellyfin client.">
+                            <span class="keycap-icon"><img src="/assets/jellyfin.svg" alt=""></span>
+                            <span class="keycap-text">CFLIX</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="map-group" aria-labelledby="map-group-infrastructure">
+                    <header class="map-group-header">
+                        <h2 id="map-group-infrastructure">//_INFRASTRUCTURE</h2>
+                        <span class="crosshair" aria-hidden="true">+</span>
+                    </header>
+                    <div class="tactical-grid">
+                        <a href="https://search.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="Search engine.">
+                            <span class="keycap-icon"><img src="/assets/SEARXNG.svg" alt=""></span>
+                            <span class="keycap-text">SEARXNG</span>
+                        </a>
+                        <a href="https://dash.callen.page/" target="_blank" rel="noopener" class="keycap reveal-item" title="Homarr Dashboard.">
+                            <span class="keycap-icon"><img src="/assets/homarr.svg" alt=""></span>
+                            <span class="keycap-text">DASH</span>
+                        </a>
+                        <a href="https://netdata.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="Netdata monitor.">
+                            <span class="keycap-icon"><img src="/assets/netdata.svg" alt=""></span>
+                            <span class="keycap-text">NETDATA</span>
+                        </a>
+                        <a href="https://uptime-kuma.callen.page/status/default" target="_blank" rel="noopener" class="keycap reveal-item" title="Uptime Kuma monitor.">
+                            <span class="keycap-icon"><img src="/assets/uptime-kuma.svg" alt=""></span>
+                            <span class="keycap-text">UPTIME</span>
+                        </a>
+                        <a href="https://n8n.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="n8n workflow.">
+                            <span class="keycap-icon"><img src="/assets/n8n.svg" alt=""></span>
+                            <span class="keycap-text">N8N</span>
+                        </a>
+                        <a href="https://omniroute.callen.page/dashboard/endpoint" target="_blank" rel="noopener" class="keycap reveal-item" title="OmniRoute.">
+                            <span class="keycap-icon"><img src="/assets/omniroute-dark.svg" alt=""></span>
+                            <span class="keycap-text">OMNIROUTE</span>
+                        </a>
+                        <a href="https://webui.callen.page" target="_blank" rel="noopener" class="keycap reveal-item" title="Open WebUI.">
+                            <span class="keycap-icon"><img src="/assets/open-webui.svg" alt=""></span>
+                            <span class="keycap-text">WEBUI</span>
+                        </a>
+                        <a href="https://penpot.callen.page/" target="_blank" rel="noopener" class="keycap reveal-item" title="Penpot">
+                            <span class="keycap-icon"><img src="https://cdn.jsdelivr.net/gh/homarr-labs/dashboard-icons/svg/penpot.svg" alt=""></span>
+                            <span class="keycap-text">PENPOT</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="map-group" aria-labelledby="map-group-projects">
+                    <header class="map-group-header">
+                        <h2 id="map-group-projects">//_PROJECTS</h2>
+                        <span class="crosshair" aria-hidden="true">+</span>
+                    </header>
+                    <div class="tactical-grid">
+                        <a href="https://callenflynn.github.io/Typer/" target="_blank" rel="noopener" class="keycap reveal-item" title="Typer">
+                            <span class="keycap-text">TYPER</span>
+                        </a>
+                    </div>
+                </section>
+
+                <section class="map-group" aria-labelledby="map-group-archive">
+                    <header class="map-group-header">
+                        <h2 id="map-group-archive">//_ARCHIVE</h2>
+                        <span class="crosshair" aria-hidden="true">+</span>
+                    </header>
+                    <div class="tactical-grid">
+                        <a href="https://callen.page/old/" target="_blank" rel="noopener" class="keycap reveal-item" title="Old Site">
+                            <span class="keycap-icon"><img src="/assets/site-icon/web/icon-512.png" alt=""></span>
+                            <span class="keycap-text">OLD SITE</span>
+                        </a>
+                    </div>
+                </section>
+            </div>
+
+            <footer class="hero-footer">
+                <span class="term-line">&copy; <span id="yearMap"></span> CALLEN_FLYNN // SYS.MAP</span>
+            </footer>
+        </main>
+    </div> <!-- END #mapContent -->
 
     <!-- ── SECRET TERMINAL ── -->
     <button class="secret-terminal-btn" id="secretTerminalBtn" aria-label="Open hidden terminal" title="???">

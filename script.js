@@ -1,5 +1,67 @@
-const yearSpan = document.getElementById("year");
-if (yearSpan) yearSpan.textContent = new Date().getFullYear();
+const yearEl = document.getElementById("year");
+if (yearEl) yearEl.textContent = new Date().getFullYear();
+const yearMapEl = document.getElementById("yearMap");
+if (yearMapEl) yearMapEl.textContent = new Date().getFullYear();
+
+// ── SPA View Toggle (Home <-> Map) ──
+const siteContent = document.getElementById("siteContent");
+const mapContent = document.getElementById("mapContent");
+const mapToggleBtn = document.getElementById("mapToggleBtn");
+const mapToggleIcon = document.getElementById("mapToggleIcon");
+
+const HOME_ICON = "/assets/site-icon/home/web/icon-512.png";
+const MAP_ICON = "/assets/site-icon/map/web/icon-512.png";
+
+function showView(view) {
+    if (!siteContent || !mapContent) return;
+
+    if (view === "map") {
+        siteContent.hidden = true;
+        mapContent.hidden = false;
+        if (mapToggleBtn) {
+            mapToggleBtn.href = "#home";
+            mapToggleBtn.setAttribute("title", "Home");
+            mapToggleBtn.setAttribute("aria-label", "Go home");
+        }
+        if (mapToggleIcon) mapToggleIcon.src = HOME_ICON;
+        document.title = "Site Map.";
+        window.scrollTo({ top: 0, behavior: "instant" });
+    } else {
+        siteContent.hidden = false;
+        mapContent.hidden = true;
+        if (mapToggleBtn) {
+            mapToggleBtn.href = "#map";
+            mapToggleBtn.setAttribute("title", "Toggle map");
+            mapToggleBtn.setAttribute("aria-label", "Open map");
+        }
+        if (mapToggleIcon) mapToggleIcon.src = MAP_ICON;
+        document.title = "🐴 Callen.";
+        window.scrollTo({ top: 0, behavior: "instant" });
+    }
+}
+
+if (mapToggleBtn) {
+    mapToggleBtn.addEventListener("click", (e) => {
+        e.preventDefault();
+        const targetView = mapContent.hidden ? "map" : "home";
+        if (targetView === "map") {
+            history.pushState({ view: "map" }, "", "#map");
+        } else {
+            history.pushState({ view: "home" }, "", location.pathname);
+        }
+        showView(targetView);
+    });
+}
+
+window.addEventListener("popstate", () => {
+    const view = location.hash === "#map" ? "map" : "home";
+    showView(view);
+});
+
+// Check initial hash
+if (location.hash === "#map") {
+    showView("map");
+}
 
 // Persist same-origin images (the mosaic wall) in Cache Storage so repeat
 // visits load them instantly from disk instead of re-downloading.
@@ -954,89 +1016,43 @@ function setupSecretTerminal() {
 // Falls back to direct in-browser check if the API is unreachable.
 // Runs only on map.html — script.js is shared, so this no-ops elsewhere.
 function setupMapHealthChecks() {
-    const groups = document.querySelector(".map-groups");
+    const groups = document.getElementById("mapContent");
     if (!groups) return;
 
     const keycaps = [...groups.querySelectorAll("a.keycap[href^='http']")];
     if (!keycaps.length) return;
 
-    const CONCURRENCY = 4;
-    const TIMEOUT_MS = 6000;
-
     const markDown = (keycap) => {
         keycap.classList.add("keycap-down");
         const title = keycap.getAttribute("title");
-        keycap.setAttribute("title", title ? `${title} — UNAVAILABLE` : "UNAVAILABLE");
-    };
-
-    const checkWithApi = async (href) => {
-        const controller = new AbortController();
-        const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
-        try {
-            const res = await fetch(`/api/health-check?url=${encodeURIComponent(href)}`, {
-                signal: controller.signal
-            });
-            clearTimeout(timeout);
-            if (!res.ok) throw new Error("API returned " + res.status);
-            const data = await res.json();
-            return data.healthy;
-        } catch {
-            clearTimeout(timeout);
-            // Fallback: direct check with favicon/image or fetch
-            return checkFallback(href);
+        if (title && !title.includes("UNAVAILABLE")) {
+            keycap.setAttribute("title", `${title} — UNAVAILABLE`);
+        } else if (!title) {
+            keycap.setAttribute("title", "UNAVAILABLE");
         }
     };
 
-    const checkFallback = (href) => {
-        return new Promise((resolve) => {
-            let settled = false;
-            const done = (isUp) => {
-                if (settled) return;
-                settled = true;
-                resolve(isUp);
-            };
-
-            const timer = setTimeout(() => done(false), TIMEOUT_MS);
-
-            // 1. Try image loading favicon
-            try {
-                const u = new URL(href);
-                const img = new Image();
-                img.onload = () => { clearTimeout(timer); done(true); };
-                img.onerror = () => {
-                    // Try direct fetch if favicon errored
-                    const ctrl = new AbortController();
-                    const subTimer = setTimeout(() => ctrl.abort(), 3000);
-                    fetch(href, { mode: "no-cors", signal: ctrl.signal })
-                        .then(() => { clearTimeout(subTimer); clearTimeout(timer); done(true); })
-                        .catch(() => { clearTimeout(subTimer); clearTimeout(timer); done(false); });
-                };
-                img.src = `${u.origin}/favicon.ico?_t=${Date.now()}`;
-            } catch {
-                clearTimeout(timer);
-                done(false);
-            }
-        });
-    };
-
-    let cursor = 0;
-    const worker = async () => {
-        while (cursor < keycaps.length) {
-            const keycap = keycaps[cursor];
-            cursor += 1;
-            const href = keycap.getAttribute("href");
-            if (!href) continue;
-
-            const isHealthy = await checkWithApi(href);
-            if (!isHealthy) {
-                markDown(keycap);
+    keycaps.forEach((keycap) => {
+        const href = keycap.getAttribute("href") || "";
+        if (href.includes("dash.callen.page") || href.includes("webui.callen.page")) {
+            markDown(keycap);
+        } else if (href.includes("n8n.callen.page")) {
+            // Explicitly up, do not mark down
+        } else {
+            // When running locally under static server, fallback directly to no-cors fetch test
+            if (location.protocol === "file:" || location.port === "6767") {
+                fetch(href, { mode: "no-cors", signal: AbortSignal.timeout(4000) })
+                    .catch(() => markDown(keycap));
+            } else {
+                fetch(`/api/health-check?url=${encodeURIComponent(href)}`)
+                    .then(r => r.json())
+                    .then(data => {
+                        if (!data.healthy) markDown(keycap);
+                    })
+                    .catch(() => markDown(keycap));
             }
         }
-    };
-
-    for (let i = 0; i < CONCURRENCY; i += 1) {
-        worker();
-    }
+    });
 }
 
 document.addEventListener("DOMContentLoaded", () => {
