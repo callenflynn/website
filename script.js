@@ -949,8 +949,9 @@ function setupSecretTerminal() {
 }
 
 // ── Map page uptime health checks ──
-// Pings every .keycap's external URL; unreachable links get the keycap-down
-// treatment (dark gray, no orange offset shadow) plus a title warning.
+// Checks status via /api/health-check serverless proxy; unreachable links
+// or Cloudflare errors (502, 530, etc.) get the keycap-down treatment.
+// Falls back to direct in-browser check if the API is unreachable.
 // Runs only on map.html — script.js is shared, so this no-ops elsewhere.
 function setupMapHealthChecks() {
     const groups = document.querySelector(".map-groups");
@@ -959,31 +960,8 @@ function setupMapHealthChecks() {
     const keycaps = [...groups.querySelectorAll("a.keycap[href^='http']")];
     if (!keycaps.length) return;
 
-    const CONCURRENCY = 5;
-    const TIMEOUT_MS = 5000;
-
-    const check = (keycap) => {
-        const href = keycap.getAttribute("href");
-        if (!href) return Promise.resolve();
-
-        let signal;
-        if (typeof AbortSignal !== "undefined" && AbortSignal.timeout) {
-            signal = AbortSignal.timeout(TIMEOUT_MS);
-        } else {
-            // Fallback for browsers without AbortSignal.timeout
-            const controller = new AbortController();
-            signal = controller.signal;
-            setTimeout(() => controller.abort(), TIMEOUT_MS);
-        }
-
-        // mode:no-cors is required — cross-origin fetches otherwise fail on
-        // CORS. An opaque (resolve) response means reachable; a TypeError or
-        // timeout (reject) means down.
-        return fetch(href, { mode: "no-cors", signal }).then(
-            () => Promise.resolve(),
-            () => Promise.reject()
-        );
-    };
+    const CONCURRENCY = 4;
+    const TIMEOUT_MS = 6000;
 
     const markDown = (keycap) => {
         keycap.classList.add("keycap-down");
@@ -991,18 +969,74 @@ function setupMapHealthChecks() {
         keycap.setAttribute("title", title ? `${title} — UNAVAILABLE` : "UNAVAILABLE");
     };
 
-    // Small concurrency pool so the page never fires 15+ requests at once.
+    const checkWithApi = async (href) => {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), TIMEOUT_MS);
+        try {
+            const res = await fetch(`/api/health-check?url=${encodeURIComponent(href)}`, {
+                signal: controller.signal
+            });
+            clearTimeout(timeout);
+            if (!res.ok) throw new Error("API returned " + res.status);
+            const data = await res.json();
+            return data.healthy;
+        } catch {
+            clearTimeout(timeout);
+            // Fallback: direct check with favicon/image or fetch
+            return checkFallback(href);
+        }
+    };
+
+    const checkFallback = (href) => {
+        return new Promise((resolve) => {
+            let settled = false;
+            const done = (isUp) => {
+                if (settled) return;
+                settled = true;
+                resolve(isUp);
+            };
+
+            const timer = setTimeout(() => done(false), TIMEOUT_MS);
+
+            // 1. Try image loading favicon
+            try {
+                const u = new URL(href);
+                const img = new Image();
+                img.onload = () => { clearTimeout(timer); done(true); };
+                img.onerror = () => {
+                    // Try direct fetch if favicon errored
+                    const ctrl = new AbortController();
+                    const subTimer = setTimeout(() => ctrl.abort(), 3000);
+                    fetch(href, { mode: "no-cors", signal: ctrl.signal })
+                        .then(() => { clearTimeout(subTimer); clearTimeout(timer); done(true); })
+                        .catch(() => { clearTimeout(subTimer); clearTimeout(timer); done(false); });
+                };
+                img.src = `${u.origin}/favicon.ico?_t=${Date.now()}`;
+            } catch {
+                clearTimeout(timer);
+                done(false);
+            }
+        });
+    };
+
     let cursor = 0;
-    const worker = () => {
+    const worker = async () => {
         while (cursor < keycaps.length) {
             const keycap = keycaps[cursor];
             cursor += 1;
-            check(keycap)
-                .catch(() => markDown(keycap))
-                .finally(() => worker());
+            const href = keycap.getAttribute("href");
+            if (!href) continue;
+
+            const isHealthy = await checkWithApi(href);
+            if (!isHealthy) {
+                markDown(keycap);
+            }
         }
     };
-    for (let i = 0; i < CONCURRENCY; i += 1) worker();
+
+    for (let i = 0; i < CONCURRENCY; i += 1) {
+        worker();
+    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {
