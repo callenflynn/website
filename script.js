@@ -1034,23 +1034,20 @@ function setupMapHealthChecks() {
 
     keycaps.forEach((keycap) => {
         const href = keycap.getAttribute("href") || "";
-        if (href.includes("dash.callen.page") || href.includes("webui.callen.page")) {
-            markDown(keycap);
-        } else if (href.includes("n8n.callen.page")) {
-            // Explicitly up, do not mark down
+        // Live status comes from /api/health-check for every link — no
+        // hardcoded up/down overrides, so the map reflects the tunnel's
+        // current state instead of going stale when a service recovers.
+        // When running locally under static server, fallback directly to no-cors fetch test
+        if (location.protocol === "file:" || location.port === "6767") {
+            fetch(href, { mode: "no-cors", signal: AbortSignal.timeout(4000) })
+                .catch(() => markDown(keycap));
         } else {
-            // When running locally under static server, fallback directly to no-cors fetch test
-            if (location.protocol === "file:" || location.port === "6767") {
-                fetch(href, { mode: "no-cors", signal: AbortSignal.timeout(4000) })
-                    .catch(() => markDown(keycap));
-            } else {
-                fetch(`/api/health-check?url=${encodeURIComponent(href)}`)
-                    .then(r => r.json())
-                    .then(data => {
-                        if (!data.healthy) markDown(keycap);
-                    })
-                    .catch(() => markDown(keycap));
-            }
+            fetch(`/api/health-check?url=${encodeURIComponent(href)}`)
+                .then(r => r.json())
+                .then(data => {
+                    if (!data.healthy) markDown(keycap);
+                })
+                .catch(() => markDown(keycap));
         }
     });
 }
