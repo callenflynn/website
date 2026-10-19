@@ -1,6 +1,3 @@
-Markdown
-
-````
 ---
 name: industrial-neobrutalist-web-design
 description: Build distinctive, production-quality websites using dark industrial neo-brutalism, restrained high-contrast accents, editorial typography, technical layouts, precise spacing, and functional interactions. Use when creating or redesigning developer tools, software products, documentation sites, portfolios, dashboards, and modern technical brands.
