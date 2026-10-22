@@ -12,6 +12,7 @@ const ALLOWED_HOSTS = new Set([
     "omniroute.callen.page",
     "webui.callen.page",
     "penpot.callen.page",
+    "agentkit.callen.page",
     "hermes.callen.page",
     "hermes-office.callen.page",
     "callenflynn.github.io"
