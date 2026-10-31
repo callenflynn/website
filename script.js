@@ -739,6 +739,7 @@ function setupLiveActivity() {
         };
 
         artIdle.hidden = false;
+        artIdle.src = Math.random() < 0.9 ? "/assets/mii_1.gif" : "/assets/mii_sitting_chill.gif";
         artPlaceholder.hidden = true;
         startIdleBackdrop();
         if (artIdle.complete) {
