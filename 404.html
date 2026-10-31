@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="/assets/site-icon/web/favicon.ico" sizes="any">
+    <link rel="manifest" href="/manifest.json">
+    <title>404 — Callen.</title>
+    <meta name="description" content="Page not found.">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        body { overflow: hidden; }
+        #stars { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .star { position: absolute; background: #fff; border-radius: 50%; opacity: 0.7; animation: twinkle 3s infinite ease-in-out; }
+        @keyframes twinkle { 0%,100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .notfound { position: relative; z-index: 1; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1.5rem; text-align: center; padding: 2rem; }
+        .notfound h1 { font-family: "Oswald", sans-serif; font-size: clamp(4rem, 18vw, 12rem); line-height: 1; margin: 0; }
+        .notfound p { font-family: "Space Mono", monospace; max-width: 40ch; }
+        .redirect-timer { font-family: "Space Mono", monospace; opacity: 0.8; }
+        .home-link { font-family: "Space Mono", monospace; text-decoration: underline; }
+        #easterEggGif { width: 120px; height: auto; cursor: pointer; transition: transform 0.2s; }
+    </style>
+</head>
+<body>
+    <div id="stars" aria-hidden="true"></div>
+    <main class="notfound">
+        <h1>404</h1>
+        <p>you wandered off the map. nothing here but stars.</p>
+        <img id="easterEggGif" src="/assets/mii_1.gif" alt="easter egg" onclick="playEasterEgg()">
+        <div class="redirect-timer">redirecting home in <span id="countdown">10</span>s…</div>
+        <a class="home-link" href="index.html">go home now</a>
+    </main>
+    <script src="assets/404.js"></script>
+</body>
+</html>
