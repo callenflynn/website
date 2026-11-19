@@ -496,6 +496,9 @@ async function buildGameMosaic() {
 
 const LANYARD_URL = "https://lanyard.callen.page/v1/users/1409705687159668736";
 const LIVE_REFRESH_MS = 5000;
+// Server-side Spotify fallback (see /api/spotify-now.js). Used only when Lanyard
+// has no Spotify to report (Discord closed, or on but not broadcasting a song).
+const SPOTIFY_NOW_URL = "/api/spotify-now";
 
 function formatPresenceStatus(status) {
     const labels = { online: "ONLINE", idle: "IDLE", dnd: "DO NOT DISTURB", offline: "OFFLINE" };
@@ -781,6 +784,7 @@ function setupLiveActivity() {
         if (!payload?.success || !data) throw new Error("Invalid Lanyard response");
 
         const user = data.discord_user || {};
+        const spotifyViaApi = data._spotify_source === "api";
         const activities = Array.isArray(data.activities) ? data.activities : [];
         const custom = activities.find((activity) => activity.type === 4);
         const spotifyActivity = data.spotify || activities.find((activity) => activity.type === 2);
@@ -794,7 +798,13 @@ function setupLiveActivity() {
         handle.textContent = user.username ? `@${user.username}` : "DISCORD PRESENCE FEED";
         presence.textContent = `DISCORD: ${formatPresenceStatus(discordStatus)}`;
         status.textContent = `STATUS: ${discordStatus === "offline" ? "AWAY" : "ACTIVE"}`;
-        setSignal(discordStatus === "offline" ? "OFFLINE" : "LIVE", discordStatus === "offline" ? "offline" : "active");
+        // When a song is showing via the direct Spotify API (Discord closed), make the
+        // signal read as a live music feed rather than a broken/offline presence.
+        if (spotifyViaApi) {
+            setSignal("SPOTIFY: PLAYING", "active");
+        } else {
+            setSignal(discordStatus === "offline" ? "OFFLINE" : "LIVE", discordStatus === "offline" ? "offline" : "active");
+        }
 
         if (user.avatar && user.id) {
             avatar.src = `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png?size=96`;
@@ -892,7 +902,46 @@ function setupLiveActivity() {
         try {
             const response = await fetch(LANYARD_URL, { cache: "no-store" });
             if (!response.ok) throw new Error(`HTTP ${response.status}`);
-            await render(await response.json());
+            const lanyardPayload = await response.json();
+
+            // If Lanyard already carries Spotify (Discord on + reporting it), render
+            // as-is — no extra API call, no behavioural change.
+            const hasLanyardSpotify = !!(
+                lanyardPayload?.data?.spotify ||
+                lanyardPayload?.data?.activities?.some((a) => a.type === 2)
+            );
+
+            if (hasLanyardSpotify) {
+                await render(lanyardPayload);
+            } else {
+                // No Spotify from Lanyard: check Spotify directly via our server function.
+                try {
+                    const spRes = await fetch(SPOTIFY_NOW_URL, { cache: "no-store" });
+                    const spData = await spRes.json();
+                    if (spData?.success && spData?.playing && spData?.data) {
+                        // Merge Spotify data into the Lanyard payload so render() sees it.
+                        const merged = {
+                            ...lanyardPayload,
+                            data: {
+                                ...lanyardPayload.data,
+                                spotify: spData.data.spotify,
+                                // Keep the real discord_status but flag it so render()
+                                // can show a distinct signal text.
+                                _spotify_source: "api",
+                            },
+                        };
+                        await render(merged);
+                    } else {
+                        // Spotify says nothing playing either — render the Lanyard data
+                        // unchanged (offline/idle as before).
+                        await render(lanyardPayload);
+                    }
+                } catch (spError) {
+                    console.warn("Spotify fallback unavailable:", spError);
+                    // If the fallback endpoint itself fails, still render Lanyard data.
+                    await render(lanyardPayload);
+                }
+            }
         } catch (error) {
             console.warn("Live activity unavailable:", error);
             card.dataset.state = "error";
